@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Input PIC Pengawasan</title>
+    <style>
+      body {
+        font-family: Cambria;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+
+      header {
+        background-color: #ce1e10;
+        color: white;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 20px auto;
+        background-color: white;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+
+      .form-container {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-container label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        margin-top: 15px;
+      }
+
+      .form-container input,
+      .form-container select,
+      .form-container button {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+      }
+
+      .form-container select {
+        background-color: white;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .form-container button {
+        background-color: #ce1e10;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        flex: 1;
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      .form-container button:hover:not(:disabled) {
+        background-color: #ef190a;
+      }
+
+      .form-container button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      .back-btn {
+        color: black;
+        text-decoration: none;
+        font-size: 1rem;
+        display: inline-block;
+        margin-top: 20px;
+        cursor: pointer;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+      }
+
+      .back-btn:hover {
+        background-color: #f0f0f0;
+      }
+
+      .popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+      }
+
+      .popup-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #ffffff;
+        padding: 30px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        color: #333;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+      }
+
+      .popup-content p {
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 0;
+        margin-bottom: 20px;
+        line-height: 1.4;
+      }
+
+      .popup.show {
+        display: block;
+      }
+
+      .popup-content button {
+        background-color: #ef190a;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .popup-content button:hover {
+        background-color: #d50e08;
+      }
+
+      .file-info {
+        font-size: 12px;
+        color: #666;
+        margin-top: -10px;
+        margin-bottom: 15px;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        margin: 20px 0;
+        color: #ce1e10;
+        font-weight: bold;
+      }
+
+      .loading.show {
+        display: block;
+      }
+
+      .error-message {
+        color: #d32f2f;
+        background-color: #ffebee;
+        border: 1px solid #e57373;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 10px 0;
+        display: none;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+
+      .success-message {
+        color: #2e7d32;
+        background-color: #e8f5e8;
+        border: 1px solid #81c784;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 10px 0;
+        display: none;
+      }
+
+      .success-message.show {
+        display: block;
+      }
+
+      /* Responsive design */
+      @media (max-width: 600px) {
+        .container {
+          margin: 10px;
+          padding: 20px;
+        }
+
+        header {
+          padding: 15px;
+        }
+
+        .popup-content {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Form Input PIC Pengawasan</h1>
+    </header>
+
+    <div class="container">
+      <div class="error-message" id="error-message"></div>
+      <div class="success-message" id="success-message"></div>
+
+      <form id="pic-form" class="form-container">
+        <label for="cabang">Cabang:</label>
+        <select id="cabang" name="cabang" required>
+          <option value="">-- Pilih Cabang --</option>
+        </select>
+
+        <label for="kode_toko">Kode Toko:</label>
+        <input
+          type="text"
+          id="kode_toko"
+          name="kode_toko"
+          placeholder="Masukkan Kode Toko"
+          required
+        />
+
+        <label for="kategori_lokasi">Kategori Lokasi:</label>
+        <select name="kategori_lokasi" id="kategori_lokasi" required>
+          <option value="">-- Pilih Kategori Lokasi --</option>
+          <option value="non_ruko_non_urugan_30hr">
+            Non Ruko Non Urugan 30 HR
+          </option>
+          <option value="non_ruko_non_urugan_35hr">
+            Non Ruko Non Urugan 35 HR
+          </option>
+          <option value="non_ruko_non_urugan_40hr">
+            Non Ruko Non Urugan 40 HR
+          </option>
+          <option value="non_ruko_non_urugan_48hr">
+            Non Ruko Non Urugan 48 HR
+          </option>
+          <option value="ruko_10hr">Ruko 10 HR</option>
+          <option value="ruko_14hr">Ruko 14 HR</option>
+          <option value="ruko_20hr">Ruko 20 HR</option>
+        </select>
+
+        <label for="tanggal_spk">Tanggal Mulai SPK:</label>
+        <input
+          type="date"
+          id="tanggal_spk"
+          name="tanggal_spk"
+          accept=".pdf"
+          required
+        />
+
+        <label for="upload_spk">Upload SPK:</label>
+        <input
+          type="file"
+          id="upload_spk"
+          name="upload_spk"
+          accept=".pdf"
+          required
+        />
+
+        <label for="upload_file"
+          >Upload File (RAB, Penawaran & Gambar Sipil & Me):</label
+        >
+        <input
+          type="file"
+          id="upload_file"
+          name="upload_file"
+          accept=".pdf"
+          required
+        />
+
+        <label for="pic_building_support">PIC Building Support:</label>
+        <select name="pic_building_support" id="pic_building_support" required>
+          <option value="">-- Pilih PIC Building Support --</option>
+        </select>
+
+        <div class="loading" id="loading">
+          Sedang memproses data dan mengirim email...
+        </div>
+
+        <div class="button-group">
+          <button type="submit" id="submit-btn">Simpan</button>
+        </div>
+      </form>
+
+      <a href="landing_page.html" class="back-btn"> ← Kembali ke Beranda </a>
+    </div>
+
+    <div class="popup" id="popup">
+      <div class="popup-content">
+        <p id="popup-message"></p>
+        <button onclick="closePopup()">Tutup</button>
+      </div>
+    </div>
+
+    <script>
+      const SCRIPT_URL = "https://backend-form-neon.vercel.app/api";
+
+      const form = document.getElementById("pic-form");
+      const loading = document.getElementById("loading");
+      const submitBtn = document.getElementById("submit-btn");
+      const errorMessage = document.getElementById("error-message");
+      const successMessage = document.getElementById("success-message");
+      const popup = document.getElementById("popup");
+      const popupMessage = document.getElementById("popup-message");
+      const cabangInput = document.getElementById("cabang");
+      const picSelect = document.getElementById("pic_building_support");
+
+      window.onload = async function () {
+        const cabangSelect = document.getElementById("cabang");
+        try {
+          const response = await fetch(`${SCRIPT_URL}/input-pic/get-data`);
+          const result = await response.json();
+          if (result.status === "success" && result.cabangList) {
+            result.cabangList.forEach((cabang) => {
+              const option = document.createElement("option");
+              option.value = cabang;
+              option.textContent = cabang.toUpperCase();
+              cabangSelect.appendChild(option);
+            });
+          }
+        } catch (err) {
+          console.error("Error fetching cabang list:", err);
+          showError("Gagal memuat daftar cabang.");
+        }
+      };
+
+      cabangInput.addEventListener("change", async function () {
+        const cabang = cabangInput.value.trim();
+        if (!cabang) return;
+
+        picSelect.innerHTML =
+          '<option value="">-- Pilih PIC Building Support --</option>';
+
+        try {
+          const response = await fetch(
+            `${SCRIPT_URL}/input-pic/get-data?cabang=${encodeURIComponent(
+              cabang
+            )}`
+          );
+          const result = await response.json();
+
+          if (result.status === "success") {
+            if (result.picList.length === 0) {
+              const opt = document.createElement("option");
+              opt.textContent = "PIC tidak ditemukan untuk cabang ini";
+              opt.disabled = true;
+              picSelect.appendChild(opt);
+            } else {
+              result.picList.forEach((pic) => {
+                const option = document.createElement("option");
+                option.value = JSON.stringify({
+                  email: pic.email,
+                  nama: pic.nama,
+                  jabatan: pic.jabatan,
+                });
+                option.textContent = pic.nama.toUpperCase();
+                picSelect.appendChild(option);
+              });
+            }
+          } else {
+            showError("Gagal mengambil data PIC.");
+          }
+        } catch (err) {
+          console.error("Fetch error:", err);
+          showError("Terjadi kesalahan saat mengambil data PIC.");
+        }
+      });
+
+      // Hide messages
+      function hideMessages() {
+        errorMessage.classList.remove("show");
+        successMessage.classList.remove("show");
+      }
+
+      // Show error message
+      function showError(message) {
+        hideMessages();
+        errorMessage.textContent = message;
+        errorMessage.classList.add("show");
+      }
+
+      // Show success message
+      function showSuccess(message) {
+        hideMessages();
+        successMessage.textContent = message;
+        successMessage.classList.add("show");
+      }
+
+      // Show popup
+      function showPopup(message) {
+        popupMessage.textContent = message;
+        popup.classList.add("show");
+      }
+
+      // Close popup
+      function closePopup() {
+        popup.classList.remove("show");
+      }
+
+      // Handle form submission
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        loading.classList.add("show");
+        submitBtn.disabled = true;
+        hideMessages();
+
+        try {
+          // Ambil file PDF dan konversi ke base64
+          const spkFile = document.getElementById("upload_spk").files[0];
+          const rabFile = document.getElementById("upload_file").files[0];
+
+          if (!spkFile || !rabFile) {
+            showError("File PDF harus diupload semua.");
+            return;
+          }
+
+          const spkBase64 = await fileToBase64(spkFile);
+          const rabBase64 = await fileToBase64(rabFile);
+
+          const picData = JSON.parse(form.pic_building_support.value);
+
+          const jsonData = {
+            cabang: form.cabang.value,
+            kode_toko: form.kode_toko.value,
+            kategori_lokasi: form.kategori_lokasi.value,
+            tanggal_spk: form.tanggal_spk.value,
+            pic_building_support: picData.email,
+            pic_nama: picData.nama,
+            spk_filename: spkFile.name,
+            spk_base64: spkBase64,
+            rab_filename: rabFile.name,
+            rab_base64: rabBase64,
+          };
+
+          const response = await fetch(`${SCRIPT_URL}/input-pic/submit-form`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(jsonData),
+          });
+
+          const result = await response.json();
+          if (result.status === "success") {
+            const pesan = `Form berhasil dikirim. Email notifikasi telah dikirim kepada PIC Building Support.`;
+            showSuccess(pesan);
+            showPopup(pesan);
+            form.reset();
+          } else {
+            showError(
+              result.message || "Terjadi kesalahan saat menyimpan data."
+            );
+            showPopup(
+              result.message ||
+                "Terjadi kesalahan saat menyimpan data. Silakan coba lagi."
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          showError("Terjadi kesalahan saat menyimpan data.");
+          showPopup("Terjadi kesalahan saat menyimpan data.");
+        } finally {
+          loading.classList.remove("show");
+          submitBtn.disabled = false;
+        }
+      });
+
+      function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result.split(",")[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      // Make closePopup available globally
+      window.closePopup = closePopup;
+    </script>
+  </body>
+</html>
