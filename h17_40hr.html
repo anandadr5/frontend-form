@@ -211,8 +211,7 @@
           });
 
         try {
-          const base64_1 = await convertToBase64(formData.get("pek_sanitary"));
-          const base64_2 = await convertToBase64(formData.get("pek_atap"));
+          const base64_1 = await convertToBase64(formData.get("pek_atap"));
 
           const statusProgress = formData.getAll("status_progress");
           const catatan = formData.getAll("catatan");
