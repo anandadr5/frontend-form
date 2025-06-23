@@ -172,9 +172,8 @@
     </div>
 
     <script>
-      const SCRIPT_URL =
-        "https://backend-form-neon.vercel.app/api/h2/submit-form";
-      const GET_URL = "https://backend-form-neon.vercel.app/api/h2/get-data";
+      const SCRIPT_URL = "https://backend-form-neon.vercel.app/api/form";
+      const GET_URL = "https://backend-form-neon.vercel.app/api/form?form=h2";
 
       const form = document.getElementById("laporan-form");
       const submitButton = form.querySelector("button[type='submit']");
@@ -216,6 +215,7 @@
           const catatan = formData.getAll("catatan");
 
           const payload = {
+            form: "h2",
             kode_toko: formData.get("kode_toko"),
             status_lokasi: formData.get("status_lokasi"),
             kategori_lokasi: formData.get("status_lokasi"),
