@@ -314,7 +314,8 @@
     </div>
 
     <script>
-      const SCRIPT_URL = "https://backend-form-neon.vercel.app/api";
+      const SCRIPT_URL = "https://backend-form-neon.vercel.app/api/form";
+      const GET_URL = "https://backend-form-neon.vercel.app/api/form";
 
       const form = document.getElementById("pic-form");
       const loading = document.getElementById("loading");
@@ -329,7 +330,7 @@
       window.onload = async function () {
         const cabangSelect = document.getElementById("cabang");
         try {
-          const response = await fetch(`${SCRIPT_URL}/input-pic/get-data`);
+          const response = await fetch(`${SCRIPT_URL}?form=input-pic`);
           const result = await response.json();
           if (result.status === "success" && result.cabangList) {
             result.cabangList.forEach((cabang) => {
@@ -354,9 +355,7 @@
 
         try {
           const response = await fetch(
-            `${SCRIPT_URL}/input-pic/get-data?cabang=${encodeURIComponent(
-              cabang
-            )}`
+            `${SCRIPT_URL}?form=input-pic&cabang=${encodeURIComponent(cabang)}`
           );
           const result = await response.json();
 
@@ -442,6 +441,7 @@
           const picData = JSON.parse(form.pic_building_support.value);
 
           const jsonData = {
+            form: "input-pic",
             cabang: form.cabang.value,
             kode_toko: form.kode_toko.value,
             kategori_lokasi: form.kategori_lokasi.value,
@@ -454,7 +454,7 @@
             rab_base64: rabBase64,
           };
 
-          const response = await fetch(`${SCRIPT_URL}/input-pic/submit-form`, {
+          const response = await fetch(SCRIPT_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(jsonData),
