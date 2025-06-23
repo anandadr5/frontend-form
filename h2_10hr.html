@@ -182,7 +182,9 @@
       async function loadKodeToko() {
         const email = getParameterByName("email");
         const res = await fetch(
-          `${GET_URL}?email=${encodeURIComponent(email)}`
+          `https://backend-form-neon.vercel.app/api/form?form=h2&email=${encodeURIComponent(
+            email
+          )}`
         );
         const result = await res.json();
         const select = document.getElementById("kode_toko");
