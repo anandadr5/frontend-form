@@ -172,9 +172,8 @@
     </div>
 
     <script>
-      const SCRIPT_URL =
-        "https://backend-form-neon.vercel.app/api/h2/submit-form";
-      const GET_URL = "https://backend-form-neon.vercel.app/api/h2/get-data";
+      const SCRIPT_URL = "https://backend-form-neon.vercel.app/api/form";
+      const GET_URL = "https://backend-form-neon.vercel.app/api/form";
 
       const form = document.getElementById("laporan-form");
       const submitButton = form.querySelector("button[type='submit']");
@@ -183,7 +182,9 @@
       async function loadKodeToko() {
         const email = getParameterByName("email");
         const res = await fetch(
-          `${GET_URL}?email=${encodeURIComponent(email)}`
+          `https://backend-form-neon.vercel.app/api/form?form=h2&email=${encodeURIComponent(
+            email
+          )}`
         );
         const result = await res.json();
         const select = document.getElementById("kode_toko");
@@ -216,6 +217,7 @@
           const catatan = formData.getAll("catatan");
 
           const payload = {
+            form: "h2",
             kode_toko: formData.get("kode_toko"),
             status_lokasi: formData.get("status_lokasi"),
             kategori_lokasi: formData.get("status_lokasi"),
