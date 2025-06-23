@@ -116,13 +116,9 @@
     <div class="container">
       <form id="laporan-form" class="form-container">
         <label for="kode_toko">Kode Toko:</label>
-        <input
-          type="text"
-          id="kode_toko"
-          name="kode_toko"
-          placeholder="Masukkan Kode Toko"
-          required
-        />
+        <select id="kode_toko" name="kode_toko" required>
+          <option value="">-- Pilih Kode Toko --</option>
+        </select>
 
         <label for="status_lokasi">Status Lokasi:</label>
         <input
@@ -131,6 +127,12 @@
           name="status_lokasi"
           placeholder="Non Ruko Non Urugan 30 hr"
           disabled
+        />
+        <input
+          type="hidden"
+          id="status_lokasi"
+          name="status_lokasi"
+          value="non_ruko_non_urugan_30hr"
         />
 
         <label for="pek_lantai">I. PEK. LANTAI & DINDING KERAMIK:</label>
@@ -142,17 +144,17 @@
           required
         />
 
-        <label for="status_progress">Status Progress:</label>
-        <select name="status_progress" id="status_progress" required>
+        <label for="status_progress1">Status Progress:</label>
+        <select name="status_progress" id="status_progress1" required>
           <option value="">-- Pilih Status Progress --</option>
           <option value="tepat_waktu">Tepat Waktu</option>
           <option value="terlambat">Terlambat</option>
         </select>
 
-        <label for="catatan">Catatan:</label>
+        <label for="catatan1">Catatan:</label>
         <textarea
           name="catatan"
-          id="catatan"
+          id="catatan1"
           rows="4"
           placeholder="Masukkan Catatan"
           required
@@ -167,17 +169,17 @@
           required
         />
 
-        <label for="status_progress">Status Progress:</label>
-        <select name="status_progress" id="status_progress" required>
+        <label for="status_progress2">Status Progress:</label>
+        <select name="status_progress" id="status_progress2" required>
           <option value="">-- Pilih Status Progress --</option>
           <option value="tepat_waktu">Tepat Waktu</option>
           <option value="terlambat">Terlambat</option>
         </select>
 
-        <label for="catatan">Catatan:</label>
+        <label for="catatan2">Catatan:</label>
         <textarea
           name="catatan"
-          id="catatan"
+          id="catatan2"
           rows="4"
           placeholder="Masukkan Catatan"
           required
