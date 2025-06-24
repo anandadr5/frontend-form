@@ -161,7 +161,7 @@
         ></textarea>
 
         <label for="berkas_pengawasan"
-          >III. BERKAS PENGAWASAN (MEMO PENGAWASAN/INSTRUKSI LAPANGAN/OPNAME
+          >II. BERKAS PENGAWASAN (MEMO PENGAWASAN/INSTRUKSI LAPANGAN/OPNAME
           PEKERJAAN)</label
         >
         <input
@@ -224,6 +224,9 @@
 
         try {
           const base64_1 = await convertToBase64(formData.get("pek_atap"));
+          const base64_2 = await convertToBase64(
+            formData.get("berkas_pengawasan")
+          );
 
           const statusProgress = formData.getAll("status_progress");
           const catatan = formData.getAll("catatan");
@@ -242,6 +245,7 @@
             catatan2: "-",
             image1: base64_1,
             image2: "",
+            image3: base64_2,
           };
 
           const response = await fetch(SCRIPT_URL, {
