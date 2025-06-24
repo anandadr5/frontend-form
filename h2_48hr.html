@@ -256,6 +256,9 @@
           const base64_2 = await convertToBase64(
             formData.get("pekerjaan_tanah")
           );
+          const base64_3 = await convertToBase64(
+            formData.get("berkas_pengawasan")
+          );
           const statusProgress = formData.getAll("status_progress");
           const catatan = formData.getAll("catatan");
 
@@ -273,6 +276,7 @@
             catatan2: catatan[1],
             image1: base64_1,
             image2: base64_2,
+            image3: base64_3,
           };
 
           const response = await fetch(SCRIPT_URL, {
