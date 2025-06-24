@@ -176,10 +176,10 @@
           <option value="terlambat">Terlambat</option>
         </select>
 
-        <label for="catatan">Catatan:</label>
+        <label for="catatan1">Catatan:</label>
         <textarea
           name="catatan"
-          id="catatan"
+          id="catatan1"
           rows="4"
           placeholder="Masukkan Catatan"
           required
@@ -194,21 +194,33 @@
           required
         />
 
-        <label for="status_progress">Status Progress:</label>
-        <select name="status_progress" id="status_progress" required>
+        <label for="status_progress3">Status Progress:</label>
+        <select name="status_progress" id="status_progress3" required>
           <option value="">-- Pilih Status Progress --</option>
           <option value="tepat_waktu">Tepat Waktu</option>
           <option value="terlambat">Terlambat</option>
         </select>
 
-        <label for="catatan">Catatan:</label>
+        <label for="catatan3">Catatan:</label>
         <textarea
           name="catatan"
-          id="catatan"
+          id="catatan3"
           rows="4"
           placeholder="Masukkan Catatan"
           required
         ></textarea>
+
+        <label for="berkas_pengawasan"
+          >IV. BERKAS PENGAWASAN (MEMO PENGAWASAN/INSTRUKSI LAPANGAN/OPNAME
+          PEKERJAAN)</label
+        >
+        <input
+          type="file"
+          id="berkas_pengawasan"
+          name="berkas_pengawasan"
+          accept="image/*"
+          required
+        />
 
         <div class="button-group">
           <button type="submit">Simpan</button>
