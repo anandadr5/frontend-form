@@ -116,13 +116,9 @@
     <div class="container">
       <form id="laporan-form" class="form-container">
         <label for="kode_toko">Kode Toko:</label>
-        <input
-          type="text"
-          id="kode_toko"
-          name="kode_toko"
-          placeholder="Masukkan Kode Toko"
-          required
-        />
+        <select id="kode_toko" name="kode_toko" required>
+          <option value="">-- Pilih Kode Toko --</option>
+        </select>
 
         <label for="status_lokasi">Status Lokasi:</label>
         <input
@@ -131,6 +127,12 @@
           name="status_lokasi"
           placeholder="Non Ruko Non Urugan 35 hr"
           disabled
+        />
+        <input
+          type="hidden"
+          id="status_lokasi"
+          name="status_lokasi"
+          value="non_ruko_non_urugan_35hr"
         />
 
         <label for="pek_kusen"
@@ -144,17 +146,17 @@
           required
         />
 
-        <label for="status_progress">Status Progress:</label>
-        <select name="status_progress" id="status_progress" required>
+        <label for="status_progress1">Status Progress:</label>
+        <select name="status_progress" id="status_progress1" required>
           <option value="">-- Pilih Status Progress --</option>
           <option value="tepat_waktu">Tepat Waktu</option>
           <option value="terlambat">Terlambat</option>
         </select>
 
-        <label for="catatan">Catatan:</label>
+        <label for="catatan1">Catatan:</label>
         <textarea
           name="catatan"
-          id="catatan"
+          id="catatan1"
           rows="4"
           placeholder="Masukkan Catatan"
           required
@@ -169,21 +171,33 @@
           required
         />
 
-        <label for="status_progress">Status Progress:</label>
-        <select name="status_progress" id="status_progress" required>
+        <label for="status_progress2">Status Progress:</label>
+        <select name="status_progress" id="status_progress2" required>
           <option value="">-- Pilih Status Progress --</option>
           <option value="tepat_waktu">Tepat Waktu</option>
           <option value="terlambat">Terlambat</option>
         </select>
 
-        <label for="catatan">Catatan:</label>
+        <label for="catatan2">Catatan:</label>
         <textarea
           name="catatan"
-          id="catatan"
+          id="catatan2"
           rows="4"
           placeholder="Masukkan Catatan"
           required
         ></textarea>
+
+        <label for="berkas_pengawasan"
+          >III. BERKAS PENGAWASAN (MEMO PENGAWASAN/INSTRUKSI LAPANGAN/OPNAME
+          PEKERJAAN)</label
+        >
+        <input
+          type="file"
+          id="berkas_pengawasan"
+          name="berkas_pengawasan"
+          accept="image/*"
+          required
+        />
 
         <div class="button-group">
           <button type="submit">Simpan</button>
@@ -197,49 +211,106 @@
     </div>
 
     <script>
+      const SCRIPT_URL = "https://backend-form-neon.vercel.app/api/form";
+      const GET_URL = "https://backend-form-neon.vercel.app/api/form";
+
       const form = document.getElementById("laporan-form");
       const submitButton = form.querySelector("button[type='submit']");
       const messageDiv = document.getElementById("popup");
 
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
+      async function loadKodeToko() {
+        const email = getParameterByName("email");
+        const res = await fetch(
+          `https://backend-form-neon.vercel.app/api/form?form=h28&email=${encodeURIComponent(
+            email
+          )}`
+        );
+        const result = await res.json();
+        const select = document.getElementById("kode_toko");
+        result.data.forEach((kode) => {
+          const opt = document.createElement("option");
+          opt.value = kode;
+          opt.textContent = kode;
+          select.appendChild(opt);
+        });
+      }
 
-        messageDiv.textContent = "Mengirim data...";
-        messageDiv.style.display = "block";
-        messageDiv.style.backgroundColor = "beige";
-        messageDiv.style.color = "black";
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
         submitButton.disabled = true;
+        showPopup("Mengirim data...");
+
+        const formData = new FormData(form);
+        const convertToBase64 = (file) =>
+          new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(",")[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
 
         try {
-          const formData = new FormData(this);
-          const formDataObj = {};
+          const base64_1 = await convertToBase64(formData.get("pek_kusen"));
+          const base64_2 = await convertToBase64(formData.get("pek_area"));
+          const base64_3 = await convertToBase64(
+            formData.get("berkas_pengawasan")
+          );
 
-          for (let [key, value] of formData.entries()) {
-            formDataObj[key] = value;
+          const statusProgress = formData.getAll("status_progress");
+          const catatan = formData.getAll("catatan");
+
+          const payload = {
+            form: "h28",
+            kode_toko: formData.get("kode_toko"),
+            status_lokasi: formData.get("status_lokasi"),
+            kategori_lokasi: formData.get("status_lokasi"),
+            cabang: getParameterByName("cabang"),
+            pic_nama: getParameterByName("nama"),
+            pic_building_support: getParameterByName("email"),
+            status_progress1: statusProgress[0],
+            catatan1: catatan[0],
+            status_progress2: statusProgress[1],
+            catatan2: catatan[1],
+            image1: base64_1,
+            image2: base64_2,
+            image3: base64_3,
+          };
+
+          const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify(payload),
+            headers: { "Content-Type": "application/json" },
+          });
+
+          const result = await response.json();
+          if (result.status === "success") {
+            showPopup("Data berhasil dikirim!");
+            form.reset();
+          } else {
+            showPopup("Gagal kirim: " + result.message);
           }
-
-          showPopup("Data berhasil disimpan!");
-          form.reset();
-        } catch (error) {
-          console.error("Error:", error);
-          showPopup("Error: " + error.message);
+        } catch (err) {
+          console.error(err);
+          showPopup("Error: " + err.message);
         } finally {
           submitButton.disabled = false;
-          setTimeout(() => {
-            messageDiv.textContent = "";
-            messageDiv.style.display = "none";
-          }, 4000);
         }
       });
 
-      function showPopup(message) {
-        messageDiv.querySelector("p").textContent = message;
+      function showPopup(msg) {
+        messageDiv.querySelector("p").textContent = msg;
         messageDiv.classList.add("show");
       }
 
       function closePopup() {
         messageDiv.classList.remove("show");
       }
+
+      function getParameterByName(name) {
+        return new URLSearchParams(window.location.search).get(name) || "";
+      }
+
+      window.addEventListener("DOMContentLoaded", loadKodeToko);
     </script>
   </body>
 </html>

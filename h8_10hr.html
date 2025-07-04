@@ -187,6 +187,18 @@
           required
         ></textarea>
 
+        <label for="berkas_pengawasan"
+          >III. BERKAS PENGAWASAN (MEMO PENGAWASAN/INSTRUKSI LAPANGAN/OPNAME
+          PEKERJAAN)</label
+        >
+        <input
+          type="file"
+          id="berkas_pengawasan"
+          name="berkas_pengawasan"
+          accept="image/*"
+          required
+        />
+
         <div class="button-group">
           <button type="submit">Simpan</button>
         </div>
@@ -199,9 +211,8 @@
     </div>
 
     <script>
-      const SCRIPT_URL =
-        "https://backend-form-neon.vercel.app/api/h8/submit-form";
-      const GET_URL = "https://backend-form-neon.vercel.app/api/h8/get-data";
+      const SCRIPT_URL = "https://backend-form-neon.vercel.app/api/form";
+      const GET_URL = "https://backend-form-neon.vercel.app/api/form";
 
       const form = document.getElementById("laporan-form");
       const submitButton = form.querySelector("button[type='submit']");
@@ -210,7 +221,9 @@
       async function loadKodeToko() {
         const email = getParameterByName("email");
         const res = await fetch(
-          `${GET_URL}?email=${encodeURIComponent(email)}`
+          `https://backend-form-neon.vercel.app/api/form?form=h8&email=${encodeURIComponent(
+            email
+          )}`
         );
         const result = await res.json();
         const select = document.getElementById("kode_toko");
@@ -239,11 +252,15 @@
         try {
           const base64_1 = await convertToBase64(formData.get("pek_kusen"));
           const base64_2 = await convertToBase64(formData.get("pek_area"));
+          const base64_3 = await convertToBase64(
+            formData.get("berkas_pengawasan")
+          );
 
           const statusProgress = formData.getAll("status_progress");
           const catatan = formData.getAll("catatan");
 
           const payload = {
+            form: "h8",
             kode_toko: formData.get("kode_toko"),
             status_lokasi: formData.get("status_lokasi"),
             kategori_lokasi: formData.get("status_lokasi"),
@@ -256,7 +273,7 @@
             catatan2: catatan[1],
             image1: base64_1,
             image2: base64_2,
-            tanggal_tugas: formData.get("tanggal_tugas"),
+            image3: base64_3,
           };
 
           const response = await fetch(SCRIPT_URL, {
