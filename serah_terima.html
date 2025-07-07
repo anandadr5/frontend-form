@@ -206,6 +206,11 @@
 
     <div class="container">
       <form id="laporan-form" class="form-container">
+        <label for="kode_toko">Kode Toko:</label>
+        <select id="kode_toko" name="kode_toko" required>
+          <option value="">-- Pilih Kode Toko --</option>
+        </select>
+
         <label for="lokasi">Lokasi:</label>
         <input
           type="text"
@@ -455,57 +460,60 @@
           const div = document.createElement("div");
           div.className = "pekerjaan-item";
           div.innerHTML = `
-            <div class="judul-area">
-              <div class="no">${item.kode}</div>
-              <div class="area">${item.area}</div>
-            </div>
-            <div class="input-grid">
-              <div>
-                <label>ADA / TIDAK</label>
-                <select name="${item.kode}_ada" required>
-                  <option value="">--</option>
-                  <option value="ada">ADA</option>
-                  <option value="tidak">TIDAK ADA</option>
-                </select>
-              </div>
-              <div>
-                <label>SESUAI DESIGN STANDART</label>
-                <select name="${item.kode}_desain" required>
-                  <option value="">--</option>
-                  <option value="sesuai">SESUAI</option>
-                  <option value="tidak">TIDAK SESUAI</option>
-                </select>
-              </div>
-              <div>
-                <label>KUALITAS / KERAPIHAN PEKERJAAN</label>
-                <select name="${item.kode}_kualitas" required>
-                  <option value="">--</option>
-                  <option value="baik">BAIK</option>
-                  <option value="tidak">TIDAK BAIK</option>
-                </select>
-              </div>
-              <div>
-                <label>SPESIFIKASI MATERIAL</label>
-                <select name="${item.kode}_material" required>
-                  <option value="">--</option>
-                  <option value="sesuai">SESUAI</option>
-                  <option value="tidak">TIDAK SESUAI</option>
-                </select>
-              </div>
-              <div>
-                <label>DITERIMA / TIDAK</label>
-                <select name="${item.kode}_diterima" required>
-                  <option value="">--</option>
-                  <option value="diterima">DITERIMA</option>
-                  <option value="tidak">TIDAK DITERIMA</option>
-                </select>
-              </div>
-              <div>
-                <label>UPLOAD FOTO</label>
-                <input type="file" name="${item.kode}_foto" accept="image/*" required />
-              </div>
-            </div>
-          `;
+                  <div class="judul-area">
+                    <div class="no">${item.kode}</div>
+                    <div class="area">${item.area}</div>
+                  </div>
+                  <div class="input-grid">
+                    <div>
+                      <label>ADA / TIDAK</label>
+                      <select name="${item.kode}_ada" required>
+                        <option value="">--</option>
+                        <option value="ada">ADA</option>
+                        <option value="tidak">TIDAK ADA</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label>SESUAI DESIGN STANDART</label>
+                      <select name="${item.kode}_desain" required>
+                        <option value="">--</option>
+                        <option value="sesuai">SESUAI</option>
+                        <option value="tidak">TIDAK SESUAI</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label>KUALITAS / KERAPIHAN PEKERJAAN</label>
+                      <select name="${item.kode}_kualitas" required>
+                        <option value="">--</option>
+                        <option value="baik">BAIK</option>
+                        <option value="tidak">TIDAK BAIK</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label>SPESIFIKASI MATERIAL</label>
+                      <select name="${item.kode}_material" required>
+                        <option value="">--</option>
+                        <option value="sesuai">SESUAI</option>
+                        <option value="tidak">TIDAK SESUAI</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label>DITERIMA / TIDAK</label>
+                      <select name="${item.kode}_diterima" required>
+                        <option value="">--</option>
+                        <option value="diterima">DITERIMA</option>
+                        <option value="tidak">TIDAK DITERIMA</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label>UPLOAD FOTO</label>
+                      <input type="file" name="${item.kode}_foto" accept="image/*" required />
+                    </div>
+                  </div>
+                `;
+
+          div.setAttribute("data-item-kode", item.kode);
+          div.setAttribute("data-item-area", item.area);
           section.appendChild(div);
         });
 
@@ -664,9 +672,7 @@
       async function loadKodeToko() {
         const email = getParameterByName("email");
         const res = await fetch(
-          `https://backend-form-neon.vercel.app/api/form?form=serah_terima&email=${encodeURIComponent(
-            email
-          )}`
+          `${GET_URL}?form=serah_terima&email=${encodeURIComponent(email)}`
         );
         const result = await res.json();
         const select = document.getElementById("kode_toko");
@@ -683,45 +689,50 @@
         submitButton.disabled = true;
         showPopup("Mengirim data...");
 
-        const formData = new FormData(form);
+        const payload = {};
+        const fotoUpload = [];
 
-        // Ambil data kode toko dari parameter URL
-        const kodeToko = getParameterByName("kode_toko");
+        const allFormElements = form.querySelectorAll("input, select");
+        for (const element of allFormElements) {
+          if (element.name && element.type !== "file") {
+            payload[element.name] = element.value;
+          }
+        }
 
-        const convertToBase64 = (file) =>
-          new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(",")[1]);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
+        const itemDivs = document.querySelectorAll(".pekerjaan-item");
+        for (const itemDiv of itemDivs) {
+          const kode = itemDiv.getAttribute("data-item-kode");
+          const area = itemDiv.getAttribute("data-item-area");
+          const fileInput = itemDiv.querySelector(`input[name="${kode}_foto"]`);
 
-        try {
-          const payload = {
-            form: "serah_terima",
-            kode_toko: kodeToko,
-            lokasi: formData.get("lokasi"),
-            cabang: formData.get("cabang"),
-            pekerjaan: formData.get("pekerjaan"),
-          };
-
-          // Ambil semua elemen form (nilai dan gambar)
-          for (const [key, value] of formData.entries()) {
-            if (value instanceof File && value.size > 0) {
-              payload[key] = await convertToBase64(value);
-            } else {
-              payload[key] = value;
+          if (fileInput && fileInput.files.length > 0 && !fileInput.disabled) {
+            const file = fileInput.files[0];
+            try {
+              const base64 = await convertFileToBase64(file);
+              fotoUpload.push({
+                item: kode,
+                area: area,
+                base64: base64.split(",")[1],
+              });
+            } catch (error) {
+              console.error(`Error converting file for ${kode}:`, error);
+              showPopup(`Error converting file for ${kode}: ${error.message}`);
+              submitButton.disabled = false;
+              return;
             }
           }
+        }
 
-          const response = await fetch(
-            "https://backend-form-neon.vercel.app/api/form",
-            {
-              method: "POST",
-              body: JSON.stringify({ form: "serah_terima", ...payload }),
-              headers: { "Content-Type": "application/json" },
-            }
-          );
+        payload.fotoUpload = fotoUpload;
+        payload.pic_nama = getParameterByName("nama");
+        payload.pic_building_support = getParameterByName("email");
+
+        try {
+          const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify(payload),
+            headers: { "Content-Type": "application/json" },
+          });
 
           const result = await response.json();
           if (result.status === "success") {
@@ -737,6 +748,15 @@
           submitButton.disabled = false;
         }
       });
+
+      function convertFileToBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
 
       function showPopup(msg) {
         messageDiv.querySelector("p").textContent = msg;
