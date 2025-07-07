@@ -130,6 +130,15 @@
         border-radius: 5px;
       }
 
+      #status-container {
+        margin-bottom: 20px;
+      }
+      #status-container input[type="date"],
+      #status-container input[type="text"] {
+        padding: 10px;
+        font-size: 14px;
+      }
+
       .button-group {
         display: flex;
         gap: 10px;
@@ -223,6 +232,22 @@
         </select>
 
         <div id="pekerjaan-sections"></div>
+
+        <div class="input-grid" id="status-container">
+          <div>
+            <label for="tanggal-serah">Tanggal Serah Terima</label>
+            <input
+              type="date"
+              id="tanggal-serah"
+              name="tanggal_serah"
+              disabled
+            />
+          </div>
+          <div>
+            <label for="status-serah">Status Serah Terima</label>
+            <input type="text" id="status-serah" name="status_serah" readonly />
+          </div>
+        </div>
 
         <div class="button-group">
           <button type="submit">Simpan</button>
@@ -408,12 +433,20 @@
 
       pekerjaanData.forEach((kelompok) => {
         const section = document.createElement("section");
-        section.classList.add("kelompok", "collapsed"); // collapsed by default
+        section.classList.add("kelompok", "collapsed");
 
         const title = document.createElement("h2");
         title.textContent = kelompok.judul;
         title.addEventListener("click", () => {
-          section.classList.toggle("collapsed");
+          const isCurrentlyOpen = !section.classList.contains("collapsed");
+
+          document.querySelectorAll(".kelompok").forEach((s) => {
+            s.classList.add("collapsed");
+          });
+
+          if (!isCurrentlyOpen) {
+            section.classList.remove("collapsed");
+          }
         });
 
         section.appendChild(title);
@@ -480,80 +513,245 @@
       });
 
       // Logic evaluasi kondisi (ubah warna dan enable/disable)
-      function updateSectionState(section) {
-        const selectAda = section.querySelector('select[name$="_ada"]');
-        const otherSelects = section.querySelectorAll(
+      function updateItemState(itemDiv) {
+        const selectAda = itemDiv.querySelector('select[name$="_ada"]');
+        const otherSelects = itemDiv.querySelectorAll(
           'select:not([name$="_ada"])'
         );
-        const fileInput = section.querySelector('input[type="file"]');
-        const title = section.querySelector("h2");
+        const fileInput = itemDiv.querySelector('input[type="file"]');
 
-        if (!selectAda || !title) return;
-
-        const val = (selectAda.value || "").toLowerCase();
-
-        title.style.backgroundColor = "";
-        title.style.borderLeft = "";
-        title.style.color = "";
+        const val = (selectAda?.value || "").toLowerCase();
 
         if (val === "tidak") {
           otherSelects.forEach((el) => (el.disabled = true));
-          if (fileInput) fileInput.disabled = false;
-          title.style.backgroundColor = "#d4edda";
-          title.style.borderLeft = "5px solid #28a745";
-          title.style.color = "#155724";
+          if (fileInput) fileInput.disabled = true;
         } else if (val === "ada") {
           otherSelects.forEach((el) => (el.disabled = false));
           if (fileInput) fileInput.disabled = false;
-
-          let isBad = false;
-          section.querySelectorAll("select").forEach((sel) => {
-            const v = sel.value.toLowerCase();
-            if (
-              [
-                "tidak",
-                "tidak sesuai",
-                "tidak baik",
-                "tidak diterima",
-              ].includes(v)
-            ) {
-              isBad = true;
-            }
-          });
-
-          if (isBad) {
-            title.style.backgroundColor = "#fff3cd";
-            title.style.borderLeft = "5px solid #ffc107";
-            title.style.color = "#856404";
-          } else {
-            title.style.backgroundColor = "#d4edda";
-            title.style.borderLeft = "5px solid #28a745";
-            title.style.color = "#155724";
-          }
         } else {
           otherSelects.forEach((el) => (el.disabled = true));
           if (fileInput) fileInput.disabled = true;
+        }
+      }
+
+      function updateSectionColor(section) {
+        const itemDivs = section.querySelectorAll(".pekerjaan-item");
+        let semuaDiisi = true;
+        let adaYangBuruk = false;
+
+        itemDivs.forEach((item) => {
+          const selectAda = item.querySelector('select[name$="_ada"]');
+          const val = (selectAda?.value || "").toLowerCase();
+          if (val !== "ada" && val !== "tidak") {
+            semuaDiisi = false;
+            return;
+          }
+
+          if (val === "ada") {
+            const selects = item.querySelectorAll('select:not([name$="_ada"])');
+            selects.forEach((s) => {
+              const v = s.value.toLowerCase();
+              if (
+                [
+                  "tidak",
+                  "tidak sesuai",
+                  "tidak baik",
+                  "tidak diterima",
+                ].includes(v)
+              ) {
+                adaYangBuruk = true;
+              }
+            });
+          }
+        });
+
+        const title = section.querySelector("h2");
+
+        if (!semuaDiisi) {
           title.style.backgroundColor = "";
           title.style.borderLeft = "";
           title.style.color = "";
+        } else if (adaYangBuruk) {
+          title.style.backgroundColor = "#fff3cd";
+          title.style.borderLeft = "5px solid #ffc107";
+          title.style.color = "#856404";
+        } else {
+          title.style.backgroundColor = "#d4edda";
+          title.style.borderLeft = "5px solid #28a745";
+          title.style.color = "#155724";
         }
       }
 
       document.querySelectorAll(".kelompok").forEach((section) => {
-        const selects = section.querySelectorAll("select");
-        selects.forEach((select) => {
-          select.addEventListener("change", () => {
-            updateSectionState(section);
+        const itemDivs = section.querySelectorAll(".pekerjaan-item");
+
+        itemDivs.forEach((itemDiv) => {
+          const selects = itemDiv.querySelectorAll("select");
+          selects.forEach((select) => {
+            select.addEventListener("change", () => {
+              updateItemState(itemDiv);
+              updateSectionColor(section);
+              checkFinalStatus();
+            });
+          });
+
+          updateItemState(itemDiv);
+        });
+
+        updateSectionColor(section);
+      });
+
+      function checkFinalStatus() {
+        const allSections = document.querySelectorAll(".kelompok");
+        let semuaDiisi = true;
+        let adaYangBuruk = false;
+
+        allSections.forEach((section) => {
+          const items = section.querySelectorAll(".pekerjaan-item");
+
+          items.forEach((item) => {
+            const selectAda = item.querySelector('select[name$="_ada"]');
+            const val = (selectAda?.value || "").toLowerCase();
+            if (val !== "ada" && val !== "tidak") {
+              semuaDiisi = false;
+              return;
+            }
+
+            if (val === "ada") {
+              const selects = item.querySelectorAll(
+                'select:not([name$="_ada"])'
+              );
+              selects.forEach((s) => {
+                const v = s.value.toLowerCase();
+                if (
+                  [
+                    "tidak",
+                    "tidak sesuai",
+                    "tidak baik",
+                    "tidak diterima",
+                  ].includes(v)
+                ) {
+                  adaYangBuruk = true;
+                }
+              });
+            }
           });
         });
 
-        // Inisialisasi: disable semua select selain "_ada"
-        section.querySelectorAll("select").forEach((select) => {
-          if (!select.name.endsWith("_ada")) {
-            select.disabled = true;
-          }
+        const statusField = document.getElementById("status-serah");
+        const tanggalField = document.getElementById("tanggal-serah");
+
+        if (!semuaDiisi) {
+          statusField.value = "";
+          tanggalField.disabled = true;
+        } else if (adaYangBuruk) {
+          statusField.value = "TIDAK DITERIMA";
+          tanggalField.disabled = false;
+        } else {
+          statusField.value = "DITERIMA";
+          tanggalField.disabled = true;
+          tanggalField.value = "";
+        }
+      }
+
+      const SCRIPT_URL = "https://backend-form-neon.vercel.app/api/form";
+      const GET_URL = "https://backend-form-neon.vercel.app/api/form";
+
+      const form = document.getElementById("laporan-form");
+      const submitButton = form.querySelector("button[type='submit']");
+      const messageDiv = document.getElementById("popup");
+
+      async function loadKodeToko() {
+        const email = getParameterByName("email");
+        const res = await fetch(
+          `https://backend-form-neon.vercel.app/api/form?form=serah_terima&email=${encodeURIComponent(
+            email
+          )}`
+        );
+        const result = await res.json();
+        const select = document.getElementById("kode_toko");
+        result.data.forEach((kode) => {
+          const opt = document.createElement("option");
+          opt.value = kode;
+          opt.textContent = kode;
+          select.appendChild(opt);
         });
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        submitButton.disabled = true;
+        showPopup("Mengirim data...");
+
+        const formData = new FormData(form);
+
+        // Ambil data kode toko dari parameter URL
+        const kodeToko = getParameterByName("kode_toko");
+
+        const convertToBase64 = (file) =>
+          new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(",")[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+
+        try {
+          const payload = {
+            form: "serah_terima",
+            kode_toko: kodeToko,
+            lokasi: formData.get("lokasi"),
+            cabang: formData.get("cabang"),
+            pekerjaan: formData.get("pekerjaan"),
+          };
+
+          // Ambil semua elemen form (nilai dan gambar)
+          for (const [key, value] of formData.entries()) {
+            if (value instanceof File && value.size > 0) {
+              payload[key] = await convertToBase64(value);
+            } else {
+              payload[key] = value;
+            }
+          }
+
+          const response = await fetch(
+            "https://backend-form-neon.vercel.app/api/form",
+            {
+              method: "POST",
+              body: JSON.stringify({ form: "serah_terima", ...payload }),
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+
+          const result = await response.json();
+          if (result.status === "success") {
+            showPopup("Data berhasil dikirim!");
+            form.reset();
+          } else {
+            showPopup("Gagal kirim: " + result.message);
+          }
+        } catch (err) {
+          console.error(err);
+          showPopup("Error: " + err.message);
+        } finally {
+          submitButton.disabled = false;
+        }
       });
+
+      function showPopup(msg) {
+        messageDiv.querySelector("p").textContent = msg;
+        messageDiv.classList.add("show");
+      }
+
+      function closePopup() {
+        messageDiv.classList.remove("show");
+      }
+
+      function getParameterByName(name) {
+        return new URLSearchParams(window.location.search).get(name) || "";
+      }
+
+      window.addEventListener("DOMContentLoaded", loadKodeToko);
     </script>
   </body>
 </html>
