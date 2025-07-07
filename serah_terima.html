@@ -671,17 +671,29 @@
 
       async function loadKodeToko() {
         const email = getParameterByName("email");
-        const res = await fetch(
-          `${GET_URL}?form=serah_terima&email=${encodeURIComponent(email)}`
-        );
-        const result = await res.json();
-        const select = document.getElementById("kode_toko");
-        result.data.forEach((kode) => {
-          const opt = document.createElement("option");
-          opt.value = kode;
-          opt.textContent = kode;
-          select.appendChild(opt);
-        });
+        try {
+          const res = await fetch(
+            `${GET_URL}?form=serah_terima&email=${encodeURIComponent(email)}`
+          );
+          const result = await res.json();
+
+          const select = document.getElementById("kode_toko");
+
+          if (result.data && Array.isArray(result.data)) {
+            result.data.forEach((kode) => {
+              const opt = document.createElement("option");
+              opt.value = kode;
+              opt.textContent = kode;
+              select.appendChild(opt);
+            });
+          } else {
+            console.error("Data kode toko tidak ditemukan:", result);
+            showPopup("Gagal memuat data kode toko.");
+          }
+        } catch (err) {
+          console.error("Gagal memuat kode toko:", err);
+          showPopup("Terjadi kesalahan saat mengambil data toko.");
+        }
       }
 
       form.addEventListener("submit", async (e) => {
