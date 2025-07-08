@@ -234,17 +234,17 @@
 
         <div class="input-grid" id="status-container">
           <div>
-            <label for="tanggal-serah">Tanggal Serah Terima Berikutnya</label>
+            <label for="tanggal_serah">Tanggal Serah Terima Berikutnya</label>
             <input
               type="date"
-              id="tanggal-serah"
+              id="tanggal_serah"
               name="tanggal_serah"
               disabled
             />
           </div>
           <div>
-            <label for="status-serah">Status Serah Terima</label>
-            <input type="text" id="status-serah" name="status_serah" readonly />
+            <label for="status_serah">Status Serah Terima</label>
+            <input type="text" id="status_serah" name="status_serah" readonly />
           </div>
         </div>
 
@@ -640,8 +640,8 @@
           });
         });
 
-        const statusField = document.getElementById("status-serah");
-        const tanggalField = document.getElementById("tanggal-serah");
+        const statusField = document.getElementById("status_serah");
+        const tanggalField = document.getElementById("tanggal_serah");
 
         if (!semuaDiisi) {
           statusField.value = "";
