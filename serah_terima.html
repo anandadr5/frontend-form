@@ -221,13 +221,7 @@
         />
 
         <label for="cabang">Cabang:</label>
-        <input
-          type="text"
-          id="cabang"
-          name="cabang"
-          placeholder="Masukan cabang"
-          required
-        />
+        <input type="text" id="cabang" name="cabang" readonly required />
 
         <label for="pekerjaan">Pekerjaan:</label>
         <select name="pekerjaan" id="pekerjaan" required>
@@ -680,7 +674,6 @@
           const select = document.getElementById("kode_toko");
           const cabangInput = document.getElementById("cabang");
 
-          // isi dropdown kode toko
           if (result.data && Array.isArray(result.data)) {
             result.data.forEach((kode) => {
               const opt = document.createElement("option");
@@ -688,11 +681,14 @@
               opt.textContent = kode;
               select.appendChild(opt);
             });
-          }
 
-          // isi input cabang
-          if (result.cabang) {
-            cabangInput.value = result.cabang;
+            // Isi otomatis cabang
+            if (result.cabang) {
+              cabangInput.value = result.cabang;
+            }
+          } else {
+            console.error("Data kode toko tidak ditemukan:", result);
+            showPopup("Gagal memuat data kode toko.");
           }
         } catch (err) {
           console.error("Gagal memuat kode toko:", err);
