@@ -715,7 +715,14 @@
               .replace(/_material$/, "_spesifikasi_material")
               .replace(/_diterima$/, "_diterima/tidak");
 
-            payload[mappedName] = element.value;
+            if (element.tagName === "SELECT") {
+              const selectedOption = element.options[element.selectedIndex];
+              payload[mappedName] = selectedOption
+                ? selectedOption.textContent
+                : "";
+            } else {
+              payload[mappedName] = element.value;
+            }
           }
         }
 
