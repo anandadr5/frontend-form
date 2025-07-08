@@ -746,12 +746,22 @@
             headers: { "Content-Type": "application/json" },
           });
 
-          const result = await response.json();
-          if (result.status === "success") {
+          let result;
+          try {
+            result = await response.json();
+          } catch {
+            const text = await response.text();
+            console.error("Non-JSON response:", text);
+            showPopup("Server mengembalikan format yang tidak dikenali.");
+            submitButton.disabled = false;
+            return;
+          }
+
+          if (response.ok && result.status === "success") {
             showPopup("Data berhasil dikirim!");
             form.reset();
           } else {
-            showPopup("Gagal kirim: " + result.message);
+            showPopup("Gagal kirim: " + (result.message || "Tidak diketahui"));
           }
         } catch (err) {
           console.error(err);
