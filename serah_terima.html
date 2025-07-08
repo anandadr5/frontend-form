@@ -678,7 +678,9 @@
           const result = await res.json();
 
           const select = document.getElementById("kode_toko");
+          const cabangInput = document.getElementById("cabang");
 
+          // isi dropdown kode toko
           if (result.data && Array.isArray(result.data)) {
             result.data.forEach((kode) => {
               const opt = document.createElement("option");
@@ -686,9 +688,11 @@
               opt.textContent = kode;
               select.appendChild(opt);
             });
-          } else {
-            console.error("Data kode toko tidak ditemukan:", result);
-            showPopup("Gagal memuat data kode toko.");
+          }
+
+          // isi input cabang
+          if (result.cabang) {
+            cabangInput.value = result.cabang;
           }
         } catch (err) {
           console.error("Gagal memuat kode toko:", err);
