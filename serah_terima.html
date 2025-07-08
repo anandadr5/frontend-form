@@ -656,7 +656,8 @@
         }
       }
 
-      const SCRIPT_URL = "https://backend-form-neon.vercel.app/api/form";
+      const SCRIPT_URL =
+        "https://backend-form-neon.vercel.app/api/form?form=serah_terima";
       const GET_URL = "https://backend-form-neon.vercel.app/api/form";
 
       const form = document.getElementById("laporan-form");
@@ -707,7 +708,14 @@
         const allFormElements = form.querySelectorAll("input, select");
         for (const element of allFormElements) {
           if (element.name && element.type !== "file") {
-            payload[element.name] = element.value;
+            const mappedName = element.name
+              .replace(/_ada$/, "_ada/tidak")
+              .replace(/_desain$/, "_sesuai_design_standart")
+              .replace(/_kualitas$/, "_kualitas/kerapihan_pekerjaan")
+              .replace(/_material$/, "_spesifikasi_material")
+              .replace(/_diterima$/, "_diterima/tidak");
+
+            payload[mappedName] = element.value;
           }
         }
 
