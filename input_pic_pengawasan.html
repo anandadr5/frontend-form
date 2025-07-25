@@ -249,7 +249,7 @@
           type="date"
           id="tanggal_spk"
           name="tanggal_spk"
-          accept=".pdf"
+          min=""
           required
         />
 
@@ -310,6 +310,8 @@
       const picSelect = document.getElementById("pic_building_support");
 
       window.onload = async function () {
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("tanggal_spk").setAttribute("min", today);
         const cabangSelect = document.getElementById("cabang");
         try {
           const response = await fetch(`${SCRIPT_URL}?form=input-pic`);
