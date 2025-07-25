@@ -238,9 +238,7 @@
           <option value="non_ruko_non_urugan_40hr">
             Non Ruko Non Urugan 40 HR
           </option>
-          <option value="non_ruko_urugan_48hr">
-            Non Ruko Urugan 48 HR
-          </option>
+          <option value="non_ruko_urugan_48hr">Non Ruko Urugan 48 HR</option>
           <option value="ruko_10hr">Ruko 10 HR</option>
           <option value="ruko_14hr">Ruko 14 HR</option>
           <option value="ruko_20hr">Ruko 20 HR</option>
@@ -446,7 +444,7 @@
 
           const result = await response.json();
           if (result.status === "success") {
-            const pesan = `Form berhasil dikirim. Email notifikasi telah dikirim kepada PIC Building Support.`;
+            const pesan = `Form berhasil dikirim!`;
             showSuccess(pesan);
             showPopup(pesan);
             form.reset();
