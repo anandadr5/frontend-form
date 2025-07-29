@@ -54,6 +54,15 @@
         margin-top: 10px;
       }
 
+      #compress {
+        background-color: #ffb700;
+        color: black;
+      }
+
+      #compress:hover {
+        background-color: #e6a800;
+      }
+
       .form-container button {
         background-color: #ce1e10;
         color: white;
@@ -183,6 +192,16 @@
 
         <div class="button-group">
           <button type="submit">Simpan</button>
+        </div>
+
+        <div class="button-group">
+          <button
+            type="button"
+            id="compress"
+            onclick="window.open('https://compressprojectv2.vercel.app/', '_blank')"
+          >
+            Kompres Foto Disini
+          </button>
         </div>
       </form>
     </div>
