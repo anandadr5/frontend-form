@@ -261,6 +261,7 @@
           accept=".pdf"
           required
         />
+        <small class="file-info">Maksimal ukuran file: 1.5 MB</small>
 
         <label for="upload_file"
           >Upload File (RAB, Penawaran & Gambar Sipil & Me):</label
@@ -272,6 +273,7 @@
           accept=".pdf"
           required
         />
+        <small class="file-info">Maksimal ukuran file: 1.5 MB</small>
 
         <label for="pic_building_support">PIC Building Support:</label>
         <select name="pic_building_support" id="pic_building_support" required>
@@ -477,6 +479,34 @@
           reader.readAsDataURL(file);
         });
       }
+
+      // Validasi ukuran file saat user memilih file
+      const MAX_SIZE_MB = 1.5;
+      const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+      document
+        .getElementById("upload_spk")
+        .addEventListener("change", function () {
+          const file = this.files[0];
+          if (file && file.size > MAX_SIZE_BYTES) {
+            alert(
+              `Ukuran file SPK melebihi ${MAX_SIZE_MB} MB. Silakan kompres dulu.`
+            );
+            this.value = "";
+          }
+        });
+
+      document
+        .getElementById("upload_file")
+        .addEventListener("change", function () {
+          const file = this.files[0];
+          if (file && file.size > MAX_SIZE_BYTES) {
+            alert(
+              `Ukuran file RAB/penawaran melebihi ${MAX_SIZE_MB} MB. Silakan kompres dulu.`
+            );
+            this.value = "";
+          }
+        });
 
       // Make closePopup available globally
       window.closePopup = closePopup;
