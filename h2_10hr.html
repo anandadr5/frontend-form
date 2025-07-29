@@ -69,6 +69,13 @@
         background-color: #ef190a;
       }
 
+      .file-info {
+        font-size: 12px;
+        color: #666;
+        margin-top: -10px;
+        margin-bottom: 15px;
+      }
+
       .popup {
         display: none;
         position: fixed;
@@ -143,6 +150,7 @@
           accept="image/*"
           required
         />
+        <small class="file-info">Maksimal ukuran file: 700 KB</small>
 
         <label for="status_progress1">Status Progress:</label>
         <select name="status_progress" id="status_progress1" required>
@@ -171,6 +179,7 @@
           accept="image/*"
           required
         />
+        <small class="file-info">Maksimal ukuran file: 700 KB</small>
 
         <div class="button-group">
           <button type="submit">Simpan</button>
@@ -268,6 +277,26 @@
           submitButton.disabled = false;
         }
       });
+
+      // Validasi ukuran file maksimal 700 KB (716800 bytes)
+      const MAX_SIZE_BYTES = 700 * 1024;
+
+      function validateFileSize(inputId, label) {
+        const input = document.getElementById(inputId);
+        input.addEventListener("change", function () {
+          const file = this.files[0];
+          if (file && file.size > MAX_SIZE_BYTES) {
+            alert(
+              `Ukuran file "${label}" melebihi 700 KB. Silakan kompres terlebih dahulu.`
+            );
+            this.value = ""; // Reset input
+          }
+        });
+      }
+
+      // Terapkan validasi ke masing-masing input file
+      validateFileSize("pek_persiapan", "PEK. PERSIAPAN & BONGKARAN");
+      validateFileSize("berkas_pengawasan", "BERKAS PENGAWASAN");
 
       function showPopup(msg) {
         messageDiv.querySelector("p").textContent = msg;
