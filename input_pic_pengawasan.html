@@ -370,7 +370,10 @@
           if (result.status === "success" && result.rabUrl) {
             currentRabUrl = result.rabUrl;
             rabUrlInput.value = result.rabUrl;
-            showRabStatus("✅ RAB ditemukan dan siap digunakan", "success");
+            showRabStatus(
+              "✅ RAB ditemukan dan akan diupload ke Drive saat submit",
+              "success"
+            );
           } else {
             clearRabUrl();
             showRabStatus(
