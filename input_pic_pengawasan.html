@@ -263,17 +263,16 @@
         />
         <small class="file-info">Maksimal ukuran file: 1.5 MB</small>
 
-        <label for="upload_file"
-          >Upload File (RAB, Penawaran & Gambar Sipil & Me):</label
+        <label for="rab_link"
+          >Link File (RAB, Penawaran & Gambar Sipil & Me):</label
         >
         <input
-          type="file"
-          id="upload_file"
-          name="upload_file"
-          accept=".pdf"
-          required
+          type="text"
+          id="rab_link"
+          name="rab_link"
+          placeholder="Link RAB akan muncul di sini"
+          readonly
         />
-        <small class="file-info">Maksimal ukuran file: 1.5 MB</small>
 
         <label for="pic_building_support">PIC Building Support:</label>
         <select name="pic_building_support" id="pic_building_support" required>
@@ -310,6 +309,9 @@
       const popupMessage = document.getElementById("popup-message");
       const cabangInput = document.getElementById("cabang");
       const picSelect = document.getElementById("pic_building_support");
+      const kodeTokoInput = document.getElementById("kode_toko");
+      const rabLinkInput = document.getElementById("rab_link");
+      const rabInfo = document.getElementById("rab-info");
 
       window.onload = async function () {
         const today = new Date().toISOString().split("T")[0];
@@ -372,6 +374,44 @@
         }
       });
 
+      // OTOMATIS MENGISI LINK RAB
+      kodeTokoInput.addEventListener("blur", async function () {
+        const kodeToko = kodeTokoInput.value.trim();
+        rabLinkInput.value = "";
+        rabInfo.textContent = "";
+
+        if (kodeToko.length === 4) {
+          rabInfo.textContent = "Mencari link RAB...";
+          try {
+            const response = await fetch(
+              `${SCRIPT_URL}?action=getRabLink&kodeToko=${encodeURIComponent(
+                kodeToko
+              )}`
+            );
+            const result = await response.json();
+
+            if (result.status === "success" && result.rabLink) {
+              rabLinkInput.value = result.rabLink;
+              rabInfo.textContent = "Link RAB ditemukan.";
+              rabInfo.style.color = "#2e7d32";
+            } else {
+              rabInfo.textContent =
+                "Link RAB tidak ditemukan untuk kode toko ini.";
+              rabInfo.style.color = "#d32f2f";
+            }
+          } catch (error) {
+            console.error("Error fetching RAB link:", error);
+            rabInfo.textContent =
+              "Gagal mengambil link RAB. Terjadi kesalahan jaringan.";
+            rabInfo.style.color = "#d32f2f";
+          }
+        } else {
+          rabInfo.textContent =
+            "Masukkan 4 karakter Kode Toko untuk mencari link RAB.";
+          rabInfo.style.color = "#666";
+        }
+      });
+
       // Hide messages
       function hideMessages() {
         errorMessage.classList.remove("show");
@@ -414,15 +454,21 @@
         try {
           // Ambil file PDF dan konversi ke base64
           const spkFile = document.getElementById("upload_spk").files[0];
-          const rabFile = document.getElementById("upload_file").files[0];
+          const rabFile = document.getElementById("rab_link").value;
 
-          if (!spkFile || !rabFile) {
+          if (!spkFile) {
             showError("File PDF harus diupload semua.");
             return;
           }
 
+          if (!rabLink) {
+            showError(
+              "Link RAB belum terisi atau tidak ditemukan. Mohon pastikan Kode Toko benar."
+            );
+            return;
+          }
+
           const spkBase64 = await fileToBase64(spkFile);
-          const rabBase64 = await fileToBase64(rabFile);
 
           const picData = JSON.parse(form.pic_building_support.value);
 
@@ -436,8 +482,7 @@
             pic_nama: picData.nama,
             spk_filename: spkFile.name,
             spk_base64: spkBase64,
-            rab_filename: rabFile.name,
-            rab_base64: rabBase64,
+            rab_link_from_sheet: rabLink,
           };
 
           const response = await fetch(SCRIPT_URL, {
@@ -452,6 +497,8 @@
             showSuccess(pesan);
             showPopup(pesan);
             form.reset();
+            rabLinkInput.value = "";
+            rabInfo.textContent = "";
           } else {
             showError(
               result.message || "Terjadi kesalahan saat menyimpan data."
@@ -491,18 +538,6 @@
           if (file && file.size > MAX_SIZE_BYTES) {
             alert(
               `Ukuran file SPK melebihi ${MAX_SIZE_MB} MB. Silakan kompres dulu.`
-            );
-            this.value = "";
-          }
-        });
-
-      document
-        .getElementById("upload_file")
-        .addEventListener("change", function () {
-          const file = this.files[0];
-          if (file && file.size > MAX_SIZE_BYTES) {
-            alert(
-              `Ukuran file RAB/penawaran melebihi ${MAX_SIZE_MB} MB. Silakan kompres dulu.`
             );
             this.value = "";
           }
