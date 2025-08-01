@@ -318,8 +318,12 @@
       let currentRabUrl = "";
 
       window.onload = async function () {
-        const today = new Date().toISOString().split("T")[0];
-        document.getElementById("tanggal_spk").setAttribute("min", today);
+        const today = new Date();
+        const minDate = new Date(today);
+        minDate.setDate(minDate.getDate() - 3);
+
+        const minDateStr = minDate.toISOString().split("T")[0];
+        document.getElementById("tanggal_spk").setAttribute("min", minDateStr);
         const cabangSelect = document.getElementById("cabang");
         try {
           const response = await fetch(`${SCRIPT_URL}?form=input-pic`);
