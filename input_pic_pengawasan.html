@@ -214,17 +214,10 @@
           <option value="">-- Pilih Cabang --</option>
         </select>
 
-        <label for="kode_toko">Kode Toko:</label>
-        <input
-          type="text"
-          id="kode_toko"
-          name="kode_toko"
-          placeholder="Masukkan Kode Toko"
-          maxlength="4"
-          pattern="^[A-Za-z0-9]{4}$"
-          title="Kode toko harus 4 karakter berupa huruf dan angka tanpa spasi"
-          required
-        />
+        <label for="kode_ulok">Kode Ulok:</label>
+        <select id="kode_ulok" name="kode_ulok" required>
+          <option value="">-- Pilih Kode Ulok --</option>
+        </select>
 
         <label for="kategori_lokasi">Kategori Lokasi:</label>
         <select name="kategori_lokasi" id="kategori_lokasi" required>
@@ -270,7 +263,7 @@
           type="text"
           id="rab_url"
           name="rab_url"
-          placeholder="Link RAB akan terisi otomatis berdasarkan kode toko..."
+          placeholder="Link RAB akan terisi otomatis berdasarkan kode ulok..."
           readonly
           class="input-readonly"
         />
@@ -311,7 +304,7 @@
       const popupMessage = document.getElementById("popup-message");
       const cabangInput = document.getElementById("cabang");
       const picSelect = document.getElementById("pic_building_support");
-      const kodeTokoInput = document.getElementById("kode_toko");
+      const kodeUlokInput = document.getElementById("kode_ulok");
       const rabUrlInput = document.getElementById("rab_url");
       const rabStatus = document.getElementById("rab-status");
 
@@ -338,31 +331,27 @@
         }
       };
 
-      // Event listener untuk kode toko - auto fetch RAB
-      kodeTokoInput.addEventListener(
-        "input",
-        debounce(async function () {
-          const kodeToko = kodeTokoInput.value.trim().toUpperCase();
-
-          if (kodeToko.length === 4) {
-            await fetchRabUrl(kodeToko);
-          } else {
-            clearRabUrl();
-          }
-        }, 500)
-      );
+      // Event listener untuk kode ulok - auto fetch RAB
+      kodeUlokInput.addEventListener("change", async function () {
+        const kodeUlok = kodeUlokInput.value.trim();
+        if (kodeUlok) {
+          await fetchRabUrl(kodeUlok);
+        } else {
+          clearRabUrl();
+        }
+      });
 
       // Fetch RAB URL dari backend
-      async function fetchRabUrl(kodeToko) {
+      async function fetchRabUrl(kodeUlok) {
         try {
           showRabStatus(
-            "Mencari RAB untuk kode toko " + kodeToko + "...",
+            "Mencari RAB untuk kode ulok " + kodeUlok + "...",
             "loading"
           );
 
           const response = await fetch(
-            `${SCRIPT_URL}?form=input-pic&kode_toko=${encodeURIComponent(
-              kodeToko
+            `${SCRIPT_URL}?form=input-pic&kode_ulok=${encodeURIComponent(
+              kodeUlok
             )}`
           );
           const result = await response.json();
@@ -374,7 +363,7 @@
           } else {
             clearRabUrl();
             showRabStatus(
-              "❌ RAB tidak ditemukan untuk kode toko ini",
+              "❌ RAB tidak ditemukan untuk kode ulok ini",
               "error"
             );
           }
@@ -421,6 +410,38 @@
         const cabang = cabangInput.value.trim();
         if (!cabang) return;
 
+        // Reset dropdown Kode Ulok
+        kodeUlokInput.innerHTML =
+          '<option value="">-- Pilih Kode Ulok --</option>';
+
+        // Ambil daftar kode ulok dari backend
+        try {
+          const response = await fetch(
+            `${SCRIPT_URL}?form=input-pic&getKodeUlokByCabang=true&cabang=${encodeURIComponent(
+              cabang
+            )}`
+          );
+          const result = await response.json();
+
+          if (result.status === "success" && result.kodeUlokList.length > 0) {
+            result.kodeUlokList.forEach((kode) => {
+              const option = document.createElement("option");
+              option.value = kode;
+              option.textContent = kode;
+              kodeUlokInput.appendChild(option);
+            });
+          } else {
+            const opt = document.createElement("option");
+            opt.textContent = "Tidak ada kode ulok untuk cabang ini";
+            opt.disabled = true;
+            kodeUlokInput.appendChild(opt);
+          }
+        } catch (err) {
+          console.error("Error fetching kode ulok:", err);
+          showError("Gagal memuat daftar kode ulok.");
+        }
+
+        // Ambil daftar pic
         picSelect.innerHTML =
           '<option value="">-- Pilih PIC Building Support --</option>';
 
@@ -495,10 +516,10 @@
         // Validasi RAB URL
         if (!currentRabUrl) {
           showError(
-            "RAB tidak ditemukan untuk kode toko ini. Pastikan kode toko sudah benar."
+            "RAB tidak ditemukan untuk kode ulok ini. Pastikan kode ulok sudah benar."
           );
           showPopup(
-            "RAB tidak ditemukan untuk kode toko ini. Pastikan kode toko sudah benar."
+            "RAB tidak ditemukan untuk kode ulok ini. Pastikan kode ulok sudah benar."
           );
           return;
         }
@@ -522,7 +543,7 @@
           const jsonData = {
             form: "input-pic",
             cabang: form.cabang.value,
-            kode_toko: form.kode_toko.value,
+            kode_ulok: form.kode_ulok.value,
             kategori_lokasi: form.kategori_lokasi.value,
             tanggal_spk: form.tanggal_spk.value,
             pic_building_support: picData.email,
