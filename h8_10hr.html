@@ -131,9 +131,9 @@
 
     <div class="container">
       <form id="laporan-form" class="form-container">
-        <label for="kode_toko">Kode Toko:</label>
-        <select id="kode_toko" name="kode_toko" required>
-          <option value="">-- Pilih Kode Toko --</option>
+        <label for="kode_ulok">Kode Ulok:</label>
+        <select id="kode_ulok" name="kode_ulok" required>
+          <option value="">-- Pilih Kode Ulok --</option>
         </select>
 
         <label for="status_lokasi">Status Lokasi:</label>
@@ -247,7 +247,7 @@
       const submitButton = form.querySelector("button[type='submit']");
       const messageDiv = document.getElementById("popup");
 
-      async function loadKodeToko() {
+      async function loadKodeUlok() {
         const email = getParameterByName("email");
         const res = await fetch(
           `https://backend-form-neon.vercel.app/api/form?form=h8&email=${encodeURIComponent(
@@ -255,7 +255,7 @@
           )}`
         );
         const result = await res.json();
-        const select = document.getElementById("kode_toko");
+        const select = document.getElementById("kode_ulok");
         result.data.forEach((kode) => {
           const opt = document.createElement("option");
           opt.value = kode;
@@ -290,7 +290,7 @@
 
           const payload = {
             form: "h8",
-            kode_toko: formData.get("kode_toko"),
+            kode_ulok: formData.get("kode_ulok"),
             status_lokasi: formData.get("status_lokasi"),
             kategori_lokasi: formData.get("status_lokasi"),
             cabang: getParameterByName("cabang"),
@@ -360,7 +360,7 @@
         return new URLSearchParams(window.location.search).get(name) || "";
       }
 
-      window.addEventListener("DOMContentLoaded", loadKodeToko);
+      window.addEventListener("DOMContentLoaded", loadKodeUlok);
     </script>
   </body>
 </html>

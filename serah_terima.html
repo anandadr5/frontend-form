@@ -206,9 +206,9 @@
 
     <div class="container">
       <form id="laporan-form" class="form-container">
-        <label for="kode_toko">Kode Toko:</label>
-        <select id="kode_toko" name="kode_toko" required>
-          <option value="">-- Pilih Kode Toko --</option>
+        <label for="kode_ulok">Kode Ulok:</label>
+        <select id="kode_ulok" name="kode_ulok" required>
+          <option value="">-- Pilih Kode Ulok --</option>
         </select>
 
         <label for="lokasi">Lokasi:</label>
@@ -664,7 +664,7 @@
       const submitButton = form.querySelector("button[type='submit']");
       const messageDiv = document.getElementById("popup");
 
-      async function loadKodeToko() {
+      async function loadKodeUlok() {
         const email = getParameterByName("email");
         try {
           const res = await fetch(
@@ -672,7 +672,7 @@
           );
           const result = await res.json();
 
-          const select = document.getElementById("kode_toko");
+          const select = document.getElementById("kode_ulok");
           const cabangInput = document.getElementById("cabang");
 
           if (result.data && Array.isArray(result.data)) {
@@ -688,12 +688,12 @@
               cabangInput.value = result.cabang;
             }
           } else {
-            console.error("Data kode toko tidak ditemukan:", result);
+            console.error("Data kode ulok tidak ditemukan:", result);
             showPopup("Gagal memuat data kode toko.");
           }
         } catch (err) {
-          console.error("Gagal memuat kode toko:", err);
-          showPopup("Terjadi kesalahan saat mengambil data toko.");
+          console.error("Gagal memuat kode ulok:", err);
+          showPopup("Terjadi kesalahan saat mengambil data ulok.");
         }
       }
 
@@ -808,7 +808,7 @@
         return new URLSearchParams(window.location.search).get(name) || "";
       }
 
-      window.addEventListener("DOMContentLoaded", loadKodeToko);
+      window.addEventListener("DOMContentLoaded", loadKodeUlok);
     </script>
   </body>
 </html>
