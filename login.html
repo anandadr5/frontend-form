@@ -132,15 +132,22 @@
             "https://backend-form-neon.vercel.app/api?form=login",
             {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email, password }),
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+              body: JSON.stringify({
+                action: "loginManager",
+                email,
+                password,
+              }),
             }
           );
 
           const data = await res.json();
           document.getElementById("spinner").style.display = "none";
 
-          if (data.success) {
+          if (data.status === "success") {
             window.location.href =
               "https://frontend-form-virid.vercel.app/input_pic_pengawasan.html";
           } else {
@@ -150,6 +157,7 @@
           document.getElementById("spinner").style.display = "none";
           document.getElementById("error").innerText =
             "Gagal terhubung ke server.";
+          console.error("Login error:", err);
         }
       }
     </script>
