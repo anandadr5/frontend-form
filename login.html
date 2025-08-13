@@ -5,208 +5,191 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - Branch Building & Maintenance</title>
     <style>
+      :root {
+        --red: #e1251b;
+        --text: #2b2b2b;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --bg: #f7f7f8;
+        --white: #ffffff;
+        --focus: #005bac33;
+      }
+
       * {
-        margin: 0;
-        padding: 0;
         box-sizing: border-box;
       }
-
       body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        display: grid;
+        place-items: center;
         padding: 20px;
+        height: 100vh;
       }
 
+      /* Container */
       .login-container {
-        background: white;
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
         width: 100%;
-        max-width: 400px;
-        position: relative;
-        overflow: hidden;
+        max-width: 420px;
+        padding: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
       }
 
-      .login-container::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 5px;
-        background: linear-gradient(90deg, #667eea, #764ba2);
-      }
-
+      /* Logo */
       .logo {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
       }
-
       .logo h1 {
-        color: #333;
-        font-size: 28px;
+        font-size: 20px;
         font-weight: 700;
-        margin-bottom: 5px;
+        margin: 0;
       }
-
       .logo p {
-        color: #666;
-        font-size: 14px;
+        font-size: 13px;
+        color: var(--muted);
+        margin: 4px 0 0;
       }
 
+      /* Form */
       .form-group {
-        margin-bottom: 25px;
-        position: relative;
+        margin-bottom: 16px;
       }
-
       .form-group label {
         display: block;
-        margin-bottom: 8px;
-        color: #333;
-        font-weight: 500;
-        font-size: 14px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: var(--text);
       }
-
       .form-group input {
         width: 100%;
-        padding: 15px;
-        border: 2px solid #e1e5e9;
+        height: 42px;
+        padding: 0 12px;
+        border: 1px solid var(--border);
         border-radius: 10px;
-        font-size: 16px;
-        transition: all 0.3s ease;
-        background: #f8f9fa;
+        font-size: 15px;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
       }
-
+      .form-group input::placeholder {
+        color: #9aa0a6;
+      }
       .form-group input:focus {
         outline: none;
-        border-color: #667eea;
-        background: white;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px var(--focus);
       }
 
+      /* Alerts */
+      .alert {
+        display: none;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border-left: 4px solid;
+        margin-bottom: 14px;
+        font-size: 14px;
+      }
+      .alert.error {
+        background: #fff5f5;
+        color: #9b1c1c;
+        border-color: #e53e3e;
+      }
+      .alert.success {
+        background: #f0fff4;
+        color: #276749;
+        border-color: #48bb78;
+      }
+
+      /* Button */
       .login-btn {
         width: 100%;
-        padding: 15px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        height: 44px;
         border: none;
         border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
+        background: var(--red);
+        color: #fff;
+        font-weight: 700;
+        font-size: 15px;
         cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
+        transition: transform 0.05s ease, box-shadow 0.2s ease, opacity 0.2s;
       }
-
       .login-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 6px 14px rgba(225, 37, 27, 0.25);
       }
-
+      .login-btn:active {
+        transform: translateY(1px);
+      }
       .login-btn:disabled {
-        opacity: 0.7;
+        opacity: 0.75;
         cursor: not-allowed;
-        transform: none;
       }
 
+      /* Spinner */
       .spinner {
         display: none;
-        width: 20px;
-        height: 20px;
-        border: 2px solid #ffffff;
-        border-top: 2px solid transparent;
+        width: 18px;
+        height: 18px;
+        border: 2px solid #fff;
+        border-top-color: transparent;
         border-radius: 50%;
         animation: spin 1s linear infinite;
-        margin-right: 10px;
       }
-
       @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
+        to {
           transform: rotate(360deg);
         }
       }
 
-      .error-message {
-        background: #fee;
-        color: #c33;
-        padding: 12px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        border-left: 4px solid #c33;
-        display: none;
-      }
-
-      .success-message {
-        background: #efe;
-        color: #363;
-        padding: 12px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        border-left: 4px solid #363;
-        display: none;
-      }
-
+      /* Loading overlay */
       .loading-overlay {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
         display: none;
         align-items: center;
         justify-content: center;
         z-index: 1000;
       }
-
-      .loading-content {
-        background: white;
-        padding: 30px;
-        border-radius: 15px;
+      .loading-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
         text-align: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       }
-
-      .loading-spinner {
-        width: 40px;
-        height: 40px;
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #667eea;
+      .loading-wheel {
+        width: 36px;
+        height: 36px;
+        border: 3px solid #e5e7eb;
+        border-top-color: var(--blue);
         border-radius: 50%;
         animation: spin 1s linear infinite;
-        margin: 0 auto 15px;
+        margin: 0 auto 10px;
       }
 
       @media (max-width: 480px) {
         .login-container {
-          padding: 30px 20px;
-          margin: 10px;
-        }
-
-        .logo h1 {
-          font-size: 24px;
+          padding: 20px;
+          border-radius: 10px;
         }
       }
     </style>
   </head>
   <body>
+    <!-- Login Box -->
     <div class="login-container">
       <div class="logo">
-        <h1>Login System</h1>
+        <h1>Login Pengawasan</h1>
         <p>Branch Building & Maintenance Manager</p>
       </div>
 
-      <div id="errorMessage" class="error-message"></div>
-      <div id="successMessage" class="success-message"></div>
+      <div id="errorMessage" class="alert error"></div>
+      <div id="successMessage" class="alert success"></div>
 
       <form id="loginForm">
         <div class="form-group">
@@ -214,23 +197,19 @@
           <input
             type="email"
             id="email"
-            name="email"
             required
             placeholder="Masukkan email Anda"
           />
         </div>
-
         <div class="form-group">
-          <label for="password">Password (Nama Cabang)</label>
+          <label for="password">Password</label>
           <input
             type="password"
             id="password"
-            name="password"
             required
             placeholder="Masukkan nama cabang"
           />
         </div>
-
         <button type="submit" class="login-btn" id="loginBtn">
           <span class="spinner" id="spinner"></span>
           <span id="btnText">Masuk</span>
@@ -238,9 +217,10 @@
       </form>
     </div>
 
+    <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
-      <div class="loading-content">
-        <div class="loading-spinner"></div>
+      <div class="loading-card">
+        <div class="loading-wheel"></div>
         <p>Memproses login...</p>
       </div>
     </div>
@@ -248,7 +228,6 @@
     <script>
       const API_BASE_URL = "https://backend-form-neon.vercel.app/api/form";
 
-      // Elements
       const loginForm = document.getElementById("loginForm");
       const emailInput = document.getElementById("email");
       const passwordInput = document.getElementById("password");
@@ -259,123 +238,76 @@
       const successMessage = document.getElementById("successMessage");
       const loadingOverlay = document.getElementById("loadingOverlay");
 
-      // Show/Hide messages
-      function showError(message) {
-        errorMessage.textContent = message;
+      const showError = (msg) => {
+        errorMessage.textContent = msg;
         errorMessage.style.display = "block";
         successMessage.style.display = "none";
-      }
-
-      function showSuccess(message) {
-        successMessage.textContent = message;
+      };
+      const showSuccess = (msg) => {
+        successMessage.textContent = msg;
         successMessage.style.display = "block";
         errorMessage.style.display = "none";
-      }
-
-      function hideMessages() {
+      };
+      const hideMessages = () => {
         errorMessage.style.display = "none";
         successMessage.style.display = "none";
-      }
-
-      // Loading states
-      function setLoading(isLoading) {
-        if (isLoading) {
-          loginBtn.disabled = true;
-          spinner.style.display = "inline-block";
-          btnText.textContent = "Memproses...";
-          loadingOverlay.style.display = "flex";
-        } else {
-          loginBtn.disabled = false;
-          spinner.style.display = "none";
-          btnText.textContent = "Masuk";
-          loadingOverlay.style.display = "none";
-        }
-      }
+      };
+      const setLoading = (state) => {
+        loginBtn.disabled = state;
+        spinner.style.display = state ? "inline-block" : "none";
+        btnText.textContent = state ? "Memproses..." : "Masuk";
+        loadingOverlay.style.display = state ? "flex" : "none";
+      };
 
       async function performLogin(email, password) {
-        try {
-          const response = await fetch(API_BASE_URL, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              form: "login",
-              action: "loginManager",
-              email: email,
-              password: password,
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error("Gagal menghubungi server");
-          }
-
-          const result = await response.json();
-
-          if (result.status !== "success") {
-            throw new Error(result.message || "Login gagal");
-          }
-
-          return result;
-        } catch (error) {
-          console.error("Login error:", error);
-          throw error;
-        }
+        const res = await fetch(API_BASE_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            form: "login",
+            action: "loginManager",
+            email,
+            password,
+          }),
+        });
+        if (!res.ok) throw new Error("Gagal menghubungi server");
+        const data = await res.json();
+        if (data.status !== "success")
+          throw new Error(data.message || "Login gagal");
+        return data;
       }
 
-      // Handle form submission
       loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
-
-        if (!email || !password) {
-          showError("Harap isi semua field");
-          return;
-        }
+        if (!email || !password) return showError("Harap isi semua field");
 
         hideMessages();
         setLoading(true);
 
         try {
           const result = await performLogin(email, password);
-
-          // Show success message
           showSuccess(result.message || "Login berhasil! Mengalihkan...");
-
-          // Store user data in sessionStorage for next page
-          if (result.data) {
+          if (result.data)
             sessionStorage.setItem("userData", JSON.stringify(result.data));
-          }
-
-          // Redirect after short delay
-          setTimeout(() => {
-            window.location.href =
-              "https://frontend-form-virid.vercel.app/input_pic_pengawasan.html";
-          }, 1500);
-        } catch (error) {
-          console.error("Login error:", error);
-          showError(error.message || "Terjadi kesalahan saat login");
+          setTimeout(
+            () =>
+              (window.location.href =
+                "https://frontend-form-virid.vercel.app/input_pic_pengawasan.html"),
+            1500
+          );
+        } catch (err) {
+          showError(err.message);
         } finally {
           setLoading(false);
         }
       });
 
-      // Auto-focus email input
       emailInput.focus();
-
-      // Handle Enter key in password field
-      passwordInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
-          loginForm.dispatchEvent(new Event("submit"));
-        }
-      });
-
-      // Clear messages when user starts typing
-      emailInput.addEventListener("input", hideMessages);
-      passwordInput.addEventListener("input", hideMessages);
+      [emailInput, passwordInput].forEach((el) =>
+        el.addEventListener("input", hideMessages)
+      );
     </script>
   </body>
 </html>
