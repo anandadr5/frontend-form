@@ -314,20 +314,36 @@
         const today = new Date().toISOString().split("T")[0];
         document.getElementById("tanggal_spk").setAttribute("min", today);
         const cabangSelect = document.getElementById("cabang");
-        try {
-          const response = await fetch(`${SCRIPT_URL}?form=input-pic`);
-          const result = await response.json();
-          if (result.status === "success" && result.cabangList) {
-            result.cabangList.forEach((cabang) => {
-              const option = document.createElement("option");
-              option.value = cabang;
-              option.textContent = cabang.toUpperCase();
-              cabangSelect.appendChild(option);
-            });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const loggedInCabang = urlParams.get("cabang");
+
+        if (loggedInCabang) {
+          cabangSelect.innerHTML = "";
+          const option = document.createElement("option");
+          option.value = loggedInCabang;
+          option.textContent = loggedInCabang.toUpperCase();
+          option.selected = true;
+          cabangSelect.appendChild(option);
+          cabangSelect.disabled = true;
+
+          cabangSelect.dispatchEvent(new Event("change"));
+        } else {
+          try {
+            const response = await fetch(`${SCRIPT_URL}?form=input-pic`);
+            const result = await response.json();
+            if (result.status === "success" && result.cabangList) {
+              result.cabangList.forEach((cabang) => {
+                const option = document.createElement("option");
+                option.value = cabang;
+                option.textContent = cabang.toUpperCase();
+                cabangSelect.appendChild(option);
+              });
+            }
+          } catch (err) {
+            console.error("Error fetching cabang list:", err);
+            showError("Gagal memuat daftar cabang.");
           }
-        } catch (err) {
-          console.error("Error fetching cabang list:", err);
-          showError("Gagal memuat daftar cabang.");
         }
       };
 
