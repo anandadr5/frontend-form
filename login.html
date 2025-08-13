@@ -292,82 +292,34 @@
         }
       }
 
-      // Validate login credentials
-      async function validateLogin(email, password) {
+      async function performLogin(email, password) {
         try {
-          const response = await fetch(
-            `${API_BASE_URL}?form=login&action=getCabangData`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error("Gagal mengambil data cabang");
-          }
-
-          const data = await response.json();
-
-          if (!data.success) {
-            throw new Error(data.message || "Gagal validasi login");
-          }
-
-          // Find user in the data
-          const userData = data.data.find(
-            (user) =>
-              user.EMAIL_SAT === email &&
-              user.JABATAN === "BRANCH BUILDING & MAINTENANCE MANAGER" &&
-              user.CABANG.toUpperCase() === password.toUpperCase()
-          );
-
-          if (!userData) {
-            throw new Error("Email, password, atau jabatan tidak valid");
-          }
-
-          return userData;
-        } catch (error) {
-          console.error("Validation error:", error);
-          throw error;
-        }
-      }
-
-      // Save login data
-      async function saveLoginData(userData) {
-        try {
-          const loginData = {
-            Nama: userData.NAMA_LENGKAP,
-            Email: userData.EMAIL_SAT,
-            Cabang: userData.CABANG,
-          };
-
-          const response = await fetch(`${API_BASE_URL}`, {
+          const response = await fetch(API_BASE_URL, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
               form: "login",
-              action: "saveLoginData",
-              ...loginData,
+              action: "loginManager",
+              email: email,
+              password: password,
             }),
           });
 
           if (!response.ok) {
-            throw new Error("Gagal menyimpan data login");
+            throw new Error("Gagal menghubungi server");
           }
 
           const result = await response.json();
 
-          if (!result.success) {
-            throw new Error(result.message || "Gagal menyimpan data login");
+          if (result.status !== "success") {
+            throw new Error(result.message || "Login gagal");
           }
 
           return result;
         } catch (error) {
-          console.error("Save login error:", error);
+          console.error("Login error:", error);
           throw error;
         }
       }
@@ -388,17 +340,15 @@
         setLoading(true);
 
         try {
-          // Validate login
-          const userData = await validateLogin(email, password);
-
-          // Save login data
-          await saveLoginData(userData);
+          const result = await performLogin(email, password);
 
           // Show success message
-          showSuccess("Login berhasil! Mengalihkan...");
+          showSuccess(result.message || "Login berhasil! Mengalihkan...");
 
           // Store user data in sessionStorage for next page
-          sessionStorage.setItem("userData", JSON.stringify(userData));
+          if (result.data) {
+            sessionStorage.setItem("userData", JSON.stringify(result.data));
+          }
 
           // Redirect after short delay
           setTimeout(() => {
