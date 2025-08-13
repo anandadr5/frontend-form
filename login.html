@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Login Manager</title>
+    <title>Login Pengawasan</title>
     <style>
       body {
         font-family: Cambria;
@@ -35,6 +35,7 @@
         margin-bottom: 15px;
         border: 1px solid #ddd;
         border-radius: 5px;
+        box-sizing: border-box; /* Tambahkan ini */
       }
       button {
         background-color: #ce1e10;
@@ -87,7 +88,7 @@
   </head>
   <body>
     <header>
-      <h2>Login</h2>
+      <h2>Login Pengawasan</h2>
     </header>
 
     <div class="container">
@@ -117,10 +118,10 @@
         document.getElementById("spinner").style.display = "block";
         document.getElementById("error").innerText = "";
 
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
+        const emailInput = document.getElementById("email").value.trim();
+        const passwordInput = document.getElementById("password").value.trim();
 
-        if (!email || !password) {
+        if (!emailInput || !passwordInput) {
           document.getElementById("spinner").style.display = "none";
           document.getElementById("error").innerText =
             "Email dan password wajib diisi.";
@@ -138,8 +139,8 @@
               },
               body: JSON.stringify({
                 action: "loginManager",
-                email,
-                password,
+                email: emailInput,
+                password: passwordInput,
               }),
             }
           );
@@ -148,8 +149,17 @@
           document.getElementById("spinner").style.display = "none";
 
           if (data.status === "success") {
-            window.location.href =
-              "https://frontend-form-virid.vercel.app/input_pic_pengawasan.html";
+            const nama = data.data.nama;
+            const email = data.data.email;
+            const cabang = data.data.cabang;
+
+            const tujuanUrl = `https://frontend-form-virid.vercel.app/input_pic_pengawasan.html?nama=${encodeURIComponent(
+              nama
+            )}&email=${encodeURIComponent(email)}&cabang=${encodeURIComponent(
+              cabang
+            )}`;
+
+            window.location.href = tujuanUrl;
           } else {
             document.getElementById("error").innerText = data.message;
           }
