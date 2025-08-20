@@ -200,38 +200,6 @@
     </style>
   </head>
   <body>
-    <script>
-      (async function checkAuth() {
-        const token = sessionStorage.getItem("authToken");
-        const loginPage = "https://frontend-form-virid.vercel.app/login.html";
-
-        if (!token) {
-          window.location.replace(loginPage);
-          return;
-        }
-
-        try {
-          // Verifikasi token ke server
-          const response = await fetch(
-            `https://backend-form-neon.vercel.app/api/form?form=login&action=verifyToken&token=${token}`
-          );
-          const result = await response.json();
-
-          if (result.status !== "success") {
-            sessionStorage.removeItem("authToken");
-            alert(result.message);
-            window.location.replace(loginPage);
-            return;
-          }
-          sessionStorage.setItem("userData", JSON.stringify(result.data));
-        } catch (error) {
-          console.error("Authentication check failed:", error);
-          sessionStorage.removeItem("authToken");
-          window.location.replace(loginPage);
-        }
-      })();
-    </script>
-
     <header>
       <h1>Form Input PIC Pengawasan</h1>
     </header>
@@ -324,8 +292,8 @@
     </div>
 
     <script>
+      // ================== BAGIAN 1: DEKLARASI VARIABEL & KONSTANTA ==================
       const SCRIPT_URL = "https://backend-form-neon.vercel.app/api/form";
-
       const form = document.getElementById("pic-form");
       const loading = document.getElementById("loading");
       const submitBtn = document.getElementById("submit-btn");
@@ -338,26 +306,16 @@
       const kodeUlokInput = document.getElementById("kode_ulok");
       const rabUrlInput = document.getElementById("rab_url");
       const rabStatus = document.getElementById("rab-status");
-
       let currentRabUrl = "";
 
-      async function initializePage() {
-        const userDataString = sessionStorage.getItem("userData");
-        if (!userDataString) {
-          alert("Data sesi tidak ditemukan, harap login kembali.");
-          window.location.replace(
-            "https://frontend-form-virid.vercel.app/login.html"
-          );
-          return;
-        }
+      // ================== BAGIAN 2: FUNGSI-FUNGSI UTAMA & HELPER ==================
 
-        const userData = JSON.parse(userDataString);
+      function initializePage(userData) {
         const loggedInCabang = userData.cabang;
-
         const today = new Date().toISOString().split("T")[0];
         document.getElementById("tanggal_spk").setAttribute("min", today);
-        const cabangSelect = document.getElementById("cabang");
 
+        const cabangSelect = document.getElementById("cabang");
         cabangSelect.innerHTML = "";
         const option = document.createElement("option");
         option.value = loggedInCabang;
@@ -367,26 +325,60 @@
         cabangSelect.disabled = true;
         cabangSelect.dispatchEvent(new Event("change"));
       }
-      document.addEventListener("DOMContentLoaded", initializePage);
 
-      // Event listener untuk kode ulok - auto fetch RAB
-      kodeUlokInput.addEventListener("change", async function () {
-        const kodeUlok = kodeUlokInput.value.trim();
-        if (kodeUlok) {
-          await fetchRabUrl(kodeUlok);
-        } else {
-          clearRabUrl();
-        }
-      });
+      function hideMessages() {
+        errorMessage.classList.remove("show");
+        successMessage.classList.remove("show");
+      }
 
-      // Fetch RAB URL dari backend
+      function showError(message) {
+        hideMessages();
+        errorMessage.textContent = message;
+        errorMessage.classList.add("show");
+      }
+
+      function showSuccess(message) {
+        hideMessages();
+        successMessage.textContent = message;
+        successMessage.classList.add("show");
+      }
+
+      function showPopup(message) {
+        popupMessage.textContent = message;
+        popup.classList.add("show");
+      }
+
+      function closePopup() {
+        popup.classList.remove("show");
+      }
+
+      function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result.split(",")[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function clearRabUrl() {
+        currentRabUrl = "";
+        rabUrlInput.value = "";
+        rabStatus.style.display = "none";
+      }
+
+      function showRabStatus(message, type) {
+        rabStatus.textContent = message;
+        rabStatus.className = `rab-status ${type}`;
+        rabStatus.style.display = "block";
+      }
+
       async function fetchRabUrl(kodeUlok) {
         try {
           showRabStatus(
-            "Mencari RAB untuk kode ulok " + kodeUlok + "...",
+            `Mencari RAB untuk kode ulok ${kodeUlok}...`,
             "loading"
           );
-
           const response = await fetch(
             `${SCRIPT_URL}?form=input-pic&kode_ulok=${encodeURIComponent(
               kodeUlok
@@ -412,47 +404,14 @@
         }
       }
 
-      // Clear RAB URL
-      function clearRabUrl() {
-        currentRabUrl = "";
-        rabUrlInput.value = "";
-        hideRabStatus();
-      }
-
-      // Show RAB status
-      function showRabStatus(message, type) {
-        rabStatus.textContent = message;
-        rabStatus.className = `rab-status ${type}`;
-        rabStatus.style.display = "block";
-      }
-
-      // Hide RAB status
-      function hideRabStatus() {
-        rabStatus.style.display = "none";
-      }
-
-      // Debounce function untuk mengurangi API calls
-      function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-          const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-          };
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-        };
-      }
+      // ================== BAGIAN 3: EVENT LISTENERS ==================
 
       cabangInput.addEventListener("change", async function () {
         const cabang = cabangInput.value.trim();
         if (!cabang) return;
 
-        // Reset dropdown Kode Ulok
         kodeUlokInput.innerHTML =
-          '<option value="">-- Pilih Kode Ulok --</option>';
-
-        // Ambil daftar kode ulok dari backend
+          '<option value="">-- Memuat Kode Ulok --</option>';
         try {
           const response = await fetch(
             `${SCRIPT_URL}?form=input-pic&getKodeUlokByCabang=true&cabang=${encodeURIComponent(
@@ -460,7 +419,8 @@
             )}`
           );
           const result = await response.json();
-
+          kodeUlokInput.innerHTML =
+            '<option value="">-- Pilih Kode Ulok --</option>';
           if (result.status === "success" && result.kodeUlokList.length > 0) {
             result.kodeUlokList.forEach((kode) => {
               const option = document.createElement("option");
@@ -470,95 +430,60 @@
             });
           } else {
             const opt = document.createElement("option");
-            opt.textContent = "Tidak ada kode ulok untuk cabang ini";
+            opt.textContent = "Tidak ada kode ulok";
             opt.disabled = true;
             kodeUlokInput.appendChild(opt);
           }
         } catch (err) {
-          console.error("Error fetching kode ulok:", err);
           showError("Gagal memuat daftar kode ulok.");
         }
 
-        // Ambil daftar pic
-        picSelect.innerHTML =
-          '<option value="">-- Pilih PIC Building Support --</option>';
-
+        picSelect.innerHTML = '<option value="">-- Memuat PIC --</option>';
         try {
           const response = await fetch(
             `${SCRIPT_URL}?form=input-pic&cabang=${encodeURIComponent(cabang)}`
           );
           const result = await response.json();
-
-          if (result.status === "success") {
-            if (result.picList.length === 0) {
-              const opt = document.createElement("option");
-              opt.textContent = "PIC tidak ditemukan untuk cabang ini";
-              opt.disabled = true;
-              picSelect.appendChild(opt);
-            } else {
-              result.picList.forEach((pic) => {
-                const option = document.createElement("option");
-                option.value = JSON.stringify({
-                  email: pic.email,
-                  nama: pic.nama,
-                  jabatan: pic.jabatan,
-                });
-                option.textContent = pic.nama.toUpperCase();
-                picSelect.appendChild(option);
+          picSelect.innerHTML =
+            '<option value="">-- Pilih PIC Building Support --</option>';
+          if (result.status === "success" && result.picList.length > 0) {
+            result.picList.forEach((pic) => {
+              const option = document.createElement("option");
+              option.value = JSON.stringify({
+                email: pic.email,
+                nama: pic.nama,
+                jabatan: pic.jabatan,
               });
-            }
+              option.textContent = pic.nama.toUpperCase();
+              picSelect.appendChild(option);
+            });
           } else {
-            showError("Gagal mengambil data PIC.");
+            const opt = document.createElement("option");
+            opt.textContent = "PIC tidak ditemukan";
+            opt.disabled = true;
+            picSelect.appendChild(opt);
           }
         } catch (err) {
-          console.error("Fetch error:", err);
-          showError("Terjadi kesalahan saat mengambil data PIC.");
+          showError("Gagal mengambil data PIC.");
         }
       });
 
-      // Hide messages
-      function hideMessages() {
-        errorMessage.classList.remove("show");
-        successMessage.classList.remove("show");
-      }
+      kodeUlokInput.addEventListener("change", async function () {
+        const kodeUlok = kodeUlokInput.value.trim();
+        if (kodeUlok) {
+          await fetchRabUrl(kodeUlok);
+        } else {
+          clearRabUrl();
+        }
+      });
 
-      // Show error message
-      function showError(message) {
-        hideMessages();
-        errorMessage.textContent = message;
-        errorMessage.classList.add("show");
-      }
-
-      // Show success message
-      function showSuccess(message) {
-        hideMessages();
-        successMessage.textContent = message;
-        successMessage.classList.add("show");
-      }
-
-      // Show popup
-      function showPopup(message) {
-        popupMessage.textContent = message;
-        popup.classList.add("show");
-      }
-
-      // Close popup
-      function closePopup() {
-        popup.classList.remove("show");
-      }
-
-      // Handle form submission
       form.addEventListener("submit", async function (e) {
         e.preventDefault();
-
-        // Validasi RAB URL
         if (!currentRabUrl) {
-          showError(
-            "RAB tidak ditemukan untuk kode ulok ini. Pastikan kode ulok sudah benar."
-          );
-          showPopup(
-            "RAB tidak ditemukan untuk kode ulok ini. Pastikan kode ulok sudah benar."
-          );
+          const msg =
+            "RAB tidak ditemukan untuk kode ulok ini. Pastikan kode ulok sudah benar.";
+          showError(msg);
+          showPopup(msg);
           return;
         }
 
@@ -567,17 +492,14 @@
         hideMessages();
 
         try {
-          // Ambil file PDF dan konversi ke base64
           const spkFile = document.getElementById("upload_spk").files[0];
-
           if (!spkFile) {
-            showError("File SPK harus diupload semua.");
+            showError("File SPK harus diupload.");
             return;
           }
 
           const spkBase64 = await fileToBase64(spkFile);
           const picData = JSON.parse(form.pic_building_support.value);
-
           const jsonData = {
             form: "input-pic",
             cabang: form.cabang.value,
@@ -604,41 +526,30 @@
             showPopup(pesan);
             form.reset();
             clearRabUrl();
+            // Reset dropdown ke state awal
+            cabangInput.dispatchEvent(new Event("change"));
           } else {
-            showError(
-              result.message || "Terjadi kesalahan saat menyimpan data."
-            );
-            showPopup(
-              result.message ||
-                "Terjadi kesalahan saat menyimpan data. Silakan coba lagi."
-            );
+            const msg =
+              result.message || "Terjadi kesalahan saat menyimpan data.";
+            showError(msg);
+            showPopup(`${msg} Silakan coba lagi.`);
           }
         } catch (error) {
           console.error("Error:", error);
-          showError("Terjadi kesalahan saat menyimpan data.");
-          showPopup("Terjadi kesalahan saat menyimpan data.");
+          const msg = "Terjadi kesalahan fatal saat mengirim data.";
+          showError(msg);
+          showPopup(msg);
         } finally {
           loading.classList.remove("show");
           submitBtn.disabled = false;
         }
       });
 
-      function fileToBase64(file) {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result.split(",")[1]);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      }
-
-      // Validasi ukuran file saat user memilih file
-      const MAX_SIZE_MB = 1.5;
-      const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
-
       document
         .getElementById("upload_spk")
         .addEventListener("change", function () {
+          const MAX_SIZE_MB = 1.5;
+          const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
           const file = this.files[0];
           if (file && file.size > MAX_SIZE_BYTES) {
             alert(
@@ -648,8 +559,42 @@
           }
         });
 
-      // Make closePopup available globally
       window.closePopup = closePopup;
+
+      // ================== BAGIAN 4: TITIK MASUK APLIKASI (ENTRY POINT) ==================
+      (async function checkAuth() {
+        const token = sessionStorage.getItem("authToken");
+        const loginPage = "https://frontend-form-virid.vercel.app/login.html"; // Ganti jika URL login beda
+
+        if (!token) {
+          window.location.replace(loginPage);
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `${SCRIPT_URL}?form=login&action=verifyToken&token=${token}`
+          );
+          if (!response.ok)
+            throw new Error("Server tidak merespon dengan baik.");
+
+          const result = await response.json();
+
+          if (result.status !== "success") {
+            sessionStorage.removeItem("authToken");
+            alert(result.message || "Sesi tidak valid, harap login kembali.");
+            window.location.replace(loginPage);
+            return;
+          }
+
+          initializePage(result.data);
+        } catch (error) {
+          console.error("Authentication check failed:", error);
+          sessionStorage.removeItem("authToken");
+          alert("Gagal memverifikasi sesi. Harap login kembali.");
+          window.location.replace(loginPage);
+        }
+      })();
     </script>
   </body>
 </html>
