@@ -289,16 +289,15 @@
         try {
           const result = await performLogin(email, password);
           showSuccess(result.message || "Login berhasil! Mengalihkan...");
-          if (result.data)
-            sessionStorage.setItem("userData", JSON.stringify(result.data));
-          const userCabang = result.data.cabang;
-          const redirectUrl = `https://frontend-form-virid.vercel.app/input_pic_pengawasan.html?cabang=${encodeURIComponent(
-            userCabang
-          )}`;
-          setTimeout(() => (window.location.href = redirectUrl), 1500);
+          if (result.token) {
+            sessionStorage.setItem("authToken", result.token);
+            const redirectUrl = `https://frontend-form-virid.vercel.app/input_pic_pengawasan.html`;
+            setTimeout(() => (window.location.href = redirectUrl), 1500);
+          } else {
+            throw new Error("Token tidak diterima dari server.");
+          }
         } catch (err) {
           showError(err.message);
-        } finally {
           setLoading(false);
         }
       });

@@ -200,6 +200,38 @@
     </style>
   </head>
   <body>
+    <script>
+      (async function checkAuth() {
+        const token = sessionStorage.getItem("authToken");
+        const loginPage = "https://frontend-form-virid.vercel.app/login.html";
+
+        if (!token) {
+          window.location.replace(loginPage);
+          return;
+        }
+
+        try {
+          // Verifikasi token ke server
+          const response = await fetch(
+            `https://backend-form-neon.vercel.app/api/form?form=login&action=verifyToken&token=${token}`
+          );
+          const result = await response.json();
+
+          if (result.status !== "success") {
+            sessionStorage.removeItem("authToken");
+            alert(result.message);
+            window.location.replace(loginPage);
+            return;
+          }
+          sessionStorage.setItem("userData", JSON.stringify(result.data));
+        } catch (error) {
+          console.error("Authentication check failed:", error);
+          sessionStorage.removeItem("authToken");
+          window.location.replace(loginPage);
+        }
+      })();
+    </script>
+
     <header>
       <h1>Form Input PIC Pengawasan</h1>
     </header>
@@ -293,7 +325,6 @@
 
     <script>
       const SCRIPT_URL = "https://backend-form-neon.vercel.app/api/form";
-      const GET_URL = "https://backend-form-neon.vercel.app/api/form";
 
       const form = document.getElementById("pic-form");
       const loading = document.getElementById("loading");
@@ -310,42 +341,33 @@
 
       let currentRabUrl = "";
 
-      window.onload = async function () {
+      async function initializePage() {
+        const userDataString = sessionStorage.getItem("userData");
+        if (!userDataString) {
+          alert("Data sesi tidak ditemukan, harap login kembali.");
+          window.location.replace(
+            "https://frontend-form-virid.vercel.app/login.html"
+          );
+          return;
+        }
+
+        const userData = JSON.parse(userDataString);
+        const loggedInCabang = userData.cabang;
+
         const today = new Date().toISOString().split("T")[0];
         document.getElementById("tanggal_spk").setAttribute("min", today);
         const cabangSelect = document.getElementById("cabang");
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const loggedInCabang = urlParams.get("cabang");
-
-        if (loggedInCabang) {
-          cabangSelect.innerHTML = "";
-          const option = document.createElement("option");
-          option.value = loggedInCabang;
-          option.textContent = loggedInCabang.toUpperCase();
-          option.selected = true;
-          cabangSelect.appendChild(option);
-          cabangSelect.disabled = true;
-
-          cabangSelect.dispatchEvent(new Event("change"));
-        } else {
-          try {
-            const response = await fetch(`${SCRIPT_URL}?form=input-pic`);
-            const result = await response.json();
-            if (result.status === "success" && result.cabangList) {
-              result.cabangList.forEach((cabang) => {
-                const option = document.createElement("option");
-                option.value = cabang;
-                option.textContent = cabang.toUpperCase();
-                cabangSelect.appendChild(option);
-              });
-            }
-          } catch (err) {
-            console.error("Error fetching cabang list:", err);
-            showError("Gagal memuat daftar cabang.");
-          }
-        }
-      };
+        cabangSelect.innerHTML = "";
+        const option = document.createElement("option");
+        option.value = loggedInCabang;
+        option.textContent = loggedInCabang.toUpperCase();
+        option.selected = true;
+        cabangSelect.appendChild(option);
+        cabangSelect.disabled = true;
+        cabangSelect.dispatchEvent(new Event("change"));
+      }
+      document.addEventListener("DOMContentLoaded", initializePage);
 
       // Event listener untuk kode ulok - auto fetch RAB
       kodeUlokInput.addEventListener("change", async function () {
