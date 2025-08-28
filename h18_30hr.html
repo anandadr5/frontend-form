@@ -238,8 +238,8 @@
     </div>
 
     <script>
-      const SCRIPT_URL = "https://backend-form-neon.vercel.app/api/form";
-      const GET_URL = "https://backend-form-neon.vercel.app/api/form";
+      const SCRIPT_URL = "https://backend-form-chi.vercel.app/api/form";
+      const GET_URL = "https://backend-form-chi.vercel.app/api/form";
 
       const form = document.getElementById("laporan-form");
       const submitButton = form.querySelector("button[type='submit']");
@@ -248,7 +248,7 @@
       async function loadKodeUlok() {
         const email = getParameterByName("email");
         const res = await fetch(
-          `https://backend-form-neon.vercel.app/api/form?form=h18&email=${encodeURIComponent(
+          `https://backend-form-chi.vercel.app/api/form?form=h18&email=${encodeURIComponent(
             email
           )}`
         );
