@@ -87,28 +87,22 @@
         opacity: 0.6;
       }
 
-      /* Logout Button Styling */
       .logout-container {
-        text-align: center;
-        margin: 20px 0;
+        margin-top: 25px;
+        text-align: left;
       }
 
-      .logout-btn {
-        background-color: #666666 !important;
-        color: white;
-        padding: 12px 30px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: bold;
-        transition: background-color 0.3s;
+      .logout-container a {
+        color: #6b7280;
         text-decoration: none;
-        display: inline-block;
+        font-weight: bold;
+        font-size: 15px;
+        transition: color 0.3s ease;
       }
 
-      .logout-btn:hover {
-        background-color: #555555 !important;
+      .logout-container a:hover {
+        color: #ce1e10;
+        text-decoration: underline;
       }
 
       /* Status Styling */
@@ -329,7 +323,7 @@
       </form>
 
       <div class="logout-container">
-        <button type="button" class="logout-btn" id="logout-btn">Logout</button>
+        <a href="#" id="logout-link">&larr; Logout</a>
       </div>
     </div>
 
@@ -353,7 +347,7 @@
       const cabangInput = document.getElementById("cabang");
       const picSelect = document.getElementById("pic_building_support");
       const kodeUlokInput = document.getElementById("kode_ulok");
-      const logoutBtn = document.getElementById("logout-btn");
+      const logoutLink = document.getElementById("logout-link");
 
       // ========== Deklarasi variabel baru untuk SPK & RAB ==========
       const rabUrlInput = document.getElementById("rab_url");
@@ -429,12 +423,6 @@
         lingkupPekerjaanInput.innerHTML =
           '<option value="">-- Pilih Lingkup Pekerjaan --</option>';
         lingkupStatus.style.display = "none";
-      }
-
-      function handleLogout() {
-        sessionStorage.removeItem("authToken");
-
-        window.location.href = "https://alfamart-one.vercel.app/";
       }
 
       async function fetchLingkupPekerjaan(kodeUlok) {
@@ -739,6 +727,15 @@
           loading.classList.remove("show");
           submitBtn.disabled = false;
         }
+      });
+
+      logoutLink.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        sessionStorage.removeItem("authToken");
+
+        window.location.href =
+          "https://frontend-form-virid.vercel.app/login.html";
       });
 
       window.closePopup = closePopup;
