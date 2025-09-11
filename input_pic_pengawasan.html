@@ -250,6 +250,12 @@
           required
         />
 
+        <label for="lingkup_pekerjaan">Lingkup Pekerjaan:</label>
+        <select id="lingkup_pekerjaan" name="lingkup_pekerjaan" required>
+          <option value="">-- Pilih Lingkup Pekerjaan --</option>
+        </select>
+        <div class="status-indicator" id="lingkup-status"></div>
+
         <label for="tanggal_spk">Tanggal Mulai SPK:</label>
         <input
           type="date"
@@ -327,6 +333,9 @@
       const spkStatus = document.getElementById("spk-status");
       const kategoriLokasiInput = document.getElementById("kategori_lokasi");
       const tanggalSpkInput = document.getElementById("tanggal_spk");
+      const lingkupPekerjaanInput =
+        document.getElementById("lingkup_pekerjaan");
+      const lingkupStatus = document.getElementById("lingkup-status");
       let currentRabUrl = "";
       let currentSpkUrl = "";
 
@@ -388,22 +397,74 @@
         spkStatus.style.display = "none";
         kategoriLokasiInput.value = "";
         tanggalSpkInput.value = "";
+        lingkupPekerjaanInput.innerHTML =
+          '<option value="">-- Pilih Lingkup Pekerjaan --</option>';
+        lingkupStatus.style.display = "none";
       }
 
-      async function fetchSpkUrl(kodeUlok) {
+      async function fetchLingkupPekerjaan(kodeUlok) {
         try {
           showStatus(
-            spkStatus,
-            `Mencari SPK untuk kode ulok ${kodeUlok}...`,
+            lingkupStatus,
+            `Mencari lingkup pekerjaan untuk kode ulok ${kodeUlok}...`,
             "loading"
           );
           const response = await fetch(
-            `${SCRIPT_URL}?form=input-pic&getSpkUrl=true&kode_ulok=${encodeURIComponent(
+            `${SCRIPT_URL}?form=input-pic&getLingkupPekerjaan=true&kode_ulok=${encodeURIComponent(
               kodeUlok
             )}`
           );
           const result = await response.json();
 
+          lingkupPekerjaanInput.innerHTML =
+            '<option value="">-- Pilih Lingkup Pekerjaan --</option>';
+
+          if (result.status === "success" && result.lingkupList.length > 0) {
+            result.lingkupList.forEach((lingkup) => {
+              const option = document.createElement("option");
+              option.value = lingkup;
+              option.textContent = lingkup;
+              lingkupPekerjaanInput.appendChild(option);
+            });
+            showStatus(
+              lingkupStatus,
+              "✅ Lingkup pekerjaan berhasil dimuat",
+              "success"
+            );
+          } else {
+            const opt = document.createElement("option");
+            opt.textContent = "Lingkup pekerjaan tidak ditemukan";
+            opt.disabled = true;
+            lingkupPekerjaanInput.appendChild(opt);
+            showStatus(
+              lingkupStatus,
+              "❌ Lingkup pekerjaan tidak ditemukan untuk kode ulok ini",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error fetching lingkup pekerjaan:", error);
+          showStatus(
+            lingkupStatus,
+            "❌ Gagal mengambil data lingkup pekerjaan",
+            "error"
+          );
+        }
+      }
+
+      async function fetchSpkUrl(kodeUlok, lingkupPekerjaan) {
+        try {
+          showStatus(
+            spkStatus,
+            `Mencari SPK untuk kode ulok ${kodeUlok} - ${lingkupPekerjaan}...`,
+            "loading"
+          );
+          const response = await fetch(
+            `${SCRIPT_URL}?form=input-pic&getSpkUrl=true&kode_ulok=${encodeURIComponent(
+              kodeUlok
+            )}&lingkup_pekerjaan=${encodeURIComponent(lingkupPekerjaan)}`
+          );
+          const result = await response.json();
           if (result.status === "success" && result.spkUrl) {
             currentSpkUrl = result.spkUrl;
             spkUrlInput.value = result.spkUrl;
@@ -417,7 +478,7 @@
             spkUrlInput.value = "";
             showStatus(
               spkStatus,
-              "❌ SPK tidak ditemukan untuk kode ulok ini",
+              "❌ SPK tidak ditemukan untuk kode ulok dan lingkup pekerjaan ini",
               "error"
             );
           }
@@ -429,20 +490,19 @@
         }
       }
 
-      async function fetchRabUrl(kodeUlok) {
+      async function fetchRabUrl(kodeUlok, lingkupPekerjaan) {
         try {
           showStatus(
             rabStatus,
-            `Mencari RAB untuk kode ulok ${kodeUlok}...`,
+            `Mencari RAB untuk kode ulok ${kodeUlok} - ${lingkupPekerjaan}...`,
             "loading"
           );
           const response = await fetch(
             `${SCRIPT_URL}?form=input-pic&getRabUrl=true&kode_ulok=${encodeURIComponent(
               kodeUlok
-            )}`
+            )}&lingkup_pekerjaan=${encodeURIComponent(lingkupPekerjaan)}`
           );
           const result = await response.json();
-
           if (result.status === "success" && result.rabUrl) {
             currentRabUrl = result.rabUrl;
             rabUrlInput.value = result.rabUrl;
@@ -456,7 +516,7 @@
             rabUrlInput.value = "";
             showStatus(
               rabStatus,
-              "❌ RAB tidak ditemukan untuk kode ulok ini",
+              "❌ RAB tidak ditemukan untuk kode ulok dan lingkup pekerjaan ini",
               "error"
             );
           }
@@ -558,37 +618,50 @@
       kodeUlokInput.addEventListener("change", async function () {
         const kodeUlok = kodeUlokInput.value.trim();
         if (kodeUlok) {
-          await fetchSpkUrl(kodeUlok);
-          await fetchRabUrl(kodeUlok);
           await fetchSpkDetails(kodeUlok);
+          await fetchLingkupPekerjaan(kodeUlok);
         } else {
           clearUrlFields();
         }
       });
 
+      lingkupPekerjaanInput.addEventListener("change", async function () {
+        const kodeUlok = kodeUlokInput.value.trim();
+        const lingkupPekerjaan = lingkupPekerjaanInput.value.trim();
+
+        if (kodeUlok && lingkupPekerjaan) {
+          await fetchSpkUrl(kodeUlok, lingkupPekerjaan);
+          await fetchRabUrl(kodeUlok, lingkupPekerjaan);
+        } else {
+          currentSpkUrl = "";
+          spkUrlInput.value = "";
+          spkStatus.style.display = "none";
+          currentRabUrl = "";
+          rabUrlInput.value = "";
+          rabStatus.style.display = "none";
+        }
+      });
+
       form.addEventListener("submit", async function (e) {
         e.preventDefault();
-
         // ========== Validasi untuk SPK dan RAB ==========
         if (!currentSpkUrl) {
           const msg =
-            "SPK tidak ditemukan. Pastikan kode ulok sudah benar dan SPK sudah terdata.";
+            "SPK tidak ditemukan. Pastikan kode ulok dan lingkup pekerjaan sudah benar dan SPK sudah terdata.";
           showError(msg);
           showPopup(msg);
           return;
         }
         if (!currentRabUrl) {
           const msg =
-            "RAB tidak ditemukan. Pastikan kode ulok sudah benar dan RAB sudah terdata.";
+            "RAB tidak ditemukan. Pastikan kode ulok dan lingkup pekerjaan sudah benar dan RAB sudah terdata.";
           showError(msg);
           showPopup(msg);
           return;
         }
-
         loading.classList.add("show");
         submitBtn.disabled = true;
         hideMessages();
-
         try {
           const picData = JSON.parse(form.pic_building_support.value);
           const jsonData = {
@@ -596,19 +669,18 @@
             cabang: form.cabang.value,
             kode_ulok: form.kode_ulok.value,
             kategori_lokasi: form.kategori_lokasi.value,
+            lingkup_pekerjaan: form.lingkup_pekerjaan.value,
             tanggal_spk: form.tanggal_spk.value,
             pic_building_support: picData.email,
             pic_nama: picData.nama,
             spk_url: currentSpkUrl,
             rab_url: currentRabUrl,
           };
-
           const response = await fetch(SCRIPT_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(jsonData),
           });
-
           const result = await response.json();
           if (result.status === "success") {
             const pesan = `Form berhasil dikirim!`;
@@ -635,32 +707,26 @@
       });
 
       window.closePopup = closePopup;
-
       (async function checkAuth() {
         const token = sessionStorage.getItem("authToken");
         const loginPage = "https://frontend-form-virid.vercel.app/login.html";
-
         if (!token) {
           window.location.replace(loginPage);
           return;
         }
-
         try {
           const response = await fetch(
             `${SCRIPT_URL}?form=login&action=verifyToken&token=${token}`
           );
           if (!response.ok)
             throw new Error("Server tidak merespon dengan baik.");
-
           const result = await response.json();
-
           if (result.status !== "success") {
             sessionStorage.removeItem("authToken");
             alert(result.message || "Sesi tidak valid, harap login kembali.");
             window.location.replace(loginPage);
             return;
           }
-
           initializePage(result.data);
         } catch (error) {
           console.error("Authentication check failed:", error);
