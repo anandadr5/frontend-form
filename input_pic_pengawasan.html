@@ -528,13 +528,17 @@
         }
       }
 
-      async function fetchSpkDetails(kodeUlok) {
+      async function fetchSpkDetails(kodeUlok, lingkupPekerjaan = null) {
         try {
-          const response = await fetch(
-            `${SCRIPT_URL}?form=input-pic&getSpkDetails=true&kode_ulok=${encodeURIComponent(
-              kodeUlok
-            )}`
-          );
+          let url = `${SCRIPT_URL}?form=input-pic&getSpkDetails=true&kode_ulok=${encodeURIComponent(
+            kodeUlok
+          )}`;
+
+          if (lingkupPekerjaan) {
+            url += `&lingkup_pekerjaan=${encodeURIComponent(lingkupPekerjaan)}`;
+          }
+
+          const response = await fetch(url);
           const result = await response.json();
 
           if (result.status === "success") {
@@ -630,6 +634,7 @@
         const lingkupPekerjaan = lingkupPekerjaanInput.value.trim();
 
         if (kodeUlok && lingkupPekerjaan) {
+          await fetchSpkDetails(kodeUlok, lingkupPekerjaan);
           await fetchSpkUrl(kodeUlok, lingkupPekerjaan);
           await fetchRabUrl(kodeUlok, lingkupPekerjaan);
         } else {
@@ -639,6 +644,9 @@
           currentRabUrl = "";
           rabUrlInput.value = "";
           rabStatus.style.display = "none";
+          if (kodeUlok && !lingkupPekerjaan) {
+            await fetchSpkDetails(kodeUlok);
+          }
         }
       });
 
