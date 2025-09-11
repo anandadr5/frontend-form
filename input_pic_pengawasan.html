@@ -87,6 +87,30 @@
         opacity: 0.6;
       }
 
+      /* Logout Button Styling */
+      .logout-container {
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      .logout-btn {
+        background-color: #666666 !important;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .logout-btn:hover {
+        background-color: #555555 !important;
+      }
+
       /* Status Styling */
       .status-indicator {
         font-size: 12px;
@@ -303,6 +327,10 @@
           <button type="submit" id="submit-btn">Simpan</button>
         </div>
       </form>
+
+      <div class="logout-container">
+        <button type="button" class="logout-btn" id="logout-btn">Logout</button>
+      </div>
     </div>
 
     <div class="popup" id="popup">
@@ -325,6 +353,7 @@
       const cabangInput = document.getElementById("cabang");
       const picSelect = document.getElementById("pic_building_support");
       const kodeUlokInput = document.getElementById("kode_ulok");
+      const logoutBtn = document.getElementById("logout-btn");
 
       // ========== Deklarasi variabel baru untuk SPK & RAB ==========
       const rabUrlInput = document.getElementById("rab_url");
@@ -400,6 +429,12 @@
         lingkupPekerjaanInput.innerHTML =
           '<option value="">-- Pilih Lingkup Pekerjaan --</option>';
         lingkupStatus.style.display = "none";
+      }
+
+      function handleLogout() {
+        sessionStorage.removeItem("authToken");
+
+        window.location.href = "https://alfamart-one.vercel.app/";
       }
 
       async function fetchLingkupPekerjaan(kodeUlok) {
