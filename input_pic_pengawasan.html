@@ -240,29 +240,23 @@
         </select>
 
         <label for="kategori_lokasi">Kategori Lokasi:</label>
-        <select name="kategori_lokasi" id="kategori_lokasi" required>
-          <option value="">-- Pilih Kategori Lokasi --</option>
-          <option value="non_ruko_non_urugan_30hr">
-            Non Ruko Non Urugan 30 HR
-          </option>
-          <option value="non_ruko_non_urugan_35hr">
-            Non Ruko Non Urugan 35 HR
-          </option>
-          <option value="non_ruko_non_urugan_40hr">
-            Non Ruko Non Urugan 40 HR
-          </option>
-          <option value="non_ruko_urugan_48hr">Non Ruko Urugan 48 HR</option>
-          <option value="ruko_10hr">Ruko 10 HR</option>
-          <option value="ruko_14hr">Ruko 14 HR</option>
-          <option value="ruko_20hr">Ruko 20 HR</option>
-        </select>
+        <input
+          type="text"
+          id="kategori_lokasi"
+          name="kategori_lokasi"
+          placeholder="Akan terisi otomatis berdasarkan kode ulok..."
+          readonly
+          class="input-readonly"
+          required
+        />
 
         <label for="tanggal_spk">Tanggal Mulai SPK:</label>
         <input
           type="date"
           id="tanggal_spk"
           name="tanggal_spk"
-          min=""
+          readonly
+          class="input-readonly"
           required
         />
 
@@ -331,6 +325,8 @@
       const rabStatus = document.getElementById("rab-status");
       const spkUrlInput = document.getElementById("spk_url");
       const spkStatus = document.getElementById("spk-status");
+      const kategoriLokasiInput = document.getElementById("kategori_lokasi");
+      const tanggalSpkInput = document.getElementById("tanggal_spk");
       let currentRabUrl = "";
       let currentSpkUrl = "";
 
@@ -339,7 +335,6 @@
       function initializePage(userData) {
         const loggedInCabang = userData.cabang;
         const today = new Date().toISOString().split("T")[0];
-        document.getElementById("tanggal_spk").setAttribute("min", today);
 
         const cabangSelect = document.getElementById("cabang");
         cabangSelect.innerHTML = "";
@@ -391,6 +386,8 @@
         currentSpkUrl = "";
         spkUrlInput.value = "";
         spkStatus.style.display = "none";
+        kategoriLokasiInput.value = "";
+        tanggalSpkInput.value = "";
       }
 
       async function fetchSpkUrl(kodeUlok) {
@@ -468,6 +465,28 @@
           currentRabUrl = "";
           rabUrlInput.value = "";
           showStatus(rabStatus, "❌ Gagal mengambil data RAB", "error");
+        }
+      }
+
+      async function fetchSpkDetails(kodeUlok) {
+        try {
+          const response = await fetch(
+            `${SCRIPT_URL}?form=input-pic&getSpkDetails=true&kode_ulok=${encodeURIComponent(
+              kodeUlok
+            )}`
+          );
+          const result = await response.json();
+
+          if (result.status === "success") {
+            if (result.durasi) {
+              kategoriLokasiInput.value = result.durasi;
+            }
+            if (result.waktuMulai) {
+              tanggalSpkInput.value = result.waktuMulai;
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching SPK details:", error);
         }
       }
 
@@ -570,7 +589,6 @@
         hideMessages();
 
         try {
-          // ========== Hapus logika file upload, gunakan URL ==========
           const picData = JSON.parse(form.pic_building_support.value);
           const jsonData = {
             form: "input-pic",
@@ -580,8 +598,8 @@
             tanggal_spk: form.tanggal_spk.value,
             pic_building_support: picData.email,
             pic_nama: picData.nama,
-            spk_url: currentSpkUrl, // Kirim URL SPK
-            rab_url: currentRabUrl, // Kirim URL RAB
+            spk_url: currentSpkUrl,
+            rab_url: currentRabUrl,
           };
 
           const response = await fetch(SCRIPT_URL, {
