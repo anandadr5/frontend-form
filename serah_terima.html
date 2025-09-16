@@ -260,6 +260,8 @@
     </div>
 
     <script>
+      let ulokDataStore = [];
+
       const pekerjaanData = [
         {
           judul: "I. BAHU JALAN",
@@ -666,34 +668,84 @@
 
       async function loadKodeUlok() {
         const email = getParameterByName("email");
+        if (!email) {
+          showPopup("Email tidak ditemukan di URL");
+          return;
+        }
+
         try {
           const res = await fetch(
             `${GET_URL}?form=serah_terima&email=${encodeURIComponent(email)}`
           );
           const result = await res.json();
 
+          if (result.status === "error") {
+            throw new Error(result.message);
+          }
+
           const select = document.getElementById("kode_ulok");
-          const cabangInput = document.getElementById("cabang");
+          select.innerHTML = '<option value="">-- Pilih Kode Ulok --</option>';
 
           if (result.data && Array.isArray(result.data)) {
-            result.data.forEach((kode) => {
+            ulokDataStore = result.data;
+
+            result.data.forEach((item) => {
               const opt = document.createElement("option");
-              opt.value = kode;
-              opt.textContent = kode;
+              opt.value = item.kode;
+              opt.textContent = item.kode;
               select.appendChild(opt);
             });
 
-            // Isi otomatis cabang
-            if (result.cabang) {
-              cabangInput.value = result.cabang;
-            }
+            handleUlokChange();
           } else {
-            console.error("Data kode ulok tidak ditemukan:", result);
+            console.error("Data kode ulok tidak valid:", result);
             showPopup("Gagal memuat data kode ulok.");
           }
         } catch (err) {
-          console.error("Gagal memuat kode ulok:", err);
-          showPopup("Terjadi kesalahan saat mengambil data ulok.");
+          console.error("Gagal memuat mode ulok:", err);
+          showPopup("Terjadi kesalahan: " + err.message);
+        }
+      }
+
+      function handleUlokChange() {
+        const selectedKode = document.getElementById("kode_ulok").value;
+        const lokasiInput = document.getElementById("lokasi");
+        const cabangInput = document.getElementById("cabang");
+        const pekerjaanSelect = document.getElementById("pekerjaan");
+
+        if (!selectedKode) {
+          lokasiInput.value = "";
+          cabangInput.value = "";
+          pekerjaanSelect.innerHTML =
+            '<option value="">-- Pilih Pekerjaan --</option>';
+          return;
+        }
+
+        const selectedData = ulokDataStore.find(
+          (item) => item.kode === selectedKode
+        );
+
+        if (selectedData) {
+          lokasiInput.value = selectedData.alamat || "";
+          cabangInput.value = selectedData.cabang || "";
+
+          pekerjaanSelect.innerHTML =
+            '<option value="">-- Pilih Pekerjaan --</option>';
+          const lingkup = (selectedData.lingkup || "").toLowerCase();
+
+          if (lingkup.includes("sipil")) {
+            const optSipil = document.createElement("option");
+            optSipil.value = "sipil";
+            optSipil.textContent = "Sipil";
+            pekerjaanSelect.appendChild(optSipil);
+          }
+
+          if (lingkup.includes("me")) {
+            const optME = document.createElement("option");
+            optME.value = "me";
+            optME.textContent = "ME";
+            pekerjaanSelect.appendChild(optME);
+          }
         }
       }
 
@@ -807,6 +859,10 @@
       function getParameterByName(name) {
         return new URLSearchParams(window.location.search).get(name) || "";
       }
+
+      document
+        .getElementById("kode_ulok")
+        .addEventListener("change", handleUlokChange);
 
       window.addEventListener("DOMContentLoaded", loadKodeUlok);
     </script>
