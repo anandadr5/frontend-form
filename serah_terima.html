@@ -224,13 +224,6 @@
         <label for="cabang">Cabang:</label>
         <input type="text" id="cabang" name="cabang" readonly required />
 
-        <label for="pekerjaan">Pekerjaan:</label>
-        <select name="pekerjaan" id="pekerjaan" required>
-          <option value="">-- Pilih Pekerjaan --</option>
-          <option value="sipil">Sipil</option>
-          <option value="me">ME</option>
-        </select>
-
         <div id="pekerjaan-sections"></div>
 
         <div class="input-grid" id="status-container">
@@ -712,41 +705,10 @@
         const selectedKode = document.getElementById("kode_ulok").value;
         const lokasiInput = document.getElementById("lokasi");
         const cabangInput = document.getElementById("cabang");
-        const pekerjaanSelect = document.getElementById("pekerjaan");
 
         if (!selectedKode) {
           lokasiInput.value = "";
           cabangInput.value = "";
-          pekerjaanSelect.innerHTML =
-            '<option value="">-- Pilih Pekerjaan --</option>';
-          return;
-        }
-
-        const selectedData = ulokDataStore.find(
-          (item) => item.kode === selectedKode
-        );
-
-        if (selectedData) {
-          lokasiInput.value = selectedData.alamat || "";
-          cabangInput.value = selectedData.cabang || "";
-
-          pekerjaanSelect.innerHTML =
-            '<option value="">-- Pilih Pekerjaan --</option>';
-          const lingkup = (selectedData.lingkup || "").toLowerCase();
-
-          if (lingkup.includes("sipil")) {
-            const optSipil = document.createElement("option");
-            optSipil.value = "sipil";
-            optSipil.textContent = "Sipil";
-            pekerjaanSelect.appendChild(optSipil);
-          }
-
-          if (lingkup.includes("me")) {
-            const optME = document.createElement("option");
-            optME.value = "me";
-            optME.textContent = "ME";
-            pekerjaanSelect.appendChild(optME);
-          }
         }
       }
 
