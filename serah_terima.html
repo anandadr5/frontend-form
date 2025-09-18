@@ -709,6 +709,18 @@
         if (!selectedKode) {
           lokasiInput.value = "";
           cabangInput.value = "";
+          return;
+        }
+
+        const selectedData = ulokDataStore.find(
+          (item) => item.kode === selectedKode
+        );
+
+        if (selectedData) {
+          lokasiInput.value = selectedData.alamat || "";
+          cabangInput.value = selectedData.cabang || "";
+
+          const lingkup = (selectedData.lingkup || "").toLowerCase();
         }
       }
 
