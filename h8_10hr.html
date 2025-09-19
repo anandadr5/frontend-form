@@ -205,8 +205,34 @@
           required
         ></textarea>
 
+        <label for="pengawasan">III. PENGAWASAN ME:</label>
+        <input
+          type="file"
+          id="pengawasan"
+          name="pengawasan"
+          accept="image/*"
+          required
+        />
+        <small class="file-info">Maksimal ukuran file: 700 KB</small>
+
+        <label for="status_progress3">Status Progress:</label>
+        <select name="status_progress" id="status_progress3" required>
+          <option value="">-- Pilih Status Progress --</option>
+          <option value="tepat_waktu">Tepat Waktu</option>
+          <option value="terlambat">Terlambat</option>
+        </select>
+
+        <label for="catatan3">Catatan:</label>
+        <textarea
+          name="catatan"
+          id="catatan3"
+          rows="4"
+          placeholder="Masukkan Catatan"
+          required
+        ></textarea>
+
         <label for="berkas_pengawasan"
-          >III. BERKAS PENGAWASAN (MEMO PENGAWASAN/INSTRUKSI LAPANGAN/OPNAME
+          >IV. BERKAS PENGAWASAN (MEMO PENGAWASAN/INSTRUKSI LAPANGAN/OPNAME
           PEKERJAAN)</label
         >
         <input
@@ -281,7 +307,8 @@
         try {
           const base64_1 = await convertToBase64(formData.get("pek_kusen"));
           const base64_2 = await convertToBase64(formData.get("pek_area"));
-          const base64_3 = await convertToBase64(
+          const base64_3 = await convertToBase64(formData.get("pengawasan"));
+          const base64_4 = await convertToBase64(
             formData.get("berkas_pengawasan")
           );
 
@@ -300,9 +327,12 @@
             catatan1: catatan[0],
             status_progress2: statusProgress[1],
             catatan2: catatan[1],
+            status_progress3: statusProgress[2],
+            catatan3: catatan[2],
             image1: base64_1,
             image2: base64_2,
             image3: base64_3,
+            image4: base64_4,
           };
 
           const response = await fetch(SCRIPT_URL, {
@@ -345,6 +375,7 @@
       // Terapkan validasi ke masing-masing input file
       validateFileSize("pek_kusen", "PEK. KUSEN, PINTU, KACA, AKSESORIS TOKO");
       validateFileSize("pek_area", "PEK. AREA TERBUKA");
+      validateFileSize("pengawasan", "PENGAWASAN ME");
       validateFileSize("berkas_pengawasan", "BERKAS PENGAWASAN");
 
       function showPopup(msg) {
