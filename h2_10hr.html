@@ -308,7 +308,6 @@
         const previewId = `preview-${inputId}`;
 
         input.addEventListener("change", function () {
-          // Hapus pratinjau gambar sebelumnya jika ada
           const oldPreview = document.getElementById(previewId);
           if (oldPreview) {
             oldPreview.remove();
@@ -325,25 +324,24 @@
               return;
             }
 
-            // Buat elemen pratinjau gambar
             const reader = new FileReader();
             reader.onload = function (e) {
               const previewImage = document.createElement("img");
               previewImage.id = previewId;
               previewImage.src = e.target.result;
-              // Tambahkan style agar tampilan rapi
+
               previewImage.style.maxWidth = "250px";
               previewImage.style.maxHeight = "250px";
               previewImage.style.marginTop = "10px";
               previewImage.style.borderRadius = "5px";
-              // Sisipkan gambar setelah elemen input
-              input.insertAdjacentElement("afterend", previewImage);
+
+              const fileInfo = input.nextElementSibling;
+              fileInfo.insertAdjacentElement("afterend", previewImage);
             };
             reader.readAsDataURL(file);
           }
         });
-      } // Terapkan fungsi baru ke masing-masing input file
-
+      }
       setupFileInput("pek_persiapan", "PEK. PERSIAPAN & BONGKARAN");
       setupFileInput("berkas_pengawasan", "BERKAS PENGAWASAN");
 
