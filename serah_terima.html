@@ -652,6 +652,60 @@
         }
       }
 
+      function saveElementState(event) {
+        const element = event.target;
+        if (element.name && element.type !== "file") {
+          sessionStorage.setItem(element.name, element.value);
+        }
+      }
+
+      /**
+       * Loads form state from sessionStorage and populates the form fields.
+       */
+      function loadFormState() {
+        const form = document.getElementById("laporan-form");
+        let ulokWasLoaded = false;
+
+        // Iterate over all form elements to load their saved values
+        form.querySelectorAll("input, select").forEach((element) => {
+          if (element.name && element.type !== "file") {
+            const savedValue = sessionStorage.getItem(element.name);
+            if (savedValue !== null) {
+              element.value = savedValue;
+              if (element.id === "kode_ulok") {
+                ulokWasLoaded = true;
+              }
+            }
+          }
+        });
+
+        // If the 'kode_ulok' was loaded from storage, trigger its change handler
+        if (ulokWasLoaded) {
+          handleUlokChange();
+        }
+
+        // After loading values, update the entire UI state
+        document.querySelectorAll(".kelompok").forEach((section) => {
+          section.querySelectorAll(".pekerjaan-item").forEach((itemDiv) => {
+            updateItemState(itemDiv);
+          });
+          updateSectionColor(section);
+        });
+        checkFinalStatus();
+      }
+
+      /**
+       * Clears all saved form state from sessionStorage.
+       */
+      function clearFormState() {
+        sessionStorage.clear();
+      }
+
+      // Add a single event listener to the form to save state on any change
+      document
+        .getElementById("laporan-form")
+        .addEventListener("change", saveElementState);
+
       const SCRIPT_URL =
         "https://backend-form-y8wo.onrender.com/api/form?form=serah_terima";
       const GET_URL = "https://backend-form-y8wo.onrender.com/api/form";
