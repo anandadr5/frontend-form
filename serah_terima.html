@@ -655,21 +655,21 @@
       function saveElementState(event) {
         const element = event.target;
         if (element.name && element.type !== "file") {
-          sessionStorage.setItem(element.name, element.value);
+          localStorage.setItem(element.name, element.value);
         }
       }
 
       /**
-       * Loads form state from sessionStorage and populates the form fields.
+       * Memuat data dari localStorage dan mengisikannya ke formulir.
        */
       function loadFormState() {
         const form = document.getElementById("laporan-form");
         let ulokWasLoaded = false;
 
-        // Iterate over all form elements to load their saved values
+        // Iterasi semua elemen form untuk memuat nilainya yang tersimpan
         form.querySelectorAll("input, select").forEach((element) => {
           if (element.name && element.type !== "file") {
-            const savedValue = sessionStorage.getItem(element.name);
+            const savedValue = localStorage.getItem(element.name);
             if (savedValue !== null) {
               element.value = savedValue;
               if (element.id === "kode_ulok") {
@@ -679,12 +679,12 @@
           }
         });
 
-        // If the 'kode_ulok' was loaded from storage, trigger its change handler
+        // Jika 'kode_ulok' dimuat dari storage, panggil handler-nya
         if (ulokWasLoaded) {
           handleUlokChange();
         }
 
-        // After loading values, update the entire UI state
+        // Setelah memuat nilai, perbarui seluruh status UI
         document.querySelectorAll(".kelompok").forEach((section) => {
           section.querySelectorAll(".pekerjaan-item").forEach((itemDiv) => {
             updateItemState(itemDiv);
@@ -695,13 +695,13 @@
       }
 
       /**
-       * Clears all saved form state from sessionStorage.
+       * Menghapus semua data formulir yang tersimpan di localStorage.
        */
       function clearFormState() {
-        sessionStorage.clear();
+        localStorage.clear();
       }
 
-      // Add a single event listener to the form to save state on any change
+      // Menambahkan satu event listener ke formulir untuk menyimpan data setiap ada perubahan
       document
         .getElementById("laporan-form")
         .addEventListener("change", saveElementState);
