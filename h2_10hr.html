@@ -136,6 +136,11 @@
           <option value="">-- Pilih Kode Ulok --</option>
         </select>
 
+        <label for="lingkup_pekerjaan">Lingkup Pekerjaan:</label>
+        <select id="lingkup_pekerjaan" name="lingkup_pekerjaan" required>
+          <option value="">-- Pilih Kode Ulok terlebih dahulu --</option>
+        </select>
+
         <label for="status_lokasi">Status Lokasi:</label>
         <input
           type="text"
@@ -219,22 +224,63 @@
       const submitButton = form.querySelector("button[type='submit']");
       const messageDiv = document.getElementById("popup");
 
+      let ulokData = {};
+      const kodeUlokSelect = document.getElementById("kode_ulok");
+      const lingkupPekerjaanSelect =
+        document.getElementById("lingkup_pekerjaan");
+
       async function loadKodeUlok() {
         const email = getParameterByName("email");
-        const res = await fetch(
-          `https://backend-form-y8wo.onrender.com/api/form?form=h2&email=${encodeURIComponent(
-            email
-          )}`
-        );
-        const result = await res.json();
-        const select = document.getElementById("kode_ulok");
-        result.data.forEach((kode) => {
-          const opt = document.createElement("option");
-          opt.value = kode;
-          opt.textContent = kode;
-          select.appendChild(opt);
-        });
+        if (!email) return;
+
+        try {
+          const res = await fetch(
+            `https://backend-form-y8wo.onrender.com/api/form?form=h2&email=${encodeURIComponent(
+              email
+            )}`
+          );
+          const result = await res.json();
+          ulokData = result.data; // Simpan data { "kode": ["lingkup1",...], ... }
+
+          // Kosongkan pilihan lama
+          kodeUlokSelect.innerHTML =
+            '<option value="">-- Pilih Kode Ulok --</option>';
+
+          // Isi dropdown Kode Ulok dengan data unik
+          Object.keys(ulokData).forEach((kode) => {
+            const opt = document.createElement("option");
+            opt.value = kode;
+            opt.textContent = kode;
+            kodeUlokSelect.appendChild(opt);
+          });
+        } catch (error) {
+          console.error("Gagal memuat data Kode Ulok:", error);
+          alert("Gagal memuat data dari server.");
+        }
       }
+
+      // Event listener untuk mengubah dropdown Lingkup Pekerjaan saat Kode Ulok dipilih
+      kodeUlokSelect.addEventListener("change", function () {
+        const selectedKode = this.value;
+
+        // Kosongkan dropdown lingkup pekerjaan
+        lingkupPekerjaanSelect.innerHTML = "";
+
+        if (selectedKode && ulokData[selectedKode]) {
+          lingkupPekerjaanSelect.innerHTML =
+            '<option value="">-- Pilih Lingkup Pekerjaan --</option>';
+          // Isi dengan lingkup pekerjaan yang sesuai
+          ulokData[selectedKode].forEach((lingkup) => {
+            const opt = document.createElement("option");
+            opt.value = lingkup;
+            opt.textContent = lingkup;
+            lingkupPekerjaanSelect.appendChild(opt);
+          });
+        } else {
+          lingkupPekerjaanSelect.innerHTML =
+            '<option value="">-- Pilih Kode Ulok terlebih dahulu --</option>';
+        }
+      });
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -262,6 +308,7 @@
           const payload = {
             form: "h2",
             kode_ulok: formData.get("kode_ulok"),
+            lingkup_pekerjaan: formData.get("lingkup_pekerjaan"),
             status_lokasi: formData.get("status_lokasi"),
             kategori_lokasi: formData.get("status_lokasi"),
             cabang: getParameterByName("cabang"),
@@ -285,10 +332,12 @@
           const result = await response.json();
           if (result.status === "success") {
             showPopup("Data berhasil dikirim!");
-            // Hapus pratinjau setelah berhasil submit
             document.getElementById("preview-pek_persiapan")?.remove();
             document.getElementById("preview-berkas_pengawasan")?.remove();
             form.reset();
+            // Reset dropdown lingkup pekerjaan juga
+            lingkupPekerjaanSelect.innerHTML =
+              '<option value="">-- Pilih Kode Ulok terlebih dahulu --</option>';
           } else {
             showPopup("Gagal kirim: " + result.message);
           }
