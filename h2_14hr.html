@@ -285,6 +285,8 @@
           const result = await response.json();
           if (result.status === "success") {
             showPopup("Data berhasil dikirim!");
+            document.getElementById("preview-pek_persiapan")?.remove();
+            document.getElementById("preview-berkas_pengawasan")?.remove();
             form.reset();
           } else {
             showPopup("Gagal kirim: " + result.message);
@@ -300,22 +302,47 @@
       // Validasi ukuran file maksimal 700 KB (716800 bytes)
       const MAX_SIZE_BYTES = 700 * 1024;
 
-      function validateFileSize(inputId, label) {
+      function setupFileInput(inputId, label) {
         const input = document.getElementById(inputId);
+        const previewId = `preview-${inputId}`;
+
         input.addEventListener("change", function () {
+          const oldPreview = document.getElementById(previewId);
+          if (oldPreview) {
+            oldPreview.remove();
+          }
+
           const file = this.files[0];
-          if (file && file.size > MAX_SIZE_BYTES) {
-            alert(
-              `Ukuran file "${label}" melebihi 700 KB. Silakan kompres terlebih dahulu.`
-            );
-            this.value = ""; // Reset input
+          if (file) {
+            // Validasi ukuran file
+            if (file.size > MAX_SIZE_BYTES) {
+              alert(
+                `Ukuran file "${label}" melebihi 700 KB. Silakan kompres terlebih dahulu.`
+              );
+              this.value = ""; // Reset input
+              return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              const previewImage = document.createElement("img");
+              previewImage.id = previewId;
+              previewImage.src = e.target.result;
+
+              previewImage.style.maxWidth = "250px";
+              previewImage.style.maxHeight = "250px";
+              previewImage.style.marginTop = "10px";
+              previewImage.style.borderRadius = "5px";
+
+              const fileInfo = input.nextElementSibling;
+              fileInfo.insertAdjacentElement("afterend", previewImage);
+            };
+            reader.readAsDataURL(file);
           }
         });
       }
-
-      // Terapkan validasi ke masing-masing input file
-      validateFileSize("pek_persiapan", "PEK. PERSIAPAN & BONGKARAN");
-      validateFileSize("berkas_pengawasan", "BERKAS PENGAWASAN");
+      setupFileInput("pek_persiapan", "PEK. PERSIAPAN & BONGKARAN");
+      setupFileInput("berkas_pengawasan", "BERKAS PENGAWASAN");
 
       function showPopup(msg) {
         messageDiv.querySelector("p").textContent = msg;
