@@ -159,7 +159,7 @@
           accept="image/*"
           required
         />
-        <small class="file-info">Maksimal ukuran file: 700 KB</small>
+        <small class="file-info">Maksimal ukuran file: 2 MB</small>
 
         <label for="status_progress1">Status Progress:</label>
         <select name="status_progress" id="status_progress1" required>
@@ -185,7 +185,7 @@
           accept="image/*"
           required
         />
-        <small class="file-info">Maksimal ukuran file: 700 KB</small>
+        <small class="file-info">Maksimal ukuran file: 2 MB</small>
 
         <label for="status_progress2">Status Progress:</label>
         <select name="status_progress" id="status_progress2" required>
@@ -214,7 +214,7 @@
           accept="image/*"
           required
         />
-        <small class="file-info">Maksimal ukuran file: 700 KB</small>
+        <small class="file-info">Maksimal ukuran file: 2 MB</small>
 
         <div class="button-group">
           <button type="submit">Simpan</button>
@@ -330,8 +330,8 @@
         }
       });
 
-      // Validasi ukuran file maksimal 700 KB (716800 bytes)
-      const MAX_SIZE_BYTES = 700 * 1024;
+      // Validasi ukuran file
+      const MAX_SIZE_BYTES = 2 * 1024 * 1024;
 
       function setupFileInput(inputId, label) {
         const input = document.getElementById(inputId);
@@ -348,7 +348,7 @@
             // Validasi ukuran file
             if (file.size > MAX_SIZE_BYTES) {
               alert(
-                `Ukuran file "${label}" melebihi 700 KB. Silakan kompres terlebih dahulu.`
+                `Ukuran file "${label}" melebihi 2 MB. Silakan kompres terlebih dahulu.`
               );
               this.value = ""; // Reset input
               return;
