@@ -172,6 +172,7 @@
         border-radius: 10px;
         color: #ef190a;
         text-align: center;
+        z-index: 1000;
       }
 
       .popup p {
@@ -196,6 +197,13 @@
 
       .popup button:hover {
         background-color: #d50e08;
+      }
+
+      .file-info {
+        font-size: 12px;
+        color: #666;
+        margin-top: -10px;
+        margin-bottom: 15px;
       }
     </style>
   </head>
@@ -253,9 +261,35 @@
       <button onclick="closePopup()">Tutup</button>
     </div>
 
-    <script>
-      let ulokDataStore = [];
+    <div class="popup" id="error-popup">
+      <p id="error-message" style="font-weight: bold">
+        Pesan error akan muncul di sini.
+      </p>
+      <a
+        id="error-link"
+        href="#"
+        target="_blank"
+        style="
+          background-color: #ffb700;
+          color: black;
+          padding: 10px 15px;
+          text-decoration: none;
+          border-radius: 5px;
+          margin: 10px 0;
+          display: inline-block;
+        "
+        >Kompres Foto di Sini</a
+      >
+      <br />
+      <button id="close-error-popup" style="margin-top: 15px">Tutup</button>
+    </div>
 
+    <script>
+      // Variabel untuk validasi ukuran file
+      const MAX_SIZE_BYTES = 2 * 1024 * 1024; // Batas 2 MB
+      const COMPRESS_URL = "https://compressprojectv2.vercel.app/";
+
+      let ulokDataStore = [];
       const pekerjaanData = [
         {
           judul: "I. BAHU JALAN",
@@ -443,7 +477,6 @@
             section.classList.remove("collapsed");
           }
         });
-
         section.appendChild(title);
 
         kelompok.items.forEach((item) => {
@@ -498,6 +531,7 @@
                     <div>
                       <label>UPLOAD FOTO</label>
                       <input type="file" name="${item.kode}_foto" accept="image/*" required />
+                      <small class="file-info">Maksimal ukuran file: 2 MB</small>
                     </div>
                   </div>
                 `;
@@ -658,7 +692,12 @@
 
       const form = document.getElementById("laporan-form");
       const submitButton = form.querySelector("button[type='submit']");
-      const messageDiv = document.getElementById("popup");
+      const successPopup = document.getElementById("popup");
+      const errorPopup = document.getElementById("error-popup");
+      const errorMessage = document.getElementById("error-message");
+      const errorLink = document.getElementById("error-link");
+      const closeErrorPopupButton =
+        document.getElementById("close-error-popup");
 
       async function loadKodeUlok() {
         const email = getParameterByName("email");
@@ -831,15 +870,43 @@
         messageDiv.classList.remove("show");
       }
 
+      function showErrorPopup(message, url) {
+        errorMessage.textContent = message;
+        errorLink.href = url;
+        errorPopup.classList.add("show");
+      }
+      function closeErrorPopup() {
+        errorPopup.classList.remove("show");
+      }
+      closeErrorPopupButton.addEventListener("click", closeErrorPopup);
+
       function getParameterByName(name) {
         return new URLSearchParams(window.location.search).get(name) || "";
+      }
+
+      // Fungsi untuk validasi ukuran file dengan dialog konfirmasi
+      function setupFileSizeValidation() {
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach((input) => {
+          input.addEventListener("change", function () {
+            const file = this.files[0];
+            if (file && file.size > MAX_SIZE_BYTES) {
+              const message = `File "${file.name}" terlalu besar (maksimal 2 MB). Silakan kompres terlebih dahulu.`;
+              showErrorPopup(message, COMPRESS_URL);
+              this.value = "";
+            }
+          });
+        });
       }
 
       document
         .getElementById("kode_ulok")
         .addEventListener("change", handleUlokChange);
 
-      window.addEventListener("DOMContentLoaded", loadKodeUlok);
+      window.addEventListener("DOMContentLoaded", () => {
+        loadKodeUlok();
+        setupFileSizeValidation();
+      });
     </script>
   </body>
 </html>
