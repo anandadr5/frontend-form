@@ -16,6 +16,11 @@
         <form id="pertambahan-spk-form" class="form-container">
             <label for="nomor_ulok">Nomor Ulok:</label>
             <input type="text" id="nomor_ulok" name="nomor_ulok" placeholder="Masukkan Nomor Ulok" required />
+
+            <select id="nomor_ulok" name="nomor_ulok" required>
+                <option value="" disabled selected>Memuat data ulok...</option>
+            </select>
+
             <label for="pertambahan_hari">Pertambahan Hari Dari Tanggal SPK:</label>
             <div class="input-hari-container">
                 <input type="number" id="pertambahan_hari" name="pertambahan_hari" min="1" max="99" oninput="this.value=this.value.slice(0,2)" placeholder="00" required />
@@ -37,6 +42,34 @@
     document.addEventListener("DOMContentLoaded", function () {
         const API_PROXY_URL = "https://backend-form-y8wo.onrender.com/api/form";
         const LOGIN_PAGE_URL = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
+
+        async function populateUlokDropdown(cabang) {
+        const selectElement = document.getElementById('nomor_ulok');
+        selectElement.disabled = true;
+
+        try {
+            const getUlokUrl = `${API_PROXY_URL}?form=perpanjangan_spk&action=getUlok&cabang=${encodeURIComponent(cabang)}`;
+            const response = await fetch(getUlokUrl);
+            const result = await response.json();
+
+            if (result.status === 'success' && result.data.length > 0) {
+                selectElement.innerHTML = '<option value="" disabled selected>Pilih Nomor Ulok</option>'; // Reset
+                result.data.forEach(ulok => {
+                    const option = document.createElement('option');
+                    option.value = ulok;
+                    option.textContent = ulok;
+                    selectElement.appendChild(option);
+                });
+            } else {
+                 selectElement.innerHTML = `<option value="" disabled selected>${result.data.length === 0 ? 'Tidak ada data Ulok untuk cabang ini' : 'Gagal memuat data'}</option>`;
+            }
+        } catch (error) {
+            console.error("Error fetching Ulok data:", error);
+            selectElement.innerHTML = '<option value="" disabled selected>Error memuat data Ulok</option>';
+        } finally {
+            selectElement.disabled = false;
+        }
+    }
 
         async function initializePage() {
         const authToken = sessionStorage.getItem('authToken');
