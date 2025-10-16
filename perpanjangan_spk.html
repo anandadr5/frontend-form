@@ -38,21 +38,29 @@
         const API_PROXY_URL = "https://backend-form-y8wo.onrender.com/api/form";
         const LOGIN_PAGE_URL = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
 
+        async function initializePage() {
         const authToken = sessionStorage.getItem('authToken');
-        const userDataString = sessionStorage.getItem('userData'); 
 
-        if (!authToken || !userDataString) {
-            alert('Sesi tidak valid atau telah berakhir. Silakan login kembali.');
+        if (!authToken) {
+            alert('Sesi tidak ditemukan. Silakan login kembali.');
             window.location.href = LOGIN_PAGE_URL;
             return;
         }
 
         try {
-            const userData = JSON.parse(userDataString);
+            const response = await fetch(`${API_PROXY_URL}?action=verifyToken&token=${authToken}`);
+            const result = await response.json();
+
+            if (result.status !== 'success') {
+                throw new Error(result.message || 'Sesi tidak valid.');
+            }
+
+            const userData = result.data;
             document.getElementById('userInfo').innerText = `Login sebagai: ${userData.nama} (${userData.cabang})`;
+
         } catch (error) {
             sessionStorage.clear();
-            alert('Data sesi tidak valid. Silakan login kembali.');
+            alert(error.message);
             window.location.href = LOGIN_PAGE_URL;
             return;
         }
@@ -88,7 +96,7 @@
 
             const payload = {
                 form: 'perpanjangan_spk',
-                token: authToken,
+                token: sessionStorage.getItem('authToken'),
                 nomor_ulok: document.getElementById('nomor_ulok').value,
                 pertambahan_hari: document.getElementById('pertambahan_hari').value,
                 alasan_spk: hiddenTextarea.value
@@ -130,7 +138,10 @@
                 setLoading(false);
             }
         });
-    });
+    }
+
+    initializePage();
+});
     </script>
 </body>
 </html>
