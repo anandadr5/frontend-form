@@ -48,14 +48,12 @@
         }
 
         try {
-        const response = await fetch(API_PROXY_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'verifyToken', 
-                token: authToken      
-            })
-        });
+            const verificationUrl = `${API_PROXY_URL}?action=verifyToken&token=${authToken}`;
+
+            const response = await fetch(verificationUrl, {
+                method: 'GET',
+            });
+            
             const result = await response.json();
 
             if (result.status !== 'success') {
@@ -67,7 +65,7 @@
 
         } catch (error) {
             sessionStorage.clear();
-            alert(error.message);
+            alert(error.message); 
             window.location.href = LOGIN_PAGE_URL;
             return;
         }
