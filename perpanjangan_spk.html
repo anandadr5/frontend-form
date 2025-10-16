@@ -93,6 +93,7 @@
 
             const userData = result.data;
             document.getElementById('userInfo').innerText = `Login sebagai: ${userData.nama} (${userData.cabang})`;
+            await populateUlokDropdown(userData.cabang);
 
         } catch (error) {
             sessionStorage.clear();
