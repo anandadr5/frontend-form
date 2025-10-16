@@ -1,105 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Form Pertambahan Hari SPK</title>
     <style>
-        body{font-family:Cambria,Cochin,Georgia,Times,"Times New Roman",serif;background-color:#f4f4f4;margin:0;padding:0}header{background-color:#ce1e10;color:#fff;text-align:center;padding:20px}.container{max-width:800px;margin:20px auto;background-color:#fff;padding:30px;box-shadow:0 2px 10px rgba(0,0,0,.1);border-radius:10px}.form-container{display:flex;flex-direction:column}.form-container label{font-weight:700;margin-bottom:5px;margin-top:15px}.form-container input,.form-container select,.form-container textarea{padding:10px;margin-bottom:15px;border:1px solid #ddd;border-radius:5px;font-family:Cambria}.button-group{display:flex;gap:10px;margin-top:20px}.form-container button[type=submit]{background-color:#ce1e10;color:#fff;padding:12px 20px;border:none;border-radius:5px;cursor:pointer;transition:background-color .3s;flex:1;display:inline-flex;align-items:center;justify-content:center}.form-container button[type=submit]:hover{background-color:#ef190a}.input-hari-container{display:flex;align-items:center;gap:10px}.input-hari-container input{width:100px;margin-bottom:0;text-align:center}.input-hari-container span{font-weight:400}#alasan-container{display:flex;flex-direction:column;gap:10px;margin-bottom:10px}.alasan-item{display:flex;align-items:center;background-color:#f1f3f5;border:1px solid #dee2e6;padding:5px 5px 5px 15px;border-radius:25px;transition:background-color .3s}.alasan-item input{border:none;background:0 0;flex-grow:1;outline:0;margin:0;padding:5px;font-size:16px;transition:all .3s}.alasan-item input.locked{background-color:transparent;border-color:transparent;color:#212529;cursor:pointer}.alasan-item.locked-item{background-color:#e9ecef;border-color:#ced4da}.alasan-item.locked-item:hover{background-color:#dee2e6}.remove-alasan-btn{background-color:#ced4da;color:#495057;border:none;width:24px;height:24px;border-radius:50%;cursor:pointer;font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:10px;transition:background-color .3s}.remove-alasan-btn:hover{background-color:#adb5bd;color:#fff}#tambah-alasan-btn{background-color:#007bff;color:#fff;padding:10px 15px;border:none;border-radius:5px;cursor:pointer;margin-top:5px;transition:background-color .3s;align-self:flex-start}#tambah-alasan-btn:hover{background-color:#0056b3}#display-container h2{color:#ce1e10;text-align:center;margin-bottom:25px}#display-container p{font-size:1.1em;line-height:1.6}#display-container ul{list-style-type:disc;padding-left:20px;margin-top:10px}#display-container li{margin-bottom:8px;font-size:1.1em}#buat-laporan-baru-btn{background-color:#28a745;color:#fff;padding:12px 20px;border:none;border-radius:5px;cursor:pointer;transition:background-color .3s;width:100%;margin-top:30px;font-size:1em}#buat-laporan-baru-btn:hover{background-color:#218838}.user-info{text-align:right;margin-bottom:20px;color:#555}.spinner{display:none;width:18px;height:18px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px}@keyframes spin{to{transform:rotate(360deg)}}
+      body {
+        font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+
+      header {
+        background-color: #ce1e10;
+        color: white;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 20px auto;
+        background-color: white;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+
+      .form-container {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-container label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        margin-top: 15px;
+      }
+
+      .form-container input,
+      .form-container select,
+      .form-container textarea {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-family: Cambria;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .form-container button[type="submit"] {
+        background-color: #ce1e10;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .form-container button[type="submit"]:hover {
+        background-color: #ef190a;
+      }
+
+      .form-container button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .input-hari-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .input-hari-container input {
+        width: 100px;
+        margin-bottom: 0;
+        text-align: center;
+      }
+
+      .input-hari-container span {
+        font-weight: normal;
+      }
+
+      #alasan-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .alasan-item {
+        display: flex;
+        align-items: center;
+        background-color: #f1f3f5;
+        border: 1px solid #dee2e6;
+        padding: 5px 5px 5px 15px;
+        border-radius: 25px;
+        transition: background-color 0.3s;
+      }
+
+      .alasan-item input {
+        border: none;
+        background: transparent;
+        flex-grow: 1;
+        outline: none;
+        margin: 0;
+        padding: 5px;
+        font-size: 16px;
+        transition: all 0.3s;
+      }
+
+      .alasan-item input.locked {
+        background-color: transparent;
+        border-color: transparent;
+        color: #212529;
+        cursor: pointer;
+      }
+      .alasan-item.locked-item {
+        background-color: #e9ecef;
+        border-color: #ced4da;
+      }
+      .alasan-item.locked-item:hover {
+        background-color: #dee2e6;
+      }
+
+      .remove-alasan-btn {
+        background-color: #ced4da;
+        color: #495057;
+        border: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 10px;
+        transition: background-color 0.3s;
+      }
+
+      .remove-alasan-btn:hover {
+        background-color: #adb5bd;
+        color: white;
+      }
+
+      #tambah-alasan-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 5px;
+        transition: background-color 0.3s;
+        align-self: flex-start;
+      }
+
+      #tambah-alasan-btn:hover {
+        background-color: #0056b3;
+      }
+
+      #display-container h2 {
+        color: #ce1e10;
+        text-align: center;
+        margin-bottom: 25px;
+      }
+
+      #display-container p {
+        font-size: 1.1em;
+        line-height: 1.6;
+      }
+
+      #display-container ul {
+        list-style-type: disc;
+        padding-left: 20px;
+        margin-top: 10px;
+      }
+
+      #display-container li {
+        margin-bottom: 8px;
+        font-size: 1.1em;
+      }
+
+      #buat-laporan-baru-btn {
+        background-color: #28a745;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        width: 100%;
+        margin-top: 30px;
+        font-size: 1em;
+      }
+
+      #buat-laporan-baru-btn:hover {
+        background-color: #218838;
+      }
     </style>
-</head>
-<body>
-    <header><h1>Form Pertambahan Hari SPK</h1></header>
+  </head>
+  <body>
+    <header>
+      <h1>Form Pertambahan Hari SPK</h1>
+    </header>
 
-    <div id="form-wrapper" class="container">
-        <div class="user-info" id="userInfo"></div>
-        <form id="pertambahan-spk-form" class="form-container">
-            <label for="nomor_ulok">Nomor Ulok:</label>
-            <select id="nomor_ulok" name="nomor_ulok" required>
-                <option value="" disabled selected>Memuat data ulok...</option>
-            </select>
-
-            <label for="pertambahan_hari">Pertambahan Hari Dari Tanggal SPK:</label>
-            <div class="input-hari-container">
-                <input type="number" id="pertambahan_hari" name="pertambahan_hari" min="1" max="99" oninput="this.value=this.value.slice(0,2)" placeholder="00" required />
-                <span>hari</span>
-            </div>
-            <label for="alasan_spk">Alasan Pertambahan SPK:</label>
-            <div id="alasan-container"></div>
-            <button type="button" id="tambah-alasan-btn">+ Tambahkan Alasan Lainnya</button>
-            <textarea name="alasan_spk" id="alasan_spk_hidden" required style="display: none"></textarea>
-            <div class="button-group">
-                <button type="submit" id="submitBtn"><span class="spinner" id="spinner"></span><span id="btnText">Simpan</span></button>
-            </div>
-        </form>
+    <div id="auth-loader" class="container" style="text-align: center">
+      <p>Memverifikasi sesi Anda...</p>
     </div>
 
-    <div id="display-container" class="container" style="display: none;"></div>
+    <div id="form-wrapper" class="container" style="display: none">
+      <form id="pertambahan-spk-form" class="form-container">
+        <label for="nomor_ulok">Nomor Ulok:</label>
+        <input
+          type="text"
+          id="nomor_ulok"
+          name="nomor_ulok"
+          placeholder="Masukkan Nomor Ulok"
+          required
+        />
+        <label for="pertambahan_hari">Pertambahan Hari Dari Tanggal SPK:</label>
+        <div class="input-hari-container">
+          <input
+            type="number"
+            id="pertambahan_hari"
+            name="pertambahan_hari"
+            min="1"
+            max="99"
+            oninput="this.value=this.value.slice(0,2)"
+            placeholder="00"
+            required
+          />
+          <span>hari</span>
+        </div>
+
+        <label for="alasan_spk">Alasan Pertambahan SPK:</label>
+        <div id="alasan-container"></div>
+        <button type="button" id="tambah-alasan-btn">
+          + Tambahkan Alasan Lainnya
+        </button>
+        <textarea
+          name="alasan_spk"
+          id="alasan_spk_hidden"
+          required
+          style="display: none"
+        ></textarea>
+        <div class="button-group">
+            <button type="submit" id="submit-btn">
+                <span id="btn-text">Simpan & Kirim Permintaan</span>
+                <span id="btn-spinner" style="display: none;">
+                    <svg style="width:20px; height:20px;" aria-hidden="true" role="status" fill="none" viewBox="0 0 100 101" class="animate-spin"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="11" d="M50 1.5A48.5 48.5 0 1 1 1.5 50 48.5 48.5 0 0 1 50 1.5Zm0 0V50h48.5"></path></svg>
+                    &nbsp;Mengirim...
+                </span>
+            </button>
+        </div>
+      </form>
+    </div>
+
+    <div id="display-container" class="container" style="display: none"></div>
 
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const API_PROXY_URL = "https://backend-form-y8wo.onrender.com/api/form";
-        const LOGIN_PAGE_URL = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
+      // ===================================
+      // KONFIGURASI
+      // ===================================
+      const API_PROXY_URL = "https://backend-form-y8wo.onrender.com/api/form";
+      const GAS_LOGIN_VERIFY_URL = "https://backend-form-y8wo.onrender.com/api/form?form=login_perpanjanganspk&action=verifyToken";
+      let currentUser = null;
 
-        async function populateUlokDropdown(cabang) {
-        const selectElement = document.getElementById('nomor_ulok');
-        selectElement.disabled = true;
-
-        try {
-            const getUlokUrl = `${API_PROXY_URL}?form=perpanjangan_spk&action=getUlok&cabang=${encodeURIComponent(cabang)}`;
-            const response = await fetch(getUlokUrl);
-            const result = await response.json();
-
-            if (result.status === 'success' && result.data.length > 0) {
-                selectElement.innerHTML = '<option value="" disabled selected>Pilih Nomor Ulok</option>'; // Reset
-                result.data.forEach(ulok => {
-                    const option = document.createElement('option');
-                    option.value = ulok;
-                    option.textContent = ulok;
-                    selectElement.appendChild(option);
-                });
-            } else {
-                 selectElement.innerHTML = `<option value="" disabled selected>${result.data.length === 0 ? 'Tidak ada data Ulok untuk cabang ini' : 'Gagal memuat data'}</option>`;
-            }
-        } catch (error) {
-            console.error("Error fetching Ulok data:", error);
-            selectElement.innerHTML = '<option value="" disabled selected>Error memuat data Ulok</option>';
-        } finally {
-            selectElement.disabled = false;
-        }
-    }
-
-        async function initializePage() {
-        const authToken = sessionStorage.getItem('authToken');
+      // ===================================
+      // FUNGSI UTAMA & EVENT LISTENERS
+      // ===================================
+      document.addEventListener("DOMContentLoaded", async function () {
+        const authToken = sessionStorage.getItem("authToken");
 
         if (!authToken) {
-            alert('Sesi tidak ditemukan. Silakan login kembali.');
-            window.location.href = LOGIN_PAGE_URL;
-            return;
+          alert('Anda harus login untuk mengakses halaman ini.');
+          window.location.href = './login-perpanjanganspk.html'; // Ganti dengan path ke halaman login Anda
+          return;
         }
 
         try {
-          const verificationUrl = `${API_PROXY_URL}?form=perpanjangan_spk&action=verifyToken&token=${authToken}`;
+          const response = await fetch(`${GAS_LOGIN_VERIFY_URL}&token=${authToken}`);
+          const result = await response.json();
 
-            const response = await fetch(verificationUrl, {
-                method: 'GET',
-            });
-            
-            const result = await response.json();
-
-            if (result.status !== 'success') {
-                throw new Error(result.message || 'Sesi tidak valid.');
-            }
-
-            const userData = result.data;
-            document.getElementById('userInfo').innerText = `Login sebagai: ${userData.nama} (${userData.cabang})`;
-            await populateUlokDropdown(userData.cabang);
-
-        } catch (error) {
-            sessionStorage.clear();
-            alert(error.message); 
-            window.location.href = LOGIN_PAGE_URL;
+          if (result.status === "success") {
+            currentUser = result.data;
+            document.getElementById("auth-loader").style.display = "none";
+            document.getElementById("form-wrapper").style.display = "block";
+          } else {
+            sessionStorage.removeItem("authToken");
+            alert("Sesi tidak valid atau telah berakhir. Silakan login kembali.");
+            window.location.href = "./login-perpanjanganspk.html";
             return;
+          }
+        } catch (error) {
+          alert("Gagal memverifikasi sesi. Coba lagi.");
+          window.location.href = "./login-perpanjanganspk.html";
+          return;
         }
 
         const formWrapper = document.getElementById("form-wrapper");
@@ -108,78 +318,128 @@
         const tambahAlasanBtn = document.getElementById("tambah-alasan-btn");
         const hiddenTextarea = document.getElementById("alasan_spk_hidden");
         const form = document.getElementById("pertambahan-spk-form");
-        const submitBtn = document.getElementById('submitBtn');
-        const spinner = document.getElementById('spinner');
-        const btnText = document.getElementById('btnText');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnSpinner = document.getElementById('btn-spinner');
 
-        const createAlasanItem=()=>{const e=document.createElement("div");e.className="alasan-item",e.innerHTML=`<input type="text" placeholder="Tuliskan satu alasan di sini..." /><button type="button" class="remove-alasan-btn">&times;</button>`,alasanContainer.appendChild(e),e.querySelector("input").focus()},updateHiddenTextarea=()=>{const e=alasanContainer.querySelectorAll(".alasan-item input"),t=Array.from(e).map(e=>e.value.trim()).filter(e=>""!==e);hiddenTextarea.value=t.join("\n")};createAlasanItem(),tambahAlasanBtn.addEventListener("click",()=>{const e=alasanContainer.lastElementChild;if(e){const t=e.querySelector("input");""===t.value.trim()?(alert("Harap isi alasan saat ini sebelum menambahkan yang baru."),t.focus()):(t.readOnly=!0,t.classList.add("locked"),e.classList.add("locked"))}createAlasanItem()}),alasanContainer.addEventListener("click",function(e){if(e.target.classList.contains("remove-alasan-btn"))alasanContainer.children.length>1?e.target.closest(".alasan-item").remove():alert("Minimal harus ada satu alasan."),updateHiddenTextarea();else if(e.target.classList.contains("locked")){const t=e.target;t.readOnly=!1,t.classList.remove("locked"),t.parentElement.classList.remove("locked"),t.focus();const a=t.value.length;t.setSelectionRange(a,a)}}),alasanContainer.addEventListener("input",updateHiddenTextarea);
-
-        const setLoading = (isLoading) => {
-            submitBtn.disabled = isLoading;
-            spinner.style.display = isLoading ? "inline-block" : "none";
-            btnText.textContent = isLoading ? "Menyimpan..." : "Simpan";
+        const createAlasanItem = () => {
+          const div = document.createElement("div");
+          div.className = "alasan-item";
+          div.innerHTML = `
+            <input type="text" placeholder="Tuliskan satu alasan di sini..." />
+            <button type="button" class="remove-alasan-btn">&times;</button>
+          `;
+          alasanContainer.appendChild(div);
+          div.querySelector("input").focus();
         };
 
-        form.addEventListener("submit", async function(e) {
-            e.preventDefault();
-            updateHiddenTextarea();
-            if (hiddenTextarea.value.trim() === "") {
-                alert("Harap isi setidaknya satu alasan pertambahan SPK.");
-                alasanContainer.querySelector("input")?.focus();
-                return;
+        const updateHiddenTextarea = () => {
+          const inputs = alasanContainer.querySelectorAll(".alasan-item input");
+          const alasanArray = [];
+          inputs.forEach((input) => {
+            if (input.value.trim() !== "") {
+              alasanArray.push(`- ${input.value.trim()}`);
             }
+          });
+          hiddenTextarea.value = alasanArray.join("\n");
+        };
 
-            setLoading(true);
+        createAlasanItem();
 
-            const payload = {
-              form: 'perpanjangan_spk',
-              action: 'submitPerpanjangan',
-              token: sessionStorage.getItem('authToken'),
-              nomor_ulok: document.getElementById('nomor_ulok').value,
-              pertambahan_hari: document.getElementById('pertambahan_hari').value,
-              alasan_spk: hiddenTextarea.value
+        tambahAlasanBtn.addEventListener("click", () => {
+          const lastItem = alasanContainer.lastElementChild;
+          if (lastItem) {
+            const lastInput = lastItem.querySelector("input");
+            if (lastInput.value.trim() === "") {
+              alert("Harap isi alasan saat ini sebelum menambahkan yang baru.");
+              lastInput.focus();
+              return;
+            }
+            lastInput.readOnly = true;
+            lastInput.classList.add("locked");
+            lastItem.classList.add("locked-item");
+          }
+          createAlasanItem();
+        });
+
+        alasanContainer.addEventListener("click", function (e) {
+          if (e.target.classList.contains("remove-alasan-btn")) {
+            e.target.closest(".alasan-item").remove();
+            updateHiddenTextarea();
+          } else if (e.target.classList.contains("locked")) {
+            const targetInput = e.target;
+            targetInput.readOnly = false;
+            targetInput.classList.remove("locked");
+            targetInput.parentElement.classList.remove("locked-item");
+            targetInput.focus();
+            const len = targetInput.value.length;
+            targetInput.setSelectionRange(len, len);
+          }
+        });
+
+        alasanContainer.addEventListener("input", updateHiddenTextarea);
+
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+          updateHiddenTextarea();
+          if (hiddenTextarea.value.trim() === "") {
+            alert("Harap isi setidaknya satu alasan pertambahan SPK.");
+            if (alasanContainer.children.length === 0) createAlasanItem();
+            else alasanContainer.querySelector("input").focus();
+            return;
+          }
+
+          submitBtn.disabled = true;
+          btnText.style.display = 'none';
+          btnSpinner.style.display = 'flex';
+
+          const formData = {
+            nomor_ulok: document.getElementById("nomor_ulok").value,
+            pertambahan_hari: document.getElementById("pertambahan_hari").value,
+            alasan_spk: hiddenTextarea.value,
+            dibuat_oleh_nama: currentUser.nama,
+            dibuat_oleh_email: currentUser.email,
+            cabang_pembuat: currentUser.cabang,
           };
 
-            try {
-                const response = await fetch(API_PROXY_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload),
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const result = await response.json();
-
-                if (result.status === 'success') {
-                    displayContainer.innerHTML = `
-                        <h2>Data Berhasil Dikirim</h2>
-                        <p>Pengajuan Anda telah berhasil dikirim dan menunggu persetujuan dari Branch Manager.</p>
-                        <button type="button" id="buat-laporan-baru-btn">Buat Laporan Baru</button>
-                    `;
-                    formWrapper.style.display = 'none';
-                    displayContainer.style.display = 'block';
-
-                    document.getElementById('buat-laporan-baru-btn').addEventListener('click', function() {
-                        window.location.reload();
-                    });
-                } else {
-                    alert(`Error dari Server: ${result.message}`);
-                }
-
-            } catch (error) {
-                console.error("Fetch Error:", error);
-                alert("Terjadi kesalahan koneksi. Gagal mengirim data. " + error.message);
-            } finally {
-                setLoading(false);
+          try {
+            const response = await fetch(`${API_PROXY_URL}?form=perpanjangan_spk`, {
+              method: "POST",
+              mode: "cors",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(formData),
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        });
-    }
 
-    initializePage();
-});
+            const result = await response.json();
+
+            if (result.status === "success") {
+              displayContainer.innerHTML = `
+                <h2>✅ Berhasil Terkirim</h2>
+                <p>${result.message}</p>
+                <button type="button" id="buat-laporan-baru-btn">Buat Laporan Baru</button>
+              `;
+              formWrapper.style.display = "none";
+              displayContainer.style.display = "block";
+
+              document.getElementById("buat-laporan-baru-btn")
+                .addEventListener("click", function () {
+                  window.location.reload();
+                });
+            } else {
+              throw new Error(result.message || "Terjadi kesalahan di server.");
+            }
+          } catch (error) {
+            alert("Gagal mengirim data: " + error.message);
+            submitBtn.disabled = false;
+            btnText.style.display = 'inline';
+            btnSpinner.style.display = 'none';
+          }
+        });
+      });
     </script>
-</body>
+  </body>
 </html>
