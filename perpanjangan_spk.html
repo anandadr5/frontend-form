@@ -1,352 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Form Pertambahan Hari SPK</title>
     <style>
-      body {
-        font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 0;
-      }
-
-      header {
-        background-color: #ce1e10;
-        color: white;
-        text-align: center;
-        padding: 20px;
-      }
-
-      .container {
-        max-width: 800px;
-        margin: 20px auto;
-        background-color: white;
-        padding: 30px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-      }
-
-      .form-container {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .form-container label {
-        font-weight: bold;
-        margin-bottom: 5px;
-        margin-top: 15px;
-      }
-
-      .form-container input,
-      .form-container select,
-      .form-container textarea {
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-family: Cambria;
-      }
-
-      .button-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 20px;
-      }
-
-      .form-container button[type="submit"] {
-        background-color: #ce1e10;
-        color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        flex: 1;
-      }
-
-      .form-container button[type="submit"]:hover {
-        background-color: #ef190a;
-      }
-
-      .input-hari-container {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .input-hari-container input {
-        width: 100px;
-        margin-bottom: 0;
-        text-align: center;
-      }
-
-      .input-hari-container span {
-        font-weight: normal;
-      }
-
-      #alasan-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 10px;
-      }
-
-      .alasan-item {
-        display: flex;
-        align-items: center;
-        background-color: #f1f3f5;
-        border: 1px solid #dee2e6;
-        padding: 5px 5px 5px 15px;
-        border-radius: 25px;
-        transition: background-color 0.3s;
-      }
-
-      .alasan-item input {
-        border: none;
-        background: transparent;
-        flex-grow: 1;
-        outline: none;
-        margin: 0;
-        padding: 5px;
-        font-size: 16px;
-        transition: all 0.3s;
-      }
-
-      /* === STYLE BARU UNTUK MENGUNCI INPUT === */
-      .alasan-item input.locked {
-        background-color: transparent;
-        border-color: transparent;
-        color: #212529;
-        cursor: pointer; /* Menandakan bisa diklik untuk diedit */
-      }
-      .alasan-item.locked-item {
-        background-color: #e9ecef;
-        border-color: #ced4da;
-      }
-      .alasan-item.locked-item:hover {
-        background-color: #dee2e6; /* Efek hover agar lebih jelas */
-      }
-
-      .remove-alasan-btn {
-        background-color: #ced4da;
-        color: #495057;
-        border: none;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-left: 10px;
-        transition: background-color 0.3s;
-      }
-
-      .remove-alasan-btn:hover {
-        background-color: #adb5bd;
-        color: white;
-      }
-
-      #tambah-alasan-btn {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 5px;
-        transition: background-color 0.3s;
-        align-self: flex-start;
-      }
-
-      #tambah-alasan-btn:hover {
-        background-color: #0056b3;
-      }
-      
-      #display-container h2 {
-        color: #ce1e10;
-        text-align: center;
-        margin-bottom: 25px;
-      }
-
-      #display-container p {
-        font-size: 1.1em;
-        line-height: 1.6;
-      }
-      
-      #display-container ul {
-        list-style-type: disc;
-        padding-left: 20px;
-        margin-top: 10px;
-      }
-
-      #display-container li {
-        margin-bottom: 8px;
-        font-size: 1.1em;
-      }
-
-      #buat-laporan-baru-btn {
-        background-color: #28a745;
-        color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        width: 100%;
-        margin-top: 30px;
-        font-size: 1em;
-      }
-
-      #buat-laporan-baru-btn:hover {
-        background-color: #218838;
-      }
-
+        body{font-family:Cambria,Cochin,Georgia,Times,"Times New Roman",serif;background-color:#f4f4f4;margin:0;padding:0}header{background-color:#ce1e10;color:#fff;text-align:center;padding:20px}.container{max-width:800px;margin:20px auto;background-color:#fff;padding:30px;box-shadow:0 2px 10px rgba(0,0,0,.1);border-radius:10px}.form-container{display:flex;flex-direction:column}.form-container label{font-weight:700;margin-bottom:5px;margin-top:15px}.form-container input,.form-container select,.form-container textarea{padding:10px;margin-bottom:15px;border:1px solid #ddd;border-radius:5px;font-family:Cambria}.button-group{display:flex;gap:10px;margin-top:20px}.form-container button[type=submit]{background-color:#ce1e10;color:#fff;padding:12px 20px;border:none;border-radius:5px;cursor:pointer;transition:background-color .3s;flex:1;display:inline-flex;align-items:center;justify-content:center}.form-container button[type=submit]:hover{background-color:#ef190a}.input-hari-container{display:flex;align-items:center;gap:10px}.input-hari-container input{width:100px;margin-bottom:0;text-align:center}.input-hari-container span{font-weight:400}#alasan-container{display:flex;flex-direction:column;gap:10px;margin-bottom:10px}.alasan-item{display:flex;align-items:center;background-color:#f1f3f5;border:1px solid #dee2e6;padding:5px 5px 5px 15px;border-radius:25px;transition:background-color .3s}.alasan-item input{border:none;background:0 0;flex-grow:1;outline:0;margin:0;padding:5px;font-size:16px;transition:all .3s}.alasan-item input.locked{background-color:transparent;border-color:transparent;color:#212529;cursor:pointer}.alasan-item.locked-item{background-color:#e9ecef;border-color:#ced4da}.alasan-item.locked-item:hover{background-color:#dee2e6}.remove-alasan-btn{background-color:#ced4da;color:#495057;border:none;width:24px;height:24px;border-radius:50%;cursor:pointer;font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:10px;transition:background-color .3s}.remove-alasan-btn:hover{background-color:#adb5bd;color:#fff}#tambah-alasan-btn{background-color:#007bff;color:#fff;padding:10px 15px;border:none;border-radius:5px;cursor:pointer;margin-top:5px;transition:background-color .3s;align-self:flex-start}#tambah-alasan-btn:hover{background-color:#0056b3}#display-container h2{color:#ce1e10;text-align:center;margin-bottom:25px}#display-container p{font-size:1.1em;line-height:1.6}#display-container ul{list-style-type:disc;padding-left:20px;margin-top:10px}#display-container li{margin-bottom:8px;font-size:1.1em}#buat-laporan-baru-btn{background-color:#28a745;color:#fff;padding:12px 20px;border:none;border-radius:5px;cursor:pointer;transition:background-color .3s;width:100%;margin-top:30px;font-size:1em}#buat-laporan-baru-btn:hover{background-color:#218838}.user-info{text-align:right;margin-bottom:20px;color:#555}.spinner{display:none;width:18px;height:18px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px}@keyframes spin{to{transform:rotate(360deg)}}
     </style>
-  </head>
-  <body>
-    <header>
-      <h1>Form Pertambahan Hari SPK</h1>
-    </header>
+</head>
+<body>
+    <header><h1>Form Pertambahan Hari SPK</h1></header>
 
     <div id="form-wrapper" class="container">
-      <form id="pertambahan-spk-form" class="form-container">
-        <label for="nomor_ulok">Nomor Ulok:</label>
-        <input type="text" id="nomor_ulok" name="nomor_ulok" placeholder="Masukkan Nomor Ulok" required />
-        <label for="pertambahan_hari">Pertambahan Hari Dari Tanggal SPK:</label>
-        <div class="input-hari-container">
-          <input type="number" id="pertambahan_hari" name="pertambahan_hari" min="1" max="99" oninput="this.value=this.value.slice(0,2)" placeholder="00" required />
-          <span>hari</span>
-        </div>
-        
-        <label for="alasan_spk">Alasan Pertambahan SPK:</label>
-        <div id="alasan-container"></div>
-        <button type="button" id="tambah-alasan-btn">+ Tambahkan Alasan Lainnya</button>
-        <textarea name="alasan_spk" id="alasan_spk_hidden" required style="display: none"></textarea>
-        <div class="button-group">
-          <button type="submit">Simpan</button>
-        </div>
-      </form>
+        <div class="user-info" id="userInfo"></div>
+        <form id="pertambahan-spk-form" class="form-container">
+            <label for="nomor_ulok">Nomor Ulok:</label>
+            <input type="text" id="nomor_ulok" name="nomor_ulok" placeholder="Masukkan Nomor Ulok" required />
+            <label for="pertambahan_hari">Pertambahan Hari Dari Tanggal SPK:</label>
+            <div class="input-hari-container">
+                <input type="number" id="pertambahan_hari" name="pertambahan_hari" min="1" max="99" oninput="this.value=this.value.slice(0,2)" placeholder="00" required />
+                <span>hari</span>
+            </div>
+            <label for="alasan_spk">Alasan Pertambahan SPK:</label>
+            <div id="alasan-container"></div>
+            <button type="button" id="tambah-alasan-btn">+ Tambahkan Alasan Lainnya</button>
+            <textarea name="alasan_spk" id="alasan_spk_hidden" required style="display: none"></textarea>
+            <div class="button-group">
+                <button type="submit" id="submitBtn"><span class="spinner" id="spinner"></span><span id="btnText">Simpan</span></button>
+            </div>
+        </form>
     </div>
 
     <div id="display-container" class="container" style="display: none;"></div>
 
-
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
+        const API_PROXY_URL = "https://backend-form-y8wo.onrender.com/api/form";
+        const LOGIN_PAGE_URL = "https://frontend-form-virid.vercel.app/login_perpanjanganspk.html";
+
+        const authToken = sessionStorage.getItem('authToken');
+        const userDataString = sessionStorage.getItem('userData'); 
+
+        if (!authToken || !userDataString) {
+            alert('Sesi tidak valid atau telah berakhir. Silakan login kembali.');
+            window.location.href = LOGIN_PAGE_URL;
+            return;
+        }
+
+        try {
+            const userData = JSON.parse(userDataString);
+            document.getElementById('userInfo').innerText = `Login sebagai: ${userData.nama} (${userData.cabang})`;
+        } catch (error) {
+            sessionStorage.clear();
+            alert('Data sesi tidak valid. Silakan login kembali.');
+            window.location.href = LOGIN_PAGE_URL;
+            return;
+        }
+
         const formWrapper = document.getElementById("form-wrapper");
         const displayContainer = document.getElementById("display-container");
         const alasanContainer = document.getElementById("alasan-container");
         const tambahAlasanBtn = document.getElementById("tambah-alasan-btn");
         const hiddenTextarea = document.getElementById("alasan_spk_hidden");
         const form = document.getElementById("pertambahan-spk-form");
+        const submitBtn = document.getElementById('submitBtn');
+        const spinner = document.getElementById('spinner');
+        const btnText = document.getElementById('btnText');
 
-        const createAlasanItem = () => {
-          const div = document.createElement("div");
-          div.className = "alasan-item";
-          div.innerHTML = `
-            <input type="text" placeholder="Tuliskan satu alasan di sini..." />
-            <button type="button" class="remove-alasan-btn">&times;</button>
-          `;
-          alasanContainer.appendChild(div);
-          div.querySelector("input").focus();
+        const createAlasanItem=()=>{const e=document.createElement("div");e.className="alasan-item",e.innerHTML=`<input type="text" placeholder="Tuliskan satu alasan di sini..." /><button type="button" class="remove-alasan-btn">&times;</button>`,alasanContainer.appendChild(e),e.querySelector("input").focus()},updateHiddenTextarea=()=>{const e=alasanContainer.querySelectorAll(".alasan-item input"),t=Array.from(e).map(e=>e.value.trim()).filter(e=>""!==e);hiddenTextarea.value=t.join("\n")};createAlasanItem(),tambahAlasanBtn.addEventListener("click",()=>{const e=alasanContainer.lastElementChild;if(e){const t=e.querySelector("input");""===t.value.trim()?(alert("Harap isi alasan saat ini sebelum menambahkan yang baru."),t.focus()):(t.readOnly=!0,t.classList.add("locked"),e.classList.add("locked"))}createAlasanItem()}),alasanContainer.addEventListener("click",function(e){if(e.target.classList.contains("remove-alasan-btn"))alasanContainer.children.length>1?e.target.closest(".alasan-item").remove():alert("Minimal harus ada satu alasan."),updateHiddenTextarea();else if(e.target.classList.contains("locked")){const t=e.target;t.readOnly=!1,t.classList.remove("locked"),t.parentElement.classList.remove("locked"),t.focus();const a=t.value.length;t.setSelectionRange(a,a)}}),alasanContainer.addEventListener("input",updateHiddenTextarea);
+
+        const setLoading = (isLoading) => {
+            submitBtn.disabled = isLoading;
+            spinner.style.display = isLoading ? "inline-block" : "none";
+            btnText.textContent = isLoading ? "Menyimpan..." : "Simpan";
         };
 
-        const updateHiddenTextarea = () => {
-          const inputs = alasanContainer.querySelectorAll(".alasan-item input");
-          const alasanArray = [];
-          inputs.forEach((input) => {
-            if (input.value.trim() !== "") {
-              alasanArray.push(`- ${input.value.trim()}`);
-            }
-          });
-          hiddenTextarea.value = alasanArray.join("\n");
-        };
-
-        createAlasanItem();
-
-        tambahAlasanBtn.addEventListener("click", () => {
-            const lastItem = alasanContainer.lastElementChild;
-            if (lastItem) {
-                const lastInput = lastItem.querySelector('input');
-                
-                if (lastInput.value.trim() === '') {
-                    alert('Harap isi alasan saat ini sebelum menambahkan yang baru.');
-                    lastInput.focus();
-                    return;
-                }
-                lastInput.readOnly = true;
-                lastInput.classList.add('locked');
-                lastItem.classList.add('locked-item');
-            }
-            createAlasanItem();
-        });
-
-        alasanContainer.addEventListener("click", function (e) {
-          if (e.target.classList.contains("remove-alasan-btn")) {
-            e.target.closest(".alasan-item").remove();
-            updateHiddenTextarea();
-          }
-          else if (e.target.classList.contains("locked")) {
-            const targetInput = e.target;
-            targetInput.readOnly = false;
-            targetInput.classList.remove('locked');
-            targetInput.parentElement.classList.remove('locked-item');
-            targetInput.focus();
-            const len = targetInput.value.length;
-            targetInput.setSelectionRange(len, len);
-          }
-        });
-
-        alasanContainer.addEventListener("input", updateHiddenTextarea);
-        
-        form.addEventListener("submit", function(e) {
-            e.preventDefault(); 
+        form.addEventListener("submit", async function(e) {
+            e.preventDefault();
             updateHiddenTextarea();
             if (hiddenTextarea.value.trim() === "") {
                 alert("Harap isi setidaknya satu alasan pertambahan SPK.");
-                if (alasanContainer.children.length === 0) createAlasanItem();
-                else alasanContainer.querySelector("input").focus();
+                alasanContainer.querySelector("input")?.focus();
                 return;
             }
 
-            const nomorUlok = document.getElementById('nomor_ulok').value;
-            const pertambahanHari = document.getElementById('pertambahan_hari').value;
-            const alasanText = hiddenTextarea.value;
-            
-            const alasanArray = alasanText.split('\n').filter(alasan => alasan.trim() !== '');
-            let alasanHtmlList = '<ul>';
-            alasanArray.forEach(alasan => {
-              const cleanAlasan = alasan.substring(2);
-              alasanHtmlList += `<li>${cleanAlasan}</li>`;
-            });
-            alasanHtmlList += '</ul>';
+            setLoading(true);
 
-            displayContainer.innerHTML = `
-                <h2>Data Berhasil Disimpan</h2>
-                <p><strong>Nomor Ulok:</strong> ${nomorUlok}</p>
-                <p><strong>Pertambahan Hari:</strong> ${pertambahanHari} hari</p>
-                <p><strong>Alasan Pertambahan SPK:</strong></p>
-                ${alasanHtmlList}
-                <button type="button" id="buat-laporan-baru-btn">Buat Laporan Baru</button>
-            `;
-            
-            formWrapper.style.display = 'none';
-            displayContainer.style.display = 'block';
+            const payload = {
+                form: 'perpanjangan_spk',
+                token: authToken,
+                nomor_ulok: document.getElementById('nomor_ulok').value,
+                pertambahan_hari: document.getElementById('pertambahan_hari').value,
+                alasan_spk: hiddenTextarea.value
+            };
 
-            document.getElementById('buat-laporan-baru-btn').addEventListener('click', function() {
-                displayContainer.style.display = 'none';
-                formWrapper.style.display = 'block';
-                form.reset();
-                alasanContainer.innerHTML = '';
-                hiddenTextarea.value = '';
-                createAlasanItem();
-            });
+            try {
+                const response = await fetch(API_PROXY_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    displayContainer.innerHTML = `
+                        <h2>Data Berhasil Dikirim</h2>
+                        <p>Pengajuan Anda telah berhasil dikirim dan menunggu persetujuan dari Branch Manager.</p>
+                        <button type="button" id="buat-laporan-baru-btn">Buat Laporan Baru</button>
+                    `;
+                    formWrapper.style.display = 'none';
+                    displayContainer.style.display = 'block';
+
+                    document.getElementById('buat-laporan-baru-btn').addEventListener('click', function() {
+                        window.location.reload();
+                    });
+                } else {
+                    alert(`Error dari Server: ${result.message}`);
+                }
+
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                alert("Terjadi kesalahan koneksi. Gagal mengirim data. " + error.message);
+            } finally {
+                setLoading(false);
+            }
         });
-      });
+    });
     </script>
-  </body>
+</body>
 </html>
