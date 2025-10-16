@@ -735,13 +735,13 @@
         sessionStorage.removeItem("authToken");
 
         window.location.href =
-          "https://frontend-form-virid.vercel.app/login.html";
+          "https://frontend-form-virid.vercel.app/login-input_pic.html";
       });
 
       window.closePopup = closePopup;
       (async function checkAuth() {
         const token = sessionStorage.getItem("authToken");
-        const loginPage = "https://frontend-form-virid.vercel.app/login.html";
+        const loginPage = "https://frontend-form-virid.vercel.app/login-input_pic.html";
         if (!token) {
           window.location.replace(loginPage);
           return;
