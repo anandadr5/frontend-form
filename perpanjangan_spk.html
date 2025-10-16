@@ -288,7 +288,7 @@
 
         if (!authToken) {
           alert('Anda harus login untuk mengakses halaman ini.');
-          window.location.href = './login-perpanjanganspk.html'; // Ganti dengan path ke halaman login Anda
+          window.location.href = 'https://frontend-form-virid.vercel.app/login-perpanjanganspk.html'; // Ganti dengan path ke halaman login Anda
           return;
         }
 
@@ -303,12 +303,12 @@
           } else {
             sessionStorage.removeItem("authToken");
             alert("Sesi tidak valid atau telah berakhir. Silakan login kembali.");
-            window.location.href = "./login-perpanjanganspk.html";
+            window.location.href = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
             return;
           }
         } catch (error) {
           alert("Gagal memverifikasi sesi. Coba lagi.");
-          window.location.href = "./login-perpanjanganspk.html";
+          window.location.href = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
           return;
         }
 
