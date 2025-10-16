@@ -132,12 +132,13 @@
             setLoading(true);
 
             const payload = {
-                form: 'perpanjangan_spk',
-                token: sessionStorage.getItem('authToken'),
-                nomor_ulok: document.getElementById('nomor_ulok').value,
-                pertambahan_hari: document.getElementById('pertambahan_hari').value,
-                alasan_spk: hiddenTextarea.value
-            };
+              form: 'perpanjangan_spk',
+              action: 'submitPerpanjangan',
+              token: sessionStorage.getItem('authToken'),
+              nomor_ulok: document.getElementById('nomor_ulok').value,
+              pertambahan_hari: document.getElementById('pertambahan_hari').value,
+              alasan_spk: hiddenTextarea.value
+          };
 
             try {
                 const response = await fetch(API_PROXY_URL, {
