@@ -280,8 +280,10 @@
     <div id="form-wrapper" class="container">
       <form id="pertambahan-spk-form" class="form-container">
         <label for="nomor_ulok">Nomor Ulok:</label>
-        <input type="text" id="nomor_ulok" name="nomor_ulok" placeholder="Masukkan Nomor Ulok" required />
-        
+        <select id="nomor_ulok" name="nomor_ulok" required>
+            <option value="" disabled selected>Memuat data Ulok...</option>
+        </select>
+
         <label for="pertambahan_hari">Pertambahan Hari Dari Tanggal SPK:</label>
         <div class="input-hari-container">
           <input type="number" id="pertambahan_hari" name="pertambahan_hari" min="1" max="99" oninput="this.value=this.value.slice(0,2)" placeholder="00" required />
@@ -323,33 +325,67 @@
       const GAS_LOGIN_VERIFY_URL = "https://backend-form-y8wo.onrender.com/api/form?form=login_perpanjanganspk&action=verifyToken";
       let currentUser = null;
 
+      async function populateUlokDropdown(cabang) {
+          const ulokSelect = document.getElementById('nomor_ulok');
+          ulokSelect.disabled = true;
+
+          try {
+              const fetchUrl = `${API_PROXY_URL}?form=perpanjangan_spk&action=getUlokByCabang&cabang=${encodeURIComponent(cabang)}`;
+              const response = await fetch(fetchUrl);
+              const result = await response.json();
+
+              if (result.status === "success" && result.data && result.data.length > 0) {
+                  ulokSelect.innerHTML = '';
+                  const defaultOption = document.createElement('option');
+                  defaultOption.value = "";
+                  defaultOption.textContent = "Pilih Nomor Ulok...";
+                  defaultOption.disabled = true;
+                  defaultOption.selected = true;
+                  ulokSelect.appendChild(defaultOption);
+
+                  result.data.forEach(ulok => {
+                      if (ulok) {
+                          const option = document.createElement('option');
+                          option.value = ulok;
+                          option.textContent = ulok;
+                          ulokSelect.appendChild(option);
+                      }
+                  });
+                  ulokSelect.disabled = false;
+              } else {
+                  ulokSelect.innerHTML = `<option value="" disabled selected>Tidak ada data Ulok untuk cabang ini</option>`;
+              }
+          } catch (error) {
+              console.error("Gagal memuat Nomor Ulok:", error);
+              ulokSelect.innerHTML = `<option value="" disabled selected>Gagal memuat data</option>`;
+          }
+      }
+
       document.addEventListener("DOMContentLoaded", function () {
+          (async function verifySession() {
+              const authToken = sessionStorage.getItem("authToken");
+              if (!authToken) {
+                  alert('Anda harus login untuk mengakses halaman ini.');
+                  window.location.href = 'https://frontend-form-virid.vercel.app/login-perpanjanganspk.html';
+                  return;
+              }
 
-        (async function verifySession() {
-            const authToken = sessionStorage.getItem("authToken");
-
-            if (!authToken) {
-                alert('Anda harus login untuk mengakses halaman ini.');
-                window.location.href = 'https://frontend-form-virid.vercel.app/login-perpanjanganspk.html';
-                return;
-            }
-
-            try {
-                const response = await fetch(`${GAS_LOGIN_VERIFY_URL}&token=${authToken}`);
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    currentUser = result.data;
-                } else {
-                    sessionStorage.removeItem("authToken");
-                    alert("Sesi tidak valid atau telah berakhir. Silakan login kembali.");
-                    window.location.href = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
-                }
-            } catch (error) {
-                alert("Gagal memverifikasi sesi. Coba lagi.");
-                window.location.href = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
-            }
-        })();
+              try {
+                  const response = await fetch(`${GAS_LOGIN_VERIFY_URL}&token=${authToken}`);
+                  const result = await response.json();
+                  if (result.status === "success") {
+                      currentUser = result.data;
+                      populateUlokDropdown(currentUser.cabang);
+                  } else {
+                      sessionStorage.removeItem("authToken");
+                      alert("Sesi tidak valid atau telah berakhir. Silakan login kembali.");
+                      window.location.href = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
+                  }
+              } catch (error) {
+                  alert("Gagal memverifikasi sesi. Coba lagi.");
+                  window.location.href = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
+              }
+          })();
 
         const alasanContainer = document.getElementById("alasan-container");
         const tambahAlasanBtn = document.getElementById("tambah-alasan-btn");
