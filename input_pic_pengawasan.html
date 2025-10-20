@@ -350,8 +350,8 @@
       const kategoriLokasiInput = document.getElementById("kategori_lokasi");
       const tanggalSpkInput = document.getElementById("tanggal_spk");
 
-      let currentRabLinks = [];
-      let currentSpkLinks = [];
+      let currentRabUrl = "";
+      let currentSpkUrl = "";
 
       function initializePage(userData) {
         const loggedInCabang = userData.cabang;
@@ -401,10 +401,10 @@
       }
 
       function clearUrlFields() {
-        currentRabLinks = [];
+        currentRabUrl = "";
         rabUrlInput.value = "";
         rabStatus.style.display = "none";
-        currentSpkLinks = [];
+        currentSpkUrl = "";
         spkUrlInput.value = "";
         spkStatus.style.display = "none";
         kategoriLokasiInput.value = "";
@@ -426,17 +426,16 @@
           const result = await response.json();
 
           if (result.status === "success" && result.spkUrls && result.spkUrls.length > 0) {
-            currentSpkLinks = result.spkUrls;
-            const displayNames = result.spkUrls.map(l => l.lingkup).join(', ');
-            spkUrlInput.value = `${result.spkUrls.length} link ditemukan: (${displayNames})`;
-
+            const urls = result.spkUrls.join(', ');
+            currentSpkUrl = urls;
+            spkUrlInput.value = urls;
             showStatus(
               spkStatus,
               `✅ ${result.spkUrls.length} link SPK ditemukan`,
               "success"
             );
           } else {
-            currentSpkLinks = [];
+            currentSpkUrl = "";
             spkUrlInput.value = "";
             showStatus(
               spkStatus,
@@ -446,7 +445,7 @@
           }
         } catch (error) {
           console.error("Error fetching SPK URL:", error);
-          currentSpkLinks = [];
+          currentSpkUrl = "";
           spkUrlInput.value = "";
           showStatus(spkStatus, "❌ Gagal mengambil data SPK", "error");
         }
@@ -467,17 +466,16 @@
           const result = await response.json();
 
           if (result.status === "success" && result.rabUrls && result.rabUrls.length > 0) {
-            currentRabLinks = result.rabUrls;
-            const displayNames = result.rabUrls.map(l => l.lingkup).join(', ');
-            rabUrlInput.value = `${result.rabUrls.length} link ditemukan: (${displayNames})`;
-
+            const urls = result.rabUrls.join(', ');
+            currentRabUrl = urls;
+            rabUrlInput.value = urls;
             showStatus(
               rabStatus,
               `✅ ${result.rabUrls.length} link RAB ditemukan`,
               "success"
             );
           } else {
-            currentRabLinks = [];
+            currentRabUrl = "";
             rabUrlInput.value = "";
             showStatus(
               rabStatus,
@@ -487,7 +485,7 @@
           }
         } catch (error) {
           console.error("Error fetching RAB URL:", error);
-          currentRabLinks = []; 
+          currentRabUrl = "";
           rabUrlInput.value = "";
           showStatus(rabStatus, "❌ Gagal mengambil data RAB", "error");
         }
@@ -591,16 +589,16 @@
 
       form.addEventListener("submit", async function (e) {
         e.preventDefault();
-        if (currentSpkLinks.length === 0) {
+        if (!currentSpkUrl) {
           const msg =
-            "SPK tidak ditemukan. Pastikan kode ulok sudah benar dan SPK sudah terdata.";
+            "SPK tidak ditemukan. Pastikan kode ulok dan lingkup pekerjaan sudah benar dan SPK sudah terdata.";
           showError(msg);
           showPopup(msg);
           return;
         }
-        if (currentRabLinks.length === 0) {
+        if (!currentRabUrl) {
           const msg =
-            "RAB tidak ditemukan. Pastikan kode ulok sudah benar dan RAB sudah terdata.";
+            "RAB tidak ditemukan. Pastikan kode ulok dan lingkup pekerjaan sudah benar dan RAB sudah terdata.";
           showError(msg);
           showPopup(msg);
           return;
@@ -618,10 +616,9 @@
             tanggal_spk: form.tanggal_spk.value,
             pic_building_support: picData.email,
             pic_nama: picData.nama,
-            spk_links: currentSpkLinks,
-            rab_links: currentRabLinks,
+            spk_url: currentSpkUrl,
+            rab_url: currentRabUrl,
           };
-
           const response = await fetch(SCRIPT_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
