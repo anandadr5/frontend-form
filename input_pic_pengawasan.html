@@ -426,7 +426,7 @@
           const result = await response.json();
 
           if (result.status === "success" && result.spkUrls && result.spkUrls.length > 0) {
-            const urls = result.spkUrls.join(', ');
+            const urls = result.spkUrls.map(item => item.url).join(', ');
             currentSpkUrl = urls;
             spkUrlInput.value = urls;
             showStatus(
@@ -466,7 +466,7 @@
           const result = await response.json();
 
           if (result.status === "success" && result.rabUrls && result.rabUrls.length > 0) {
-            const urls = result.rabUrls.join(', ');
+            const urls = result.rabUrls.map(item => item.url).join(', ');
             currentRabUrl = urls;
             rabUrlInput.value = urls;
             showStatus(
