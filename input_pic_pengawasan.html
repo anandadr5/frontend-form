@@ -458,16 +458,14 @@
             `Mencari semua RAB untuk kode ulok ${kodeUlok}...`,
             "loading"
           );
-          // Endpoint baru di backend (akan kita buat di Bagian 2)
           const response = await fetch(
             `${SCRIPT_URL}?form=input-pic&getAllRabUrls=true&kode_ulok=${encodeURIComponent(
               kodeUlok
-            )}&lingkup_pekerjaan=${encodeURIComponent(lingkupPekerjaan)}`
+            )}`
           );
           const result = await response.json();
 
           if (result.status === "success" && result.rabUrls && result.rabUrls.length > 0) {
-            // Gabungkan semua link yang ditemukan dengan koma
             const urls = result.rabUrls.join(', ');
             currentRabUrl = urls;
             rabUrlInput.value = urls;
