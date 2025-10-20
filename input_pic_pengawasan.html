@@ -268,12 +268,6 @@
           required
         />
 
-        <label for="lingkup_pekerjaan">Lingkup Pekerjaan:</label>
-        <select id="lingkup_pekerjaan" name="lingkup_pekerjaan" required>
-          <option value="">-- Pilih Lingkup Pekerjaan --</option>
-        </select>
-        <div class="status-indicator" id="lingkup-status"></div>
-
         <label for="tanggal_spk">Tanggal Mulai SPK:</label>
         <input
           type="date"
@@ -349,20 +343,15 @@
       const kodeUlokInput = document.getElementById("kode_ulok");
       const logoutLink = document.getElementById("logout-link");
 
-      // ========== Deklarasi variabel baru untuk SPK & RAB ==========
       const rabUrlInput = document.getElementById("rab_url");
       const rabStatus = document.getElementById("rab-status");
       const spkUrlInput = document.getElementById("spk_url");
       const spkStatus = document.getElementById("spk-status");
       const kategoriLokasiInput = document.getElementById("kategori_lokasi");
       const tanggalSpkInput = document.getElementById("tanggal_spk");
-      const lingkupPekerjaanInput =
-        document.getElementById("lingkup_pekerjaan");
-      const lingkupStatus = document.getElementById("lingkup-status");
+
       let currentRabUrl = "";
       let currentSpkUrl = "";
-
-      // ================== BAGIAN 2: FUNGSI-FUNGSI UTAMA & HELPER ==================
 
       function initializePage(userData) {
         const loggedInCabang = userData.cabang;
@@ -420,80 +409,29 @@
         spkStatus.style.display = "none";
         kategoriLokasiInput.value = "";
         tanggalSpkInput.value = "";
-        lingkupPekerjaanInput.innerHTML =
-          '<option value="">-- Pilih Lingkup Pekerjaan --</option>';
-        lingkupStatus.style.display = "none";
       }
 
-      async function fetchLingkupPekerjaan(kodeUlok) {
+      async function fetchSpkUrl(kodeUlok) {
         try {
           showStatus(
-            lingkupStatus,
-            `Mencari lingkup pekerjaan untuk kode ulok ${kodeUlok}...`,
+            spkStatus,
+            `Mencari semua SPK untuk kode ulok ${kodeUlok}...`,
             "loading"
           );
           const response = await fetch(
-            `${SCRIPT_URL}?form=input-pic&getLingkupPekerjaan=true&kode_ulok=${encodeURIComponent(
+            `${SCRIPT_URL}?form=input-pic&getAllSpkUrls=true&kode_ulok=${encodeURIComponent(
               kodeUlok
             )}`
           );
           const result = await response.json();
 
-          lingkupPekerjaanInput.innerHTML =
-            '<option value="">-- Pilih Lingkup Pekerjaan --</option>';
-
-          if (result.status === "success" && result.lingkupList.length > 0) {
-            result.lingkupList.forEach((lingkup) => {
-              const option = document.createElement("option");
-              option.value = lingkup;
-              option.textContent = lingkup;
-              lingkupPekerjaanInput.appendChild(option);
-            });
-            showStatus(
-              lingkupStatus,
-              "✅ Lingkup pekerjaan berhasil dimuat",
-              "success"
-            );
-          } else {
-            const opt = document.createElement("option");
-            opt.textContent = "Lingkup pekerjaan tidak ditemukan";
-            opt.disabled = true;
-            lingkupPekerjaanInput.appendChild(opt);
-            showStatus(
-              lingkupStatus,
-              "❌ Lingkup pekerjaan tidak ditemukan untuk kode ulok ini",
-              "error"
-            );
-          }
-        } catch (error) {
-          console.error("Error fetching lingkup pekerjaan:", error);
-          showStatus(
-            lingkupStatus,
-            "❌ Gagal mengambil data lingkup pekerjaan",
-            "error"
-          );
-        }
-      }
-
-      async function fetchSpkUrl(kodeUlok, lingkupPekerjaan) {
-        try {
-          showStatus(
-            spkStatus,
-            `Mencari SPK untuk kode ulok ${kodeUlok} - ${lingkupPekerjaan}...`,
-            "loading"
-          );
-          const response = await fetch(
-            `${SCRIPT_URL}?form=input-pic&getSpkUrl=true&kode_ulok=${encodeURIComponent(
-              kodeUlok
-            )}&lingkup_pekerjaan=${encodeURIComponent(lingkupPekerjaan)}`
-          );
-          const result = await response.json();
-          if (result.status === "success" && result.spkUrl) {
-            currentSpkUrl = result.spkUrl;
-            spkUrlInput.value = result.spkUrl;
+          if (result.status === "success" && result.spkUrls && result.spkUrls.length > 0) {
+            const urls = result.spkUrls.join(', ');
+            currentSpkUrl = urls;
+            spkUrlInput.value = urls;
             showStatus(
               spkStatus,
-              "✅ SPK ditemukan dan siap digunakan",
+              `✅ ${result.spkUrls.length} link SPK ditemukan`,
               "success"
             );
           } else {
@@ -501,7 +439,7 @@
             spkUrlInput.value = "";
             showStatus(
               spkStatus,
-              "❌ SPK tidak ditemukan untuk kode ulok dan lingkup pekerjaan ini",
+              "❌ SPK tidak ditemukan untuk kode ulok ini",
               "error"
             );
           }
@@ -513,25 +451,29 @@
         }
       }
 
-      async function fetchRabUrl(kodeUlok, lingkupPekerjaan) {
+      async function fetchRabUrl(kodeUlok) {
         try {
           showStatus(
             rabStatus,
-            `Mencari RAB untuk kode ulok ${kodeUlok} - ${lingkupPekerjaan}...`,
+            `Mencari semua RAB untuk kode ulok ${kodeUlok}...`,
             "loading"
           );
+          // Endpoint baru di backend (akan kita buat di Bagian 2)
           const response = await fetch(
-            `${SCRIPT_URL}?form=input-pic&getRabUrl=true&kode_ulok=${encodeURIComponent(
+            `${SCRIPT_URL}?form=input-pic&getAllRabUrls=true&kode_ulok=${encodeURIComponent(
               kodeUlok
             )}&lingkup_pekerjaan=${encodeURIComponent(lingkupPekerjaan)}`
           );
           const result = await response.json();
-          if (result.status === "success" && result.rabUrl) {
-            currentRabUrl = result.rabUrl;
-            rabUrlInput.value = result.rabUrl;
+
+          if (result.status === "success" && result.rabUrls && result.rabUrls.length > 0) {
+            // Gabungkan semua link yang ditemukan dengan koma
+            const urls = result.rabUrls.join(', ');
+            currentRabUrl = urls;
+            rabUrlInput.value = urls;
             showStatus(
               rabStatus,
-              "✅ RAB ditemukan dan siap digunakan",
+              `✅ ${result.rabUrls.length} link RAB ditemukan`,
               "success"
             );
           } else {
@@ -539,7 +481,7 @@
             rabUrlInput.value = "";
             showStatus(
               rabStatus,
-              "❌ RAB tidak ditemukan untuk kode ulok dan lingkup pekerjaan ini",
+              "❌ RAB tidak ditemukan untuk kode ulok ini",
               "error"
             );
           }
@@ -572,8 +514,6 @@
           console.error("Error fetching SPK details:", error);
         }
       }
-
-      // ================== BAGIAN 3: EVENT LISTENERS ==================
 
       cabangInput.addEventListener("change", async function () {
         const cabang = cabangInput.value.trim();
@@ -642,32 +582,15 @@
         const kodeUlok = kodeUlokInput.value.trim();
         if (kodeUlok) {
           await fetchSpkDetails(kodeUlok);
-          await fetchLingkupPekerjaan(kodeUlok);
+          await fetchSpkUrl(kodeUlok);
+          await fetchRabUrl(kodeUlok);
         } else {
           clearUrlFields();
         }
       });
 
-      lingkupPekerjaanInput.addEventListener("change", async function () {
-        const kodeUlok = kodeUlokInput.value.trim();
-        const lingkupPekerjaan = lingkupPekerjaanInput.value.trim();
-
-        if (kodeUlok && lingkupPekerjaan) {
-          await fetchSpkUrl(kodeUlok, lingkupPekerjaan);
-          await fetchRabUrl(kodeUlok, lingkupPekerjaan);
-        } else {
-          currentSpkUrl = "";
-          spkUrlInput.value = "";
-          spkStatus.style.display = "none";
-          currentRabUrl = "";
-          rabUrlInput.value = "";
-          rabStatus.style.display = "none";
-        }
-      });
-
       form.addEventListener("submit", async function (e) {
         e.preventDefault();
-        // ========== Validasi untuk SPK dan RAB ==========
         if (!currentSpkUrl) {
           const msg =
             "SPK tidak ditemukan. Pastikan kode ulok dan lingkup pekerjaan sudah benar dan SPK sudah terdata.";
@@ -692,7 +615,6 @@
             cabang: form.cabang.value,
             kode_ulok: form.kode_ulok.value,
             kategori_lokasi: form.kategori_lokasi.value,
-            lingkup_pekerjaan: form.lingkup_pekerjaan.value,
             tanggal_spk: form.tanggal_spk.value,
             pic_building_support: picData.email,
             pic_nama: picData.nama,
