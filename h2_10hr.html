@@ -74,8 +74,32 @@
         flex: 1;
       }
 
-      .form-container button:hover {
+      .form-container button:hover:not(:disabled) {
         background-color: #ef190a;
+      }
+
+      .form-container button:disabled {
+        background-color: #ef190a;
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      .form-container button .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #ffffff;
+        animation: 1s ease-in-out infinite;
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
       }
 
       .file-info {
@@ -88,39 +112,89 @@
       .popup {
         display: none;
         position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #ffffff;
-        padding: 30px;
-        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
-        border-radius: 10px;
-        color: #ef190a;
-        text-align: center;
-      }
-
-      .popup p {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 15px;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
       }
 
       .popup.show {
-        display: block;
+        display: flex;
+        opacity: 1;
+      }
+
+      .popup-content {
+        background-color: #ffffff;
+        padding: 30px 40px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
+        border-radius: 10px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        transform: scale(0.9);
+        opacity: 0;
+        transition: all 0.3s ease;
+      }
+
+      .popup.show .popup-content {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      .popup-icon {
+        font-size: 50px;
+        line-height: 1;
+        margin-bottom: 15px;
+      }
+
+      .popup p {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #333;
+        margin-top: 0;
       }
 
       .popup button {
-        background-color: #ef190a;
         color: white;
-        padding: 10px 20px;
+        padding: 12px 24px;
         border: none;
         border-radius: 5px;
         font-size: 16px;
         cursor: pointer;
+        transition: background-color 0.3s ease;
       }
 
-      .popup button:hover {
-        background-color: #d50e08;
+      .popup.success .popup-icon {
+        color: #28a745;
+      }
+      .popup.success .popup-content {
+        border-top: 4px solid #28a745;
+      }
+      .popup.success button {
+        background-color: #28a745;
+      }
+      .popup.success button:hover {
+        background-color: #218838;
+      }
+
+      .popup.error .popup-icon {
+        color: #ce1e10;
+      }
+      .popup.error .popup-content {
+        border-top: 4px solid #ce1e10;
+      }
+      .popup.error button {
+        background-color: #ce1e10;
+      }
+      .popup.error button:hover {
+        background-color: #ef190a;
       }
     </style>
   </head>
@@ -219,6 +293,10 @@
       const submitButton = form.querySelector("button[type='submit']");
       const messageDiv = document.getElementById("popup");
 
+      const popupMessage = document.getElementById("popup-message");
+      const popupIcon = document.getElementById("popup-icon");
+      const originalButtonText = submitButton.innerHTML;
+
       async function loadKodeUlok() {
         const email = getParameterByName("email");
         const res = await fetch(
@@ -239,7 +317,7 @@
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         submitButton.disabled = true;
-        showPopup("Mengirim data...");
+        submitButton.innerHTML = `<span class="loading-spinner"></span> Memproses data...`;
 
         const formData = new FormData(form);
         const convertToBase64 = (file) =>
@@ -284,19 +362,19 @@
 
           const result = await response.json();
           if (result.status === "success") {
-            showPopup("Data berhasil dikirim!");
-            // Hapus pratinjau setelah berhasil submit
+           showPopup("Data berhasil dikirim!", 'success');
             document.getElementById("preview-pek_persiapan")?.remove();
             document.getElementById("preview-berkas_pengawasan")?.remove();
             form.reset();
           } else {
-            showPopup("Gagal kirim: " + result.message);
+            showPopup("Gagal kirim: " + result.message, 'error');
           }
         } catch (err) {
           console.error(err);
-          showPopup("Error: " + err.message);
+          showPopup("Error: " + err.message, 'error');
         } finally {
           submitButton.disabled = false;
+          submitButton.innerHTML = originalButtonText;
         }
       });
 
@@ -345,10 +423,19 @@
       setupFileInput("pek_persiapan", "PEK. PERSIAPAN & BONGKARAN");
       setupFileInput("berkas_pengawasan", "BERKAS PENGAWASAN");
 
-      function showPopup(msg) {
-        messageDiv.querySelector("p").textContent = msg;
-        messageDiv.classList.add("show");
-      }
+      function showPopup(msg, type = 'success') {
+        popupMessage.textContent = msg;
+        messageDiv.classList.remove('success', 'error');
+        messageDiv.classList.add(type);
+        
+        if (type === 'success') {
+          popupIcon.textContent = "✓"; 
+        } else {
+          popupIcon.textContent = "×"; 
+        }
+        
+        messageDiv.classList.add("show");
+      }
 
       function closePopup() {
         messageDiv.classList.remove("show");
