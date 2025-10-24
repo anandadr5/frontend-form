@@ -257,6 +257,17 @@
           <option value="">-- Pilih Kode Ulok --</option>
         </select>
 
+        <label for="nama_toko">Nama Toko:</label>
+        <input
+          type="text"
+          id="nama_toko"
+          name="nama_toko"
+          placeholder="Akan terisi otomatis berdasarkan kode ulok..."
+          readonly
+          class="input-readonly"
+          required
+        />
+
         <label for="kategori_lokasi">Kategori Lokasi:</label>
         <input
           type="text"
@@ -341,6 +352,7 @@
       const cabangInput = document.getElementById("cabang");
       const picSelect = document.getElementById("pic_building_support");
       const kodeUlokInput = document.getElementById("kode_ulok");
+      const namaTokoInput = document.getElementById("nama_toko");
       const logoutLink = document.getElementById("logout-link");
 
       const rabUrlInput = document.getElementById("rab_url");
@@ -407,9 +419,31 @@
         currentSpkUrl = "";
         spkUrlInput.value = "";
         spkStatus.style.display = "none";
+        namaTokoInput.value = "";
         kategoriLokasiInput.value = "";
         tanggalSpkInput.value = "";
       }
+
+      async function fetchNamaToko(kodeUlok) {
+        try {
+          namaTokoInput.value = "Mencari nama toko...";
+          const response = await fetch(
+            `${SCRIPT_URL}?form=input-pic&getNamaToko=true&kode_ulok=${encodeURIComponent(
+              kodeUlok
+            )}`
+          );
+          const result = await response.json();
+
+          if (result.status === "success" && result.namaToko) {
+            namaTokoInput.value = result.namaToko.toUpperCase();
+          } else {
+            namaTokoInput.value = "Nama Toko Tidak Ditemukan";
+          }
+        } catch (error) {
+          console.error("Error fetching Nama Toko:", error);
+          namaTokoInput.value = "Gagal mengambil data Nama Toko";
+        }
+      }
 
       async function fetchSpkUrl(kodeUlok) {
         try {
@@ -579,6 +613,7 @@
       kodeUlokInput.addEventListener("change", async function () {
         const kodeUlok = kodeUlokInput.value.trim();
         if (kodeUlok) {
+          await fetchNamaToko(kodeUlok);
           await fetchSpkDetails(kodeUlok);
           await fetchSpkUrl(kodeUlok);
           await fetchRabUrl(kodeUlok);
@@ -630,7 +665,7 @@
             showSuccess(pesan);
             showPopup(pesan);
             form.reset();
-            clearUrlFields(); // Reset dropdown ke state awal
+            clearUrlFields();
             cabangInput.dispatchEvent(new Event("change"));
           } else {
             const msg =
