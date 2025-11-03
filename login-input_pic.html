@@ -311,12 +311,18 @@
       };
 
       const urlParams = new URLSearchParams(window.location.search);
-      const redirectTo = urlParams.get('redirectTo');
-      const formType = urlParams.get('formType');
+      let redirectTo = urlParams.get('redirectTo');
+      let formType = urlParams.get('formType');
 
       if (!redirectTo || !formType) {
-        showError("Link tidak valid atau tidak lengkap. Harap gunakan link dari email.");
-        loginBtn.disabled = true;
+        console.log("Mode akses langsung: Mengarahkan ke form 'input-pic' setelah login.");
+        
+        redirectTo = "https://frontend-form-virid.vercel.app/input-pic.html"; 
+        formType = "input-pic";
+
+        loginBtn.disabled = false;
+      } else {
+        console.log(`Mode akses email: Mengarahkan ke form '${formType}'`);
       }
 
       togglePassword.addEventListener("click", () => {
