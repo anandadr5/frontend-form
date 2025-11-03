@@ -151,11 +151,11 @@
           value="non_ruko_non_urugan_40hr"
         />
 
-        <label for="pek_atap">I. PEK. ATAP:</label>
+        <label for="pek_atap">I. PEK. DINDING:</label>
         <input
           type="file"
-          id="pek_atap"
-          name="pek_atap"
+          id="pek_dinding"
+          name="pek_dinding"
           accept="image/*"
           required
         />
@@ -177,8 +177,34 @@
           required
         ></textarea>
 
+        <label for="pek_atap">II. PEK. ATAP:</label>
+        <input
+          type="file"
+          id="pek_atap"
+          name="pek_atap"
+          accept="image/*"
+          required
+        />
+        <small class="file-info">Maksimal ukuran file: 2 MB</small>
+
+        <label for="status_progress2">Status Progress:</label>
+        <select name="status_progress" id="status_progress2" required>
+          <option value="">-- Pilih Status Progress --</option>
+          <option value="tepat_waktu">Tepat Waktu</option>
+          <option value="terlambat">Terlambat</option>
+        </select>
+
+        <label for="catatan2">Catatan:</label>
+        <textarea
+          name="catatan"
+          id="catatan2"
+          rows="4"
+          placeholder="Masukkan Catatan"
+          required
+        ></textarea>
+
         <label for="berkas_pengawasan"
-          >II. BERKAS PENGAWASAN (MEMO PENGAWASAN/INSTRUKSI LAPANGAN/OPNAME
+          >III. BERKAS PENGAWASAN (MEMO PENGAWASAN/INSTRUKSI LAPANGAN/OPNAME
           PEKERJAAN)</label
         >
         <input
@@ -251,8 +277,9 @@
           });
 
         try {
-          const base64_1 = await convertToBase64(formData.get("pek_atap"));
-          const base64_2 = await convertToBase64(
+          const base64_1 = await convertToBase64(formData.get("pek_dinding"));
+          const base64_2 = await convertToBase64(formData.get("pek_atap"));
+          const base64_3 = await convertToBase64(
             formData.get("berkas_pengawasan")
           );
 
@@ -269,11 +296,14 @@
             pic_building_support: getParameterByName("email"),
             status_progress1: statusProgress[0],
             catatan1: catatan[0],
-            status_progress2: "-",
-            catatan2: "-",
+            status_progress2: statusProgress[1],
+            catatan2: catatan[1],
+            status_progress3: "-",
+            catatan3: "-",
             image1: base64_1,
-            image2: "",
-            image3: base64_2,
+            image2: base64_2,
+            image3: "",
+            image4: base64_3,
           };
 
           const response = await fetch(SCRIPT_URL, {
@@ -285,6 +315,7 @@
           const result = await response.json();
           if (result.status === "success") {
             showPopup("Data berhasil dikirim!");
+            document.getElementById("preview-pek_dinding")?.remove();
             document.getElementById("preview-pek_atap")?.remove();
             document.getElementById("preview-berkas_pengawasan")?.remove();
             form.reset();
@@ -341,6 +372,7 @@
           }
         });
       }
+      setupFileInput("pek_dinding", "PEK. DINDING");
       setupFileInput("pek_atap", "PEK. ATAP");
       setupFileInput("berkas_pengawasan", "BERKAS PENGAWASAN");
 

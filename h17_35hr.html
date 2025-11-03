@@ -177,11 +177,11 @@
           required
         ></textarea>
 
-        <label for="pek_atap">II. PEK. ATAP:</label>
+        <label for="pek_atap">II. PEK. DINDING:</label>
         <input
           type="file"
-          id="pek_atap"
-          name="pek_atap"
+          id="pek_dinding"
+          name="pek_dinding"
           accept="image/*"
           required
         />
@@ -203,8 +203,34 @@
           required
         ></textarea>
 
+        <label for="pek_atap">III. PEK. ATAP:</label>
+        <input
+          type="file"
+          id="pek_atap"
+          name="pek_atap"
+          accept="image/*"
+          required
+        />
+        <small class="file-info">Maksimal ukuran file: 2 MB</small>
+
+        <label for="status_progress3">Status Progress:</label>
+        <select name="status_progress" id="status_progress3" required>
+          <option value="">-- Pilih Status Progress --</option>
+          <option value="tepat_waktu">Tepat Waktu</option>
+          <option value="terlambat">Terlambat</option>
+        </select>
+
+        <label for="catatan3">Catatan:</label>
+        <textarea
+          name="catatan"
+          id="catatan3"
+          rows="4"
+          placeholder="Masukkan Catatan"
+          required
+        ></textarea>
+
         <label for="berkas_pengawasan"
-          >III. BERKAS PENGAWASAN (MEMO PENGAWASAN/INSTRUKSI LAPANGAN/OPNAME
+          >IV. BERKAS PENGAWASAN (MEMO PENGAWASAN/INSTRUKSI LAPANGAN/OPNAME
           PEKERJAAN)</label
         >
         <input
@@ -278,8 +304,9 @@
 
         try {
           const base64_1 = await convertToBase64(formData.get("pek_sanitary"));
-          const base64_2 = await convertToBase64(formData.get("pek_atap"));
-          const base64_3 = await convertToBase64(
+          const base64_2 = await convertToBase64(formData.get("pek_dinding"));
+          const base64_3 = await convertToBase64(formData.get("pek_atap"));
+          const base64_4 = await convertToBase64(
             formData.get("berkas_pengawasan")
           );
 
@@ -298,9 +325,12 @@
             catatan1: catatan[0],
             status_progress2: statusProgress[1],
             catatan2: catatan[1],
+            status_progress2: statusProgress[2],
+            catatan2: catatan[2],
             image1: base64_1,
             image2: base64_2,
             image3: base64_3,
+            image3: base64_4,
           };
 
           const response = await fetch(SCRIPT_URL, {
@@ -313,6 +343,7 @@
           if (result.status === "success") {
             showPopup("Data berhasil dikirim!");
             document.getElementById("preview-pek_sanitary")?.remove();
+            document.getElementById("preview-pek_dinding")?.remove();
             document.getElementById("preview-pek_atap")?.remove();
             document.getElementById("preview-berkas_pengawasan")?.remove();
             form.reset();
@@ -370,6 +401,7 @@
         });
       }
       setupFileInput("pek_sanitary", "PEK. SANITARY");
+      setupFileInput("pek_dinding", "PEK. DINDING");
       setupFileInput("pek_atap", "PEK. ATAP");
       setupFileInput("berkas_pengawasan", "BERKAS PENGAWASAN");
 
