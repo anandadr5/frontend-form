@@ -289,15 +289,6 @@
       const eyeOpen = document.getElementById("eyeOpen");
       const eyeSlashed = document.getElementById("eyeSlashed");
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const redirectTo = urlParams.get('redirectTo');
-      const formType = urlParams.get('formType');
-
-      if (!redirectTo || !formType) {
-        showError("Link tidak valid atau tidak lengkap. Harap gunakan link dari email.");
-        loginBtn.disabled = true;
-      }
-
       const showError = (msg) => {
         errorMessage.textContent = msg;
         errorMessage.style.display = "block";
@@ -318,6 +309,15 @@
         btnText.textContent = state ? "Memproses..." : "Masuk";
         loadingOverlay.style.display = state ? "flex" : "none";
       };
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectTo = urlParams.get('redirectTo');
+      const formType = urlParams.get('formType');
+
+      if (!redirectTo || !formType) {
+        showError("Link tidak valid atau tidak lengkap. Harap gunakan link dari email.");
+        loginBtn.disabled = true;
+      }
 
       togglePassword.addEventListener("click", () => {
         const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
