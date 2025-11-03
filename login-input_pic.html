@@ -285,10 +285,18 @@
       const errorMessage = document.getElementById("errorMessage");
       const successMessage = document.getElementById("successMessage");
       const loadingOverlay = document.getElementById("loadingOverlay");
-
       const togglePassword = document.getElementById("togglePassword");
       const eyeOpen = document.getElementById("eyeOpen");
       const eyeSlashed = document.getElementById("eyeSlashed");
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectTo = urlParams.get('redirectTo');
+      const formType = urlParams.get('formType');
+
+      if (!redirectTo || !formType) {
+        showError("Link tidak valid atau tidak lengkap. Harap gunakan link dari email.");
+        loginBtn.disabled = true;
+      }
 
       const showError = (msg) => {
         errorMessage.textContent = msg;
@@ -330,9 +338,10 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             form: "login",
-            action: "loginManager",
+            action: "loginUser",
             email,
             password,
+            formType: formType
           }),
         });
         if (!res.ok) throw new Error("Gagal menghubungi server");
@@ -347,6 +356,7 @@
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
         if (!email || !password) return showError("Harap isi semua field");
+        if (!redirectTo || !formType) return showError("Link tidak valid.");
 
         hideMessages();
         setLoading(true);
@@ -354,12 +364,20 @@
         try {
           const result = await performLogin(email, password);
           showSuccess(result.message || "Login berhasil! Mengalihkan...");
-          if (result.token) {
-            sessionStorage.setItem("authToken", result.token);
-            const redirectUrl = `https://frontend-form-virid.vercel.app/input_pic_pengawasan.html`;
-            setTimeout(() => (window.location.href = redirectUrl), 1500);
+
+          const { userData } = result;
+
+          if (userData && userData.token && userData.nama && userData.email && userData.cabang) {
+            sessionStorage.setItem("authToken", userData.token);
+            
+            const finalUrl = new URL(redirectTo);
+            finalUrl.searchParams.set("email", userData.email);
+            finalUrl.searchParams.set("nama", userData.nama);
+            finalUrl.searchParams.set("cabang", userData.cabang);
+            
+            setTimeout(() => (window.location.href = finalUrl.toString()), 1500);
           } else {
-            throw new Error("Token tidak diterima dari server.");
+            throw new Error("Token atau data user tidak diterima dari server.");
           }
         } catch (err) {
           showError(err.message);
