@@ -701,7 +701,11 @@
         document.getElementById("close-error-popup");
 
       async function loadKodeUlok() {
-        const email = getParameterByName("email");
+        let email = getParameterByName("assigned_email"); 
+        if (!email) {
+          email = getParameterByName("email");
+        }
+        
         if (!email) {
           showPopup("Email tidak ditemukan di URL");
           return;
@@ -818,8 +822,8 @@
         }
 
         payload.fotoUpload = fotoUpload;
-        payload.pic_nama = getParameterByName("nama");
-        payload.pic_building_support = getParameterByName("email");
+        payload.pic_nama = getParameterByName("assigned_nama") || getParameterByName("nama");
+        payload.pic_building_support = getParameterByName("assigned_email") || getParameterByName("email");
 
         try {
           const response = await fetch(SCRIPT_URL, {
