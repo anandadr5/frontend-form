@@ -274,9 +274,13 @@
       const messageDiv = document.getElementById("popup");
 
       async function loadKodeUlok() {
-        const email = getParameterByName("email");
+        let email = getParameterByName("assigned_email");
+        if (!email) {
+          email = getParameterByName("email");
+        }
+
         const res = await fetch(
-          `https://backend-form-y8wo.onrender.com/api/form?form=h10&email=${encodeURIComponent(
+          `https://backend-form-y8wo.onrender.com/api/form?form=h2&email=${encodeURIComponent(
             email
           )}`
         );
@@ -320,9 +324,9 @@
             kode_ulok: formData.get("kode_ulok"),
             status_lokasi: formData.get("status_lokasi"),
             kategori_lokasi: formData.get("status_lokasi"),
-            cabang: getParameterByName("cabang"),
-            pic_nama: getParameterByName("nama"),
-            pic_building_support: getParameterByName("email"),
+            cabang: getParameterByName("assigned_cabang"),
+            pic_nama: getParameterByName("assigned_nama"),
+            pic_building_support: getParameterByName("assigned_email"),
             status_progress1: statusProgress[0],
             catatan1: catatan[0],
             status_progress2: statusProgress[1],
