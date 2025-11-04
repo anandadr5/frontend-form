@@ -364,8 +364,8 @@
           const options = { timeZone: "Asia/Jakarta", hour: '2-digit', hour12: false };
           const currentHour = parseInt(new Intl.DateTimeFormat('en-US', options).format(now));
 
-          const startHour = 14;
-          const endHour = 15;
+          const startHour = 15;
+          const endHour = 16;
 
           if (currentHour < startHour || currentHour >= endHour) {
             showError("Login di luar jam operasional. Silakan login antara pukul 06:00 - 18:00 WIB.");
