@@ -756,8 +756,6 @@
               opt.textContent = item.kode;
               select.appendChild(opt);
             });
-
-            loadFormFromLocalStorage();
           } else {
             console.error("Data kode ulok tidak valid:", result);
             showPopup("Gagal memuat data kode ulok.");
@@ -773,6 +771,20 @@
         const lokasiInput = document.getElementById("lokasi");
         const cabangInput = document.getElementById("cabang");
 
+        document.querySelectorAll('.pekerjaan-item select, #tanggal_serah, #status_serah').forEach(el => {
+          if (el.tagName === 'SELECT') {
+            el.value = "";
+          } else if (el.tagName === 'INPUT') {
+            el.value = "";
+          }
+        });
+        
+        document.querySelectorAll(".kelompok").forEach(section => {
+            section.querySelectorAll(".pekerjaan-item").forEach(updateItemState);
+            updateSectionColor(section);
+        });
+        checkFinalStatus();
+
         if (!selectedKode) {
           lokasiInput.value = "";
           cabangInput.value = "";
@@ -786,9 +798,9 @@
         if (selectedData) {
           lokasiInput.value = selectedData.alamat || "";
           cabangInput.value = selectedData.cabang || "";
-
-          const lingkup = (selectedData.lingkup || "").toLowerCase();
         }
+
+        loadFormFromLocalStorage(selectedKode);
       }
 
       form.addEventListener("submit", async (e) => {
@@ -934,8 +946,13 @@
 
           if (response.ok && result.status === "success") {
             showPopup("Data berhasil dikirim!");
+            const submittedKodeUlok = payload["kode_ulok"]; 
+            if (submittedKodeUlok) {
+                const storageKey = `autosave_serahTerima_${submittedKodeUlok}`;
+                localStorage.removeItem(storageKey); 
+            }
+
             form.reset();
-            localStorage.removeItem("autosaveData_serahTerima");
             document.querySelectorAll(".kelompok").forEach(updateSectionColor);
             checkFinalStatus();
           } else {
@@ -1012,25 +1029,38 @@
 
       function saveFormToLocalStorage() {
         const form = document.getElementById("laporan-form");
+        const kodeUlok = document.getElementById("kode_ulok").value;
+
+        if (!kodeUlok) {
+          return;
+        }
+
         const data = {};
-        
         form.querySelectorAll("select, input[type='text'], input[type='date']").forEach(el => {
           if (el.name) {
             data[el.name] = el.value;
           }
         });
         
-        localStorage.setItem("autosaveData_serahTerima", JSON.stringify(data));
+        const storageKey = `autosave_serahTerima_${kodeUlok}`;
+        localStorage.setItem(storageKey, JSON.stringify(data));
       }
 
-      function loadFormFromLocalStorage() {
-        const savedData = localStorage.getItem("autosaveData_serahTerima");
+      function loadFormFromLocalStorage(kodeUlok) {
+        if (!kodeUlok) {
+          return; 
+        }
+
+        const storageKey = `autosave_serahTerima_${kodeUlok}`;
+        const savedData = localStorage.getItem(storageKey);
         
         if (savedData) {
           const data = JSON.parse(savedData);
           let hasRestoredData = false;
           
           for (const key in data) {
+            if (key === 'kode_ulok') continue; 
+
             const element = document.querySelector(`[name="${key}"]`);
             if (element) {
               element.value = data[key];
@@ -1039,7 +1069,6 @@
           }
           
           if (hasRestoredData) {
-            
             document.querySelectorAll(".kelompok").forEach(section => {
               const itemDivs = section.querySelectorAll(".pekerjaan-item");
               itemDivs.forEach(itemDiv => {
@@ -1049,10 +1078,8 @@
             });
             checkFinalStatus();
             
-            handleUlokChange(); 
-            
             showErrorPopup(
-              "Data Anda sebelumnya berhasil dipulihkan. PERHATIAN: FOTO HARUS DI-UPLOAD ULANG.",
+              "Data Anda sebelumnya untuk kode ulok ini berhasil dipulihkan. PERHATIAN: FOTO HARUS DI-UPLOAD ULANG.",
               null
             );
           }
@@ -1063,7 +1090,6 @@
         .getElementById("kode_ulok")
         .addEventListener("change", () => {
             handleUlokChange();
-            saveFormToLocalStorage();
         });
 
       document.getElementById("tanggal_serah").addEventListener("change", saveFormToLocalStorage);
