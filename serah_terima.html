@@ -635,6 +635,7 @@
               updateItemState(itemDiv);
               updateSectionColor(section);
               checkFinalStatus();
+              saveFormToLocalStorage();
             });
           });
 
@@ -756,7 +757,7 @@
               select.appendChild(opt);
             });
 
-            handleUlokChange();
+            loadFormFromLocalStorage();
           } else {
             console.error("Data kode ulok tidak valid:", result);
             showPopup("Gagal memuat data kode ulok.");
@@ -934,6 +935,7 @@
           if (response.ok && result.status === "success") {
             showPopup("Data berhasil dikirim!");
             form.reset();
+            localStorage.removeItem("autosaveData_serahTerima");
             document.querySelectorAll(".kelompok").forEach(updateSectionColor);
             checkFinalStatus();
           } else {
@@ -1008,9 +1010,63 @@
         });
       }
 
+      function saveFormToLocalStorage() {
+        const form = document.getElementById("laporan-form");
+        const data = {};
+        
+        form.querySelectorAll("select, input[type='text'], input[type='date']").forEach(el => {
+          if (el.name) {
+            data[el.name] = el.value;
+          }
+        });
+        
+        localStorage.setItem("autosaveData_serahTerima", JSON.stringify(data));
+      }
+
+      function loadFormFromLocalStorage() {
+        const savedData = localStorage.getItem("autosaveData_serahTerima");
+        
+        if (savedData) {
+          const data = JSON.parse(savedData);
+          let hasRestoredData = false;
+          
+          for (const key in data) {
+            const element = document.querySelector(`[name="${key}"]`);
+            if (element) {
+              element.value = data[key];
+              hasRestoredData = true;
+            }
+          }
+          
+          if (hasRestoredData) {
+            
+            document.querySelectorAll(".kelompok").forEach(section => {
+              const itemDivs = section.querySelectorAll(".pekerjaan-item");
+              itemDivs.forEach(itemDiv => {
+                updateItemState(itemDiv);
+              });
+              updateSectionColor(section);
+            });
+            checkFinalStatus();
+            
+            handleUlokChange(); 
+            
+            showErrorPopup(
+              "Data Anda sebelumnya berhasil dipulihkan. PERHATIAN: FOTO HARUS DI-UPLOAD ULANG.",
+              null
+            );
+          }
+        }
+      }
+
       document
         .getElementById("kode_ulok")
-        .addEventListener("change", handleUlokChange);
+        .addEventListener("change", () => {
+            handleUlokChange();
+            saveFormToLocalStorage();
+        });
+
+      document.getElementById("tanggal_serah").addEventListener("change", saveFormToLocalStorage);
 
       function checkSessionTime() {
         try {
