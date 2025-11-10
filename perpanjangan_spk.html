@@ -48,6 +48,12 @@
         border-radius: 5px;
         font-family: Cambria;
       }
+      
+      .form-container input[readonly] {
+          background-color: #e9ecef;
+          cursor: not-allowed;
+          color: #495057;
+      }
 
       #alasan-container {
         display: flex;
@@ -289,7 +295,12 @@
           <input type="number" id="pertambahan_hari" name="pertambahan_hari" min="1" max="99" oninput="this.value=this.value.slice(0,2)" placeholder="00" required />
           <span>hari</span>
         </div>
+        
+        <label for="tanggal_spk_akhir">Tanggal SPK Akhir (Original):</label>
+        <input type="text" id="tanggal_spk_akhir" name="tanggal_spk_akhir" readonly>
 
+        <label for="tanggal_spk_akhir_baru">Tanggal SPK Akhir (Setelah Perpanjangan):</label>
+        <input type="text" id="tanggal_spk_akhir_baru" name="tanggal_spk_akhir_baru" readonly>
         <label for="alasan_spk">Alasan Pertambahan SPK:</label>
         <div id="alasan-container"></div>
         <button type="button" id="tambah-alasan-btn">+ Tambahkan Alasan Lainnya</button>
@@ -324,9 +335,67 @@
       const API_PROXY_URL = "https://backend-form-y8wo.onrender.com/api/form";
       const GAS_LOGIN_VERIFY_URL = "https://backend-form-y8wo.onrender.com/api/form?form=login_perpanjanganspk&action=verifyToken";
       let currentUser = null;
+      
+      let ulokData = []; 
+      let originalEndDateISO = '';
+      let newEndDateISO = '';
+      
+      const ulokSelect = document.getElementById('nomor_ulok');
+      const pertambahanHariInput = document.getElementById('pertambahan_hari');
+      const tglSpkAkhirInput = document.getElementById('tanggal_spk_akhir');
+      const tglSpkAkhirBaruInput = document.getElementById('tanggal_spk_akhir_baru');
+
+      function formatDisplayDate(dateObj) {
+          if (!dateObj) return "";
+          return dateObj.toLocaleDateString('id-ID', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+          });
+      }
+
+      function formatISODate(dateObj) {
+          if (!dateObj) return "";
+          const offset = dateObj.getTimezoneOffset() * 60000;
+          const adjustedDate = new Date(dateObj.getTime() - offset);
+          return adjustedDate.toISOString().split('T')[0];
+      }
+      
+      function parseISODate(dateString) {
+          if (!dateString) return null;
+          return new Date(dateString + 'T00:00:00');
+      }
+
+      function updateDates() {
+          const selectedUlok = ulokSelect.value;
+          const daysToAdd = parseInt(pertambahanHariInput.value, 10);
+          
+          tglSpkAkhirInput.value = '';
+          tglSpkAkhirBaruInput.value = '';
+          originalEndDateISO = '';
+          newEndDateISO = '';
+
+          const spkInfo = ulokData.find(item => item.ulok === selectedUlok);
+
+          if (spkInfo && spkInfo.waktuSelesai) {
+              const originalEndDate = parseISODate(spkInfo.waktuSelesai);
+              
+              if (originalEndDate) {
+                  tglSpkAkhirInput.value = formatDisplayDate(originalEndDate);
+                  originalEndDateISO = formatISODate(originalEndDate);
+
+                  if (!isNaN(daysToAdd) && daysToAdd > 0) {
+                      const newEndDate = new Date(originalEndDate.getTime());
+                      newEndDate.setDate(newEndDate.getDate() + daysToAdd);
+                      
+                      tglSpkAkhirBaruInput.value = formatDisplayDate(newEndDate);
+                      newEndDateISO = formatISODate(newEndDate);
+                  }
+              }
+          }
+      }
 
       async function populateUlokDropdown(cabang) {
-          const ulokSelect = document.getElementById('nomor_ulok');
           ulokSelect.disabled = true;
 
           try {
@@ -343,11 +412,13 @@
                   defaultOption.selected = true;
                   ulokSelect.appendChild(defaultOption);
 
-                  result.data.forEach(ulok => {
-                      if (ulok) {
+                  ulokData = result.data; 
+
+                  ulokData.forEach(item => {
+                      if (item && item.ulok) {
                           const option = document.createElement('option');
-                          option.value = ulok;
-                          option.textContent = ulok;
+                          option.value = item.ulok;
+                          option.textContent = item.ulok;
                           ulokSelect.appendChild(option);
                       }
                   });
@@ -398,6 +469,9 @@
         const successModal = document.getElementById('success-modal');
         const modalMessage = document.getElementById('modal-message');
         const newReportBtn = document.getElementById('buat-laporan-baru-btn');
+
+        ulokSelect.addEventListener('change', updateDates);
+        pertambahanHariInput.addEventListener('input', updateDates);
 
         const createAlasanItem = () => {
           const div = document.createElement("div");
@@ -466,6 +540,11 @@
             else alasanContainer.querySelector("input").focus();
             return;
           }
+          
+          if (!originalEndDateISO || !newEndDateISO) {
+              alert("Data tanggal tidak valid. Pastikan Nomor Ulok dan Pertambahan Hari sudah benar.");
+              return;
+          }
 
           submitBtn.disabled = true;
           btnText.style.display = 'none';
@@ -474,6 +553,10 @@
           const formData = {
             nomor_ulok: document.getElementById("nomor_ulok").value,
             pertambahan_hari: document.getElementById("pertambahan_hari").value,
+            
+            tanggal_spk_akhir: originalEndDateISO,
+            tanggal_spk_akhir_baru: newEndDateISO,
+            
             alasan_spk: hiddenTextarea.value,
             dibuat_oleh_nama: currentUser.nama,
             dibuat_oleh_email: currentUser.email,
