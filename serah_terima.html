@@ -574,15 +574,21 @@
         itemDivs.forEach((item) => {
           const selectAda = item.querySelector('select[name$="_ada"]');
           const val = (selectAda?.value || "").toLowerCase();
-          if (val !== "ada" && val !== "tidak") {
+
+          if (val === "") {
             semuaDiisi = false;
-            return;
           }
 
           if (val === "ada") {
-            const selects = item.querySelectorAll('select:not([name$="_ada"])');
-            selects.forEach((s) => {
+            const otherSelects = item.querySelectorAll(
+              'select:not([name$="_ada"])'
+            );
+            otherSelects.forEach((s) => {
               const v = s.value.toLowerCase();
+              if (v === "") {
+                semuaDiisi = false;
+              }
+
               if (
                 [
                   "tidak",
@@ -594,6 +600,11 @@
                 adaYangBuruk = true;
               }
             });
+
+            const fileInput = item.querySelector('input[type="file"]');
+            if (fileInput && !fileInput.disabled && fileInput.files.length === 0) {
+              semuaDiisi = false;
+            }
           }
         });
 
@@ -644,7 +655,8 @@
           items.forEach((item) => {
             const selectAda = item.querySelector('select[name$="_ada"]');
             const val = (selectAda?.value || "").toLowerCase();
-            if (val !== "ada" && val !== "tidak") {
+
+            if (val === "") {
               semuaDiisi = false;
               return;
             }
@@ -655,6 +667,11 @@
               );
               selects.forEach((s) => {
                 const v = s.value.toLowerCase();
+                
+                if (v === "") {
+                  semuaDiisi = false;
+                }
+
                 if (
                   [
                     "tidak",
@@ -666,6 +683,11 @@
                   adaYangBuruk = true;
                 }
               });
+
+              const fileInput = item.querySelector('input[type="file"]');
+              if (fileInput && !fileInput.disabled && fileInput.files.length === 0) {
+                semuaDiisi = false;
+              }
             }
           });
         });
