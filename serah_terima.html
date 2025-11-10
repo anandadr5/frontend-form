@@ -792,6 +792,16 @@
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
+
+        const statusSerah = document.getElementById("status_serah").value;
+        if (statusSerah === "") {
+          showErrorPopup(
+            "Masih ada item yang belum diisi. Harap periksa kembali bagian yang warnanya belum hijau/kuning.",
+            null
+          );
+          return;
+        }
+
         submitButton.disabled = true;
         showPopup("Mengirim data...");
 
@@ -868,6 +878,8 @@
           if (response.ok && result.status === "success") {
             showPopup("Data berhasil dikirim!");
             form.reset();
+            document.querySelectorAll(".kelompok").forEach(updateSectionColor);
+            checkFinalStatus();
           } else {
             showPopup("Gagal kirim: " + (result.message || "Tidak diketahui"));
           }
@@ -899,9 +911,17 @@
 
       function showErrorPopup(message, url) {
         errorMessage.textContent = message;
-        errorLink.href = url;
+        
+        if (url) {
+          errorLink.href = url;
+          errorLink.style.display = "inline-block";
+        } else {
+          errorLink.style.display = "none";
+        }
+        
         errorPopup.classList.add("show");
       }
+
       function closeErrorPopup() {
         errorPopup.classList.remove("show");
       }
@@ -911,7 +931,6 @@
         return new URLSearchParams(window.location.search).get(name) || "";
       }
 
-      // Fungsi untuk validasi ukuran file dengan dialog konfirmasi
       function setupFileSizeValidation() {
         const fileInputs = document.querySelectorAll('input[type="file"]');
         fileInputs.forEach((input) => {
@@ -921,6 +940,13 @@
               const message = `File "${file.name}" terlalu besar (maksimal 2 MB). Silakan kompres terlebih dahulu.`;
               showErrorPopup(message, COMPRESS_URL);
               this.value = "";
+            }
+
+            const itemDiv = this.closest(".pekerjaan-item");
+            const section = this.closest(".kelompok");
+            if (itemDiv && section) {
+              updateSectionColor(section);
+              checkFinalStatus();
             }
           });
         });
