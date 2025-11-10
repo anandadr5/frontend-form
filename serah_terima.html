@@ -213,7 +213,7 @@
     </header>
 
     <div class="container">
-      <form id="laporan-form" class="form-container">
+      <form id="laporan-form" class="form-container" novalidate>
         <label for="kode_ulok">Kode Ulok:</label>
         <select id="kode_ulok" name="kode_ulok" required>
           <option value="">-- Pilih Kode Ulok --</option>
@@ -795,10 +795,66 @@
 
         const statusSerah = document.getElementById("status_serah").value;
         if (statusSerah === "") {
-          showErrorPopup(
-            "Masih ada item yang belum diisi. Harap periksa kembali bagian yang warnanya belum hijau/kuning.",
-            null
-          );
+          let errorFound = false;
+          const allSections = document.querySelectorAll(".kelompok");
+
+          for (const section of allSections) {
+            const items = section.querySelectorAll(".pekerjaan-item");
+            
+            for (const item of items) {
+              const selectAda = item.querySelector('select[name$="_ada"]');
+              const val = (selectAda?.value || "").toLowerCase();
+              let firstInvalidElement = null;
+              
+              if (val === "") {
+                firstInvalidElement = selectAda;
+              } else if (val === "ada") {
+                const otherSelects = item.querySelectorAll(
+                  'select:not([name$="_ada"])'
+                );
+                for (const s of otherSelects) {
+                  if (s.value === "") {
+                    firstInvalidElement = s;
+                    break;
+                  }
+                }
+
+                if (!firstInvalidElement) {
+                  const fileInput = item.querySelector('input[type="file"]');
+                  if (fileInput && !fileInput.disabled && fileInput.files.length === 0) {
+                    firstInvalidElement = fileInput;
+                  }
+                }
+              }
+              
+              if (firstInvalidElement) {
+                document.querySelectorAll(".kelompok").forEach(s => s.classList.add("collapsed"));
+                section.classList.remove("collapsed");
+
+                item.scrollIntoView({ behavior: "smooth", block: "center" });
+                
+                showErrorPopup(
+                  "Masih ada item yang belum diisi. Harap periksa kembali bagian yang baru saja terbuka.",
+                  null
+                );
+                
+                errorFound = true;
+                break;
+              }
+            }
+            
+            if (errorFound) {
+              break;
+            }
+          } 
+
+          if (!errorFound) {
+             showErrorPopup(
+              "Masih ada item yang belum diisi. Harap periksa kembali bagian yang warnanya belum hijau/kuning.",
+              null
+            );
+          }
+          
           return;
         }
 
