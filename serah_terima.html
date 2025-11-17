@@ -476,10 +476,6 @@
           if (!isCurrentlyOpen) {
             section.classList.remove("collapsed");
 
-            const firstItem = section.querySelector(".pekerjaan-item");
-            if (firstItem) {
-              firstItem.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
           }
         });
         section.appendChild(title);
