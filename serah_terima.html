@@ -476,6 +476,7 @@
           if (!isCurrentlyOpen) {
             section.classList.remove("collapsed");
 
+            title.scrollIntoView({ behavior: "smooth", block: "start" });
           }
         });
         section.appendChild(title);
