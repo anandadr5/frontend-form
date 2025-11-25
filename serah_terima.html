@@ -557,8 +557,15 @@
         const val = (selectAda?.value || "").toLowerCase();
 
         if (val === "tidak") {
-          otherSelects.forEach((el) => (el.disabled = true));
-          if (fileInput) fileInput.disabled = true;
+          otherSelects.forEach((el) => {
+            el.value = "";
+            el.disabled = true;
+        });
+        
+        if (fileInput) {
+            fileInput.value = "";
+            fileInput.disabled = true;
+        }
         } else if (val === "ada") {
           otherSelects.forEach((el) => (el.disabled = false));
           if (fileInput) fileInput.disabled = false;
