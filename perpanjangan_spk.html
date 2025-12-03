@@ -15,8 +15,36 @@
       header {
         background-color: #ce1e10;
         color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      header h1 {
+        margin: 0;
+        flex-grow: 1;
         text-align: center;
-        padding: 20px;
+        padding-left: 90px; 
+      }
+
+      .logout-btn {
+        background-color: white;
+        color: #ce1e10;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        font-family: ui-sans-serif, system-ui, Arial, sans-serif;
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .logout-btn:hover {
+        background-color: #ffebeb;
       }
 
       .container {
@@ -276,11 +304,32 @@
       #buat-laporan-baru-btn:hover {
         background-color: #218838;
       }
+
+      @media (max-width: 600px) {
+          header {
+              flex-direction: column;
+              gap: 15px;
+          }
+          header h1 {
+              padding-left: 0;
+          }
+          .logout-btn {
+              width: 100%;
+              justify-content: center;
+          }
+      }
     </style>
   </head>
   <body>
     <header>
       <h1>Form Pertambahan Hari SPK</h1>
+      <button id="logoutBtn" class="logout-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+          <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+        </svg>
+        Logout
+      </button>
     </header>
 
     <div id="form-wrapper" class="container">
@@ -334,6 +383,7 @@
     <script>
       const API_PROXY_URL = "https://backend-form-y8wo.onrender.com/api/form";
       const GAS_LOGIN_VERIFY_URL = "https://backend-form-y8wo.onrender.com/api/form?form=login_perpanjanganspk&action=verifyToken";
+      const LOGIN_PAGE_URL = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
       let currentUser = null;
       
       let ulokData = []; 
@@ -344,6 +394,16 @@
       const pertambahanHariInput = document.getElementById('pertambahan_hari');
       const tglSpkAkhirInput = document.getElementById('tanggal_spk_akhir');
       const tglSpkAkhirBaruInput = document.getElementById('tanggal_spk_akhir_baru');
+      const logoutBtn = document.getElementById('logoutBtn');
+
+      if(logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            if(confirm('Apakah Anda yakin ingin keluar?')) {
+                sessionStorage.removeItem('authToken'); 
+                window.location.href = LOGIN_PAGE_URL;
+            }
+        });
+      }
 
       function formatDisplayDate(dateObj) {
           if (!dateObj) return "";
@@ -436,8 +496,8 @@
           (async function verifySession() {
               const authToken = sessionStorage.getItem("authToken");
               if (!authToken) {
-                  alert('Anda harus login untuk mengakses halaman ini.');
-                  window.location.href = 'https://frontend-form-virid.vercel.app/login-perpanjanganspk.html';
+                  // Jika tidak ada token, langsung ke login
+                  window.location.href = LOGIN_PAGE_URL;
                   return;
               }
 
@@ -450,11 +510,11 @@
                   } else {
                       sessionStorage.removeItem("authToken");
                       alert("Sesi tidak valid atau telah berakhir. Silakan login kembali.");
-                      window.location.href = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
+                      window.location.href = LOGIN_PAGE_URL;
                   }
               } catch (error) {
                   alert("Gagal memverifikasi sesi. Coba lagi.");
-                  window.location.href = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
+                  window.location.href = LOGIN_PAGE_URL;
               }
           })();
 
@@ -610,7 +670,7 @@
               sessionStorage.removeItem("authToken");
               alert("Sesi Anda telah berakhir karena di luar jam operasional (06:00 - 18:00 WIB).");
               
-              window.location.href = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
+              window.location.href = LOGIN_PAGE_URL;
             }
           }
         } catch (err) {
