@@ -354,15 +354,11 @@
         <div id="alasan-container"></div>
         <button type="button" id="tambah-alasan-btn">+ Tambahkan Alasan Lainnya</button>
         <textarea name="alasan_spk" id="alasan_spk_hidden" required style="display: none"></textarea>
-        
-        <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border: 1px dashed #ced4da; border-radius: 5px;">
-          <label for="lampiran_pdf" style="display:block; margin-bottom: 8px; color: #495057;">
-            Upload Lampiran (PDF) - <i>Halaman pertama akan otomatis dibuat sistem, lampiran ini akan menjadi halaman kedua dst.</i>
-          </label>
-          <input type="file" id="lampiran_pdf" name="lampiran_pdf" accept="application/pdf" style="width: 100%;">
-          <small style="color: #ce1e10; display: block; margin-top: 5px;">* Maksimal ukuran file 4MB</small>
-        </div>
 
+        <label for="lampiran_pdf" style="margin-top: 20px;">Lampiran Pendukung (PDF):</label>
+        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Maksimal ukuran file 5MB.</div>
+        <input type="file" id="lampiran_pdf" name="lampiran_pdf" accept="application/pdf" />
+        
         <div class="button-group">
             <button type="submit" id="submit-btn">
                 <span id="btn-text">Simpan & Kirim Permintaan</span>
@@ -599,23 +595,18 @@
 
         newReportBtn.addEventListener('click', () => window.location.reload());
 
-        const fileToBase64 = (file) => {
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => {
-              const result = reader.result;
-              const base64 = result.split(',')[1]; 
-              resolve(base64);
-            };
-            reader.onerror = (error) => reject(error);
-          });
+        const readFileAsBase64 = (file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]); // Ambil bagian base64 saja
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
         };
 
         form.addEventListener("submit", async function (e) {
           e.preventDefault();
           updateHiddenTextarea();
-
           if (hiddenTextarea.value.trim() === "") {
             alert("Harap isi setidaknya satu alasan pertambahan SPK.");
             if (alasanContainer.children.length === 0) createAlasanItem();
@@ -628,19 +619,21 @@
               return;
           }
 
-          const pdfInput = document.getElementById("lampiran_pdf");
-          let pdfBase64 = null;
-          
-          if (pdfInput.files.length > 0) {
-              const file = pdfInput.files[0];
-              if (file.size > 4 * 1024 * 1024) {
-                  alert("Ukuran file PDF terlalu besar (Maksimal 4MB).");
+          const fileInput = document.getElementById('lampiran_pdf');
+          let fileBase64 = null;
+          let fileName = null;
+
+          if (fileInput.files.length > 0) {
+              const file = fileInput.files[0];
+              if (file.size > 5 * 1024 * 1024) {
+                  alert("Ukuran file terlalu besar. Maksimal 5MB.");
                   return;
               }
               try {
-                  pdfBase64 = await fileToBase64(file);
+                  fileBase64 = await readFileAsBase64(file);
+                  fileName = file.name;
               } catch (err) {
-                  alert("Gagal memproses file PDF: " + err.message);
+                  alert("Gagal memproses file upload.");
                   return;
               }
           }
@@ -658,7 +651,8 @@
             dibuat_oleh_nama: currentUser.nama,
             dibuat_oleh_email: currentUser.email,
             cabang_pembuat: currentUser.cabang,
-            lampiran_pdf: pdfBase64
+            lampiran_user_base64: fileBase64,
+            lampiran_user_name: fileName
           };
 
           try {
