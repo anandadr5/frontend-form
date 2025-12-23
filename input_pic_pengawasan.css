@@ -1,24 +1,81 @@
+/* Menggunakan Font Inter */
 body {
-    font-family: Cambria;
+    font-family: 'Inter', sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    color: #333;
 }
 
+/* Header style menyesuaikan index.html */
 header {
-    background-color: #ce1e10;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); /* Gradasi Merah */
     color: white;
-    text-align: center;
-    padding: 20px;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: auto;
+    min-height: 60px;
 }
 
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+/* Style Logo Header */
+.header-logo {
+    width: 100px;
+    height: auto;
+    position: absolute;
+    left: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Style Tombol Logout di Header */
+.btn-header-logout {
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-header-logout:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) scale(1.05);
+}
+
+/* Container Form */
 .container {
     max-width: 800px;
-    margin: 20px auto;
+    margin: 2.5rem auto;
     background-color: white;
-    padding: 30px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    border-radius: 15px;
 }
 
 .form-container {
@@ -27,99 +84,98 @@ header {
 }
 
 .form-container label {
-    font-weight: bold;
-    margin-bottom: 5px;
+    font-weight: 600;
+    margin-bottom: 8px;
     margin-top: 15px;
+    color: #444;
+    font-size: 0.95rem;
 }
 
 .form-container input,
-.form-container select,
-.form-container button {
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+.form-container select {
+    padding: 12px;
+    margin-bottom: 5px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
     font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s;
 }
 
-.form-container select {
-    background-color: white;
+.form-container input:focus,
+.form-container select:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 .input-readonly {
-    background-color: #f0f0f0;
+    background-color: #f8fafc;
+    color: #64748b;
+    border-color: #cbd5e1;
     cursor: not-allowed;
 }
 
+/* Tombol Simpan */
 .button-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
+    margin-top: 2rem;
 }
 
-.form-container button {
-    background-color: #ce1e10;
+#submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
     color: white;
-    padding: 12px 20px;
+    padding: 14px;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    flex: 1;
+    border-radius: 8px;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.form-container button:hover:not(:disabled) {
-    background-color: #ef190a;
+#submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
 
-.form-container button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-    opacity: 0.6;
+/* Pesan Status & Popup (Tidak banyak berubah, hanya penyesuaian font) */
+.loading {
+    display: none;
+    text-align: center;
+    margin: 20px 0;
+    color: #dc2626;
+    font-weight: 600;
 }
 
-.logout-container {
-    margin-top: 25px;
-    text-align: left;
+.loading.show {
+    display: block;
 }
 
-.logout-container a {
-    color: #6b7280;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 15px;
-    transition: color 0.3s ease;
+.error-message {
+    color: #d32f2f;
+    background-color: #ffebee;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: none;
+    font-size: 14px;
 }
 
-.logout-container a:hover {
-    color: #ce1e10;
-    text-decoration: underline;
+.success-message {
+    color: #1b5e20;
+    background-color: #e8f5e9;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: none;
+    font-size: 14px;
 }
 
 .status-indicator {
     font-size: 12px;
-    padding: 5px 8px;
-    border-radius: 4px;
-    margin-top: -10px;
-    margin-bottom: 10px;
-    display: none; /* Hidden by default */
-}
-
-.status-indicator.loading {
-  color: #ffa000;
-  background-color: #fff8e1;
-}
-
-.status-indicator.success {
-    color: #2e7d32;
-    background-color: #e8f5e9;
-}
-
-.status-indicator.error {
-    color: #d32f2f;
-    background-color: #ffebee;
+    margin-bottom: 15px;
+    font-style: italic;
 }
 
 .popup {
@@ -134,98 +190,60 @@ header {
 }
 
 .popup-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #ffffff;
+    background-color: white;
+    margin: 15% auto;
     padding: 30px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
     color: #333;
     text-align: center;
     max-width: 400px;
     width: 90%;
+    font-family: 'Inter', sans-serif;
 }
 
-.popup-content p {
-    font-size: 18px;
-    font-weight: bold;
-    margin-top: 0;
-    margin-bottom: 20px;
-    line-height: 1.4;
+.popup-content button {
+    background: #dc2626;
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 15px;
 }
 
 .popup.show {
     display: block;
 }
 
-.popup-content button {
-    background-color: #ef190a;
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.popup-content button:hover {
-    background-color: #d50e08;
-}
-
-.loading {
-        display: none;
-        text-align: center;
-        margin: 20px 0;
-        color: #ce1e10;
-        font-weight: bold;
-}
-
-.loading.show {
-    display: block;
-}
-
-.error-message {
-    color: #d32f2f;
-    background-color: #ffebee;
-    border: 1px solid #e57373;
-    border-radius: 5px;
-    padding: 10px;
-    margin: 10px 0;
-    display: none;
-}
-
-.error-message.show {
-    display: block;
-}
-
-.success-message {
-    color: #2e7d32;
-    background-color: #e8f5e8;
-        border: 1px solid #81c784;
-        border-radius: 5px;
-        padding: 10px;
-        margin: 10px 0;
-        display: none;
-}
-
-.success-message.show {
-    display: block;
-    }
-
-@media (max-width: 600px) {
+/* Responsive (Mobile) */
+@media (max-width: 768px) {
     .container {
-        margin: 10px;
-        padding: 20px;
+        margin: 1rem;
+        padding: 1.5rem;
+        width: auto;
     }
-
     header {
-        padding: 15px;
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 1rem;
     }
-
-    .popup-content {
-        padding: 20px;
+    header h1 {
+        margin-top: 0.5rem;
+    }
+    .header-logo {
+        position: static;
+        transform: none;
+        margin: 0 auto;
+        width: 120px;
+    }
+    .btn-header-logout {
+        position: static;
+        transform: none;
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
     }
 }
