@@ -1,339 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Form Pertambahan Hari SPK</title>
-    <style>
-      body {
-        font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 0;
-      }
-
-      header {
-        background-color: #ce1e10;
-        color: white;
-        padding: 15px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      header h1 {
-        margin: 0;
-        flex-grow: 1;
-        text-align: center;
-        padding-left: 90px; 
-      }
-
-      .logout-btn {
-        background-color: white;
-        color: #ce1e10;
-        border: none;
-        padding: 8px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-        font-family: ui-sans-serif, system-ui, Arial, sans-serif;
-        transition: background-color 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-      }
-
-      .logout-btn:hover {
-        background-color: #ffebeb;
-      }
-
-      .container {
-        max-width: 800px;
-        margin: 20px auto;
-        background-color: white;
-        padding: 30px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-      }
-
-      .form-container {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .form-container label {
-        font-weight: bold;
-        margin-bottom: 5px;
-        margin-top: 15px;
-      }
-
-      .form-container input,
-      .form-container select,
-      .form-container textarea {
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-family: Cambria;
-      }
-      
-      .form-container input[readonly] {
-          background-color: #e9ecef;
-          cursor: not-allowed;
-          color: #495057;
-      }
-
-      #alasan-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 10px;
-      }
-
-      .alasan-item {
-        display: flex;
-        align-items: center;
-        background-color: #f1f3f5;
-        border: 1px solid #dee2e6;
-        padding: 5px 5px 5px 15px;
-        border-radius: 25px;
-        transition: background-color 0.3s;
-      }
-
-      .alasan-item input {
-        border: none;
-        background: transparent;
-        flex-grow: 1;
-        outline: none;
-        margin: 0;
-        padding: 5px;
-        font-size: 16px;
-      }
-      
-      .alasan-item input.locked {
-        cursor: pointer;
-      }
-      
-      .alasan-item.locked-item {
-        background-color: #e9ecef;
-        border-color: #ced4da;
-      }
-      .alasan-item.locked-item:hover {
-        background-color: #dee2e6;
-      }
-      
-      .remove-alasan-btn {
-        background-color: #ced4da;
-        color: #495057;
-        border: none;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-left: 10px;
-        transition: background-color 0.3s;
-      }
-
-      .remove-alasan-btn:hover {
-        background-color: #adb5bd;
-        color: white;
-      }
-
-      #tambah-alasan-btn {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 5px;
-        transition: background-color 0.3s;
-        align-self: flex-start;
-      }
-
-      #tambah-alasan-btn:hover {
-        background-color: #0056b3;
-      }
-
-      .input-hari-container {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .input-hari-container input {
-        width: 100px;
-        margin-bottom: 0;
-        text-align: center;
-      }
-
-      .button-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 20px;
-      }
-
-      #submit-btn {
-        background-color: #ce1e10;
-        color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-      }
-
-      #submit-btn:hover {
-        background-color: #ef190a;
-      }
-
-      #submit-btn:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
-      }
-
-      .spinner-dots {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-      }
-
-      .spinner-dots .dot {
-          width: 8px;
-          height: 8px;
-          margin: 0 3px;
-          background-color: white;
-          border-radius: 50%;
-          animation: bounce 1.4s infinite ease-in-out both;
-      }
-
-      .spinner-dots .dot:nth-child(1) { animation-delay: -0.32s; }
-      .spinner-dots .dot:nth-child(2) { animation-delay: -0.16s; }
-
-      @keyframes bounce {
-        0%, 80%, 100% { transform: scale(0); }
-        40% { transform: scale(1.0); }
-      }
-
-      .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.6);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        pointer-events: none;
-      }
-      
-      .modal-overlay.show {
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      .modal-content {
-        background-color: white;
-        padding: 40px;
-        border-radius: 15px;
-        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
-        text-align: center;
-        max-width: 400px;
-        width: 90%;
-        transform: scale(0.9);
-        transition: transform 0.3s ease;
-      }
-
-      .modal-overlay.show .modal-content {
-        transform: scale(1);
-      }
-      
-      .modal-icon {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background-color: #28a745;
-        color: white;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 40px;
-        font-weight: bold;
-        margin-bottom: 20px;
-      }
-      
-      .modal-content h2 {
-        color: #333;
-        margin-top: 0;
-        margin-bottom: 15px;
-      }
-      
-      .modal-content p {
-        font-size: 1.1em;
-        line-height: 1.6;
-        color: #555;
-      }
-      
-      #buat-laporan-baru-btn {
-        background-color: #28a745;
-        color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        width: 100%;
-        margin-top: 30px;
-        font-size: 1em;
-        font-weight: bold;
-      }
-      
-      #buat-laporan-baru-btn:hover {
-        background-color: #218838;
-      }
-
-      @media (max-width: 600px) {
-          header {
-              flex-direction: column;
-              gap: 15px;
-          }
-          header h1 {
-              padding-left: 0;
-          }
-          .logout-btn {
-              width: 100%;
-              justify-content: center;
-          }
-      }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="/assets/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/perpanjangan_spk.css">
   </head>
   <body>
     <header>
+      <img src="/assets/Alfamart-Emblem.png" alt="Alfamart Logo" class="header-logo" />
+      
       <h1>Form Pertambahan Hari SPK</h1>
-      <button id="logoutBtn" class="logout-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-          <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
-          <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+      
+      <button id="logoutBtn" class="btn-header-logout">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
         </svg>
-        Logout
+        <span>Logout</span>
       </button>
     </header>
 
     <div id="form-wrapper" class="container">
       <form id="pertambahan-spk-form" class="form-container">
+        
         <label for="nomor_ulok">Nomor Ulok:</label>
         <select id="nomor_ulok" name="nomor_ulok" required>
             <option value="" disabled selected>Memuat data Ulok...</option>
@@ -342,22 +35,24 @@
         <label for="pertambahan_hari">Pertambahan Hari Dari Tanggal SPK:</label>
         <div class="input-hari-container">
           <input type="number" id="pertambahan_hari" name="pertambahan_hari" min="1" max="99" oninput="this.value=this.value.slice(0,2)" placeholder="00" required />
-          <span>hari</span>
+          <span class="suffix">hari</span>
         </div>
         
         <label for="tanggal_spk_akhir">Tanggal SPK Akhir:</label>
-        <input type="text" id="tanggal_spk_akhir" name="tanggal_spk_akhir" readonly>
+        <input type="text" id="tanggal_spk_akhir" name="tanggal_spk_akhir" class="input-readonly" readonly>
 
         <label for="tanggal_spk_akhir_baru">Tanggal SPK Akhir (Setelah Perpanjangan):</label>
-        <input type="text" id="tanggal_spk_akhir_baru" name="tanggal_spk_akhir_baru" readonly>
+        <input type="text" id="tanggal_spk_akhir_baru" name="tanggal_spk_akhir_baru" class="input-readonly" readonly>
+
         <label for="alasan_spk">Alasan Pertambahan SPK:</label>
         <div id="alasan-container"></div>
+        
         <button type="button" id="tambah-alasan-btn">+ Tambahkan Alasan Lainnya</button>
         <textarea name="alasan_spk" id="alasan_spk_hidden" required style="display: none"></textarea>
 
         <label for="lampiran_pdf" style="margin-top: 20px;">Lampiran Pendukung (PDF):</label>
-        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Maksimal ukuran file 5MB.</div>
-        <input type="file" id="lampiran_pdf" name="lampiran_pdf" accept="application/pdf" />
+        <div class="file-instruction">Maksimal ukuran file 5MB.</div>
+        <input type="file" id="lampiran_pdf" name="lampiran_pdf" accept="application/pdf" class="input-file" />
         
         <div class="button-group">
             <button type="submit" id="submit-btn">
@@ -377,340 +72,15 @@
 
     <div id="success-modal" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-icon">✓</div>
+            <div class="modal-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
             <h2>Berhasil Terkirim</h2>
             <p id="modal-message">Permintaan perpanjangan SPK berhasil dikirim.</p>
             <button type="button" id="buat-laporan-baru-btn">Buat Laporan Baru</button>
         </div>
     </div>
-
-    <script>
-      const API_PROXY_URL = "https://pengawasan-tambahspk.onrender.com/api/form";
-      const GAS_LOGIN_VERIFY_URL = "https://pengawasan-tambahspk.onrender.com/api/form?form=login_perpanjanganspk&action=verifyToken";
-      const LOGIN_PAGE_URL = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
-      let currentUser = null;
-      
-      let ulokData = []; 
-      let originalEndDateISO = '';
-      let newEndDateISO = '';
-      
-      const ulokSelect = document.getElementById('nomor_ulok');
-      const pertambahanHariInput = document.getElementById('pertambahan_hari');
-      const tglSpkAkhirInput = document.getElementById('tanggal_spk_akhir');
-      const tglSpkAkhirBaruInput = document.getElementById('tanggal_spk_akhir_baru');
-      const logoutBtn = document.getElementById('logoutBtn');
-
-      if(logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-            if(confirm('Apakah Anda yakin ingin keluar?')) {
-                sessionStorage.removeItem('authToken'); 
-                window.location.href = LOGIN_PAGE_URL;
-            }
-        });
-      }
-
-      function formatDisplayDate(dateObj) {
-          if (!dateObj) return "";
-          return dateObj.toLocaleDateString('id-ID', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric'
-          });
-      }
-
-      function formatISODate(dateObj) {
-          if (!dateObj) return "";
-          const offset = dateObj.getTimezoneOffset() * 60000;
-          const adjustedDate = new Date(dateObj.getTime() - offset);
-          return adjustedDate.toISOString().split('T')[0];
-      }
-      
-      function parseISODate(dateString) {
-          if (!dateString) return null;
-          return new Date(dateString + 'T00:00:00');
-      }
-
-      function updateDates() {
-          const selectedUlok = ulokSelect.value;
-          const daysToAdd = parseInt(pertambahanHariInput.value, 10);
-          
-          tglSpkAkhirInput.value = '';
-          tglSpkAkhirBaruInput.value = '';
-          originalEndDateISO = '';
-          newEndDateISO = '';
-
-          const spkInfo = ulokData.find(item => item.ulok === selectedUlok);
-
-          if (spkInfo && spkInfo.waktuSelesai) {
-              const originalEndDate = parseISODate(spkInfo.waktuSelesai);
-              
-              if (originalEndDate) {
-                  tglSpkAkhirInput.value = formatDisplayDate(originalEndDate);
-                  originalEndDateISO = formatISODate(originalEndDate);
-
-                  if (!isNaN(daysToAdd) && daysToAdd > 0) {
-                      const newEndDate = new Date(originalEndDate.getTime());
-                      newEndDate.setDate(newEndDate.getDate() + daysToAdd);
-                      
-                      tglSpkAkhirBaruInput.value = formatDisplayDate(newEndDate);
-                      newEndDateISO = formatISODate(newEndDate);
-                  }
-              }
-          }
-      }
-
-      async function populateUlokDropdown(cabang) {
-          ulokSelect.disabled = true;
-
-          try {
-              const fetchUrl = `${API_PROXY_URL}?form=perpanjangan_spk&action=getUlokByCabang&cabang=${encodeURIComponent(cabang)}`;
-              const response = await fetch(fetchUrl);
-              const result = await response.json();
-
-              if (result.status === "success" && result.data && result.data.length > 0) {
-                  ulokSelect.innerHTML = '';
-                  const defaultOption = document.createElement('option');
-                  defaultOption.value = "";
-                  defaultOption.textContent = "Pilih Nomor Ulok...";
-                  defaultOption.disabled = true;
-                  defaultOption.selected = true;
-                  ulokSelect.appendChild(defaultOption);
-
-                  ulokData = result.data; 
-
-                  ulokData.forEach(item => {
-                      if (item && item.ulok) {
-                          const option = document.createElement('option');
-                          option.value = item.ulok;
-                          option.textContent = item.ulok;
-                          ulokSelect.appendChild(option);
-                      }
-                  });
-                  ulokSelect.disabled = false;
-              } else {
-                  ulokSelect.innerHTML = `<option value="" disabled selected>Tidak ada data Ulok untuk cabang ini</option>`;
-              }
-          } catch (error) {
-              console.error("Gagal memuat Nomor Ulok:", error);
-              ulokSelect.innerHTML = `<option value="" disabled selected>Gagal memuat data</option>`;
-          }
-      }
-
-      document.addEventListener("DOMContentLoaded", function () {
-          (async function verifySession() {
-              const authToken = sessionStorage.getItem("authToken");
-              if (!authToken) {
-                  // Jika tidak ada token, langsung ke login
-                  window.location.href = LOGIN_PAGE_URL;
-                  return;
-              }
-
-              try {
-                  const response = await fetch(`${GAS_LOGIN_VERIFY_URL}&token=${authToken}`);
-                  const result = await response.json();
-                  if (result.status === "success") {
-                      currentUser = result.data;
-                      populateUlokDropdown(currentUser.cabang);
-                  } else {
-                      sessionStorage.removeItem("authToken");
-                      alert("Sesi tidak valid atau telah berakhir. Silakan login kembali.");
-                      window.location.href = LOGIN_PAGE_URL;
-                  }
-              } catch (error) {
-                  alert("Gagal memverifikasi sesi. Coba lagi.");
-                  window.location.href = LOGIN_PAGE_URL;
-              }
-          })();
-
-        const alasanContainer = document.getElementById("alasan-container");
-        const tambahAlasanBtn = document.getElementById("tambah-alasan-btn");
-        const hiddenTextarea = document.getElementById("alasan_spk_hidden");
-        const form = document.getElementById("pertambahan-spk-form");
-        const submitBtn = document.getElementById('submit-btn');
-        const btnText = document.getElementById('btn-text');
-        const btnSpinner = document.getElementById('btn-spinner');
-
-        const successModal = document.getElementById('success-modal');
-        const modalMessage = document.getElementById('modal-message');
-        const newReportBtn = document.getElementById('buat-laporan-baru-btn');
-
-        ulokSelect.addEventListener('change', updateDates);
-        pertambahanHariInput.addEventListener('input', updateDates);
-
-        const createAlasanItem = () => {
-          const div = document.createElement("div");
-          div.className = "alasan-item";
-          div.innerHTML = `
-            <input type="text" placeholder="Tuliskan satu alasan di sini..." />
-            <button type="button" class="remove-alasan-btn">&times;</button>
-          `;
-          alasanContainer.appendChild(div);
-          div.querySelector("input").focus();
-        };
-
-        const updateHiddenTextarea = () => {
-          const inputs = alasanContainer.querySelectorAll(".alasan-item input");
-          const alasanArray = [];
-          inputs.forEach((input) => {
-            if (input.value.trim() !== "") {
-              alasanArray.push(`- ${input.value.trim()}`);
-            }
-          });
-          hiddenTextarea.value = alasanArray.join("\n");
-        };
-
-        createAlasanItem();
-
-        tambahAlasanBtn.addEventListener("click", () => {
-          const lastItem = alasanContainer.lastElementChild;
-          if (lastItem) {
-            const lastInput = lastItem.querySelector("input");
-            if (lastInput.value.trim() === "") {
-              alert("Harap isi alasan saat ini sebelum menambahkan yang baru.");
-              lastInput.focus();
-              return;
-            }
-            lastInput.readOnly = true;
-            lastInput.classList.add("locked");
-            lastItem.classList.add("locked-item");
-          }
-          createAlasanItem();
-        });
-
-        alasanContainer.addEventListener("click", function (e) {
-          if (e.target.classList.contains("remove-alasan-btn")) {
-            e.target.closest(".alasan-item").remove();
-            updateHiddenTextarea();
-          } else if (e.target.classList.contains("locked")) {
-            const targetInput = e.target;
-            targetInput.readOnly = false;
-            targetInput.classList.remove("locked");
-            targetInput.parentElement.classList.remove("locked-item");
-            targetInput.focus();
-            targetInput.setSelectionRange(targetInput.value.length, targetInput.value.length);
-          }
-        });
-        
-        alasanContainer.addEventListener("input", updateHiddenTextarea);
-
-        newReportBtn.addEventListener('click', () => window.location.reload());
-
-        const readFileAsBase64 = (file) => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result.split(',')[1]); // Ambil bagian base64 saja
-                reader.onerror = error => reject(error);
-                reader.readAsDataURL(file);
-            });
-        };
-
-        form.addEventListener("submit", async function (e) {
-          e.preventDefault();
-          updateHiddenTextarea();
-          if (hiddenTextarea.value.trim() === "") {
-            alert("Harap isi setidaknya satu alasan pertambahan SPK.");
-            if (alasanContainer.children.length === 0) createAlasanItem();
-            else alasanContainer.querySelector("input").focus();
-            return;
-          }
-          
-          if (!originalEndDateISO || !newEndDateISO) {
-              alert("Data tanggal tidak valid. Pastikan Nomor Ulok dan Pertambahan Hari sudah benar.");
-              return;
-          }
-
-          const fileInput = document.getElementById('lampiran_pdf');
-          let fileBase64 = null;
-          let fileName = null;
-
-          if (fileInput.files.length > 0) {
-              const file = fileInput.files[0];
-              if (file.size > 5 * 1024 * 1024) {
-                  alert("Ukuran file terlalu besar. Maksimal 5MB.");
-                  return;
-              }
-              try {
-                  fileBase64 = await readFileAsBase64(file);
-                  fileName = file.name;
-              } catch (err) {
-                  alert("Gagal memproses file upload.");
-                  return;
-              }
-          }
-
-          submitBtn.disabled = true;
-          btnText.style.display = 'none';
-          btnSpinner.style.display = 'flex';
-
-          const formData = {
-            nomor_ulok: document.getElementById("nomor_ulok").value,
-            pertambahan_hari: document.getElementById("pertambahan_hari").value,
-            tanggal_spk_akhir: originalEndDateISO,
-            tanggal_spk_akhir_baru: newEndDateISO,
-            alasan_spk: hiddenTextarea.value,
-            dibuat_oleh_nama: currentUser.nama,
-            dibuat_oleh_email: currentUser.email,
-            cabang_pembuat: currentUser.cabang,
-            lampiran_user_base64: fileBase64,
-            lampiran_user_name: fileName
-          };
-
-          try {
-            const response = await fetch(`${API_PROXY_URL}?form=perpanjangan_spk`, {
-              method: "POST",
-              mode: "cors",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(formData),
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
-
-            if (result.status === "success") {
-              modalMessage.textContent = result.message;
-              successModal.classList.add('show');
-            } else {
-              throw new Error(result.message || "Terjadi kesalahan di server.");
-            }
-          } catch (error) {
-            alert("Gagal mengirim data: " + error.message);
-          } finally {
-            submitBtn.disabled = false;
-            btnText.style.display = 'inline';
-            btnSpinner.style.display = 'none';
-          }
-        });
-      });
-
-      function checkSessionTime() {
-        try {
-          const startHour = 6;
-          const endHour = 18;
-
-          const now = new Date();
-          const options = { timeZone: "Asia/Jakarta", hour: '2-digit', hour12: false };
-          const currentHour = parseInt(new Intl.DateTimeFormat('en-US', options).format(now));
-
-          if (currentHour < startHour || currentHour >= endHour) {
-            
-            const token = sessionStorage.getItem("authToken");
-            
-            if (token) {
-              sessionStorage.removeItem("authToken");
-              alert("Sesi Anda telah berakhir karena di luar jam operasional (06:00 - 18:00 WIB).");
-              
-              window.location.href = LOGIN_PAGE_URL;
-            }
-          }
-        } catch (err) {
-          console.error("Gagal menjalankan pengecekan jam sesi:", err);
-        }
-      }
-      checkSessionTime();
-      setInterval(checkSessionTime, 300000);
-    </script>
+    
+    <script src="perpanjangan_spk.js"></script>
   </body>
 </html>
