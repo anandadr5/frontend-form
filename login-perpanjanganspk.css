@@ -1,0 +1,220 @@
+:root {
+    --primary-color: #005a9e; /* Warna biru Alfamart */
+    --secondary-color: #e53e3e; /* Warna merah Alfamart */
+    --background-color: #f4f7f6;
+    --form-background: #ffffff;
+    --text-color: #2d3748;
+    --label-color: #4a5568;
+    --border-color: #cbd5e0;
+    --border-focus-color: #4299e1;
+    --white: #ffffff;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Container Login */
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 2.5rem;
+    background-color: var(--form-background);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+}
+
+/* Header & Logo */
+.login-header {
+    margin-bottom: 2rem;
+}
+
+.login-logo {
+    height: 50px;
+    margin-bottom: 1rem;
+}
+
+.login-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.login-header h3 {
+    margin-top: 10px;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--text-color);
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--label-color);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--border-focus-color);
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+}
+
+/* Password Toggle */
+.password-wrapper {
+    position: relative;
+}
+
+.form-group .password-wrapper input#password {
+    padding-right: 40px; 
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--label-color);
+    width: 20px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+}
+
+.toggle-password svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Buttons */
+.login-btn {
+    width: 100%;
+    padding: 0.85rem;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.login-btn:hover {
+    background-color: #004a80;
+    box-shadow: 0 6px 14px rgba(0, 90, 158, 0.25);
+}
+
+.login-btn:active {
+    transform: scale(0.98);
+}
+
+.login-btn:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+
+/* Alerts */
+.alert {
+    display: none;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 4px solid;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.alert.error {
+    background: #fff5f5;
+    color: #c53030;
+    border-color: #e53e3e;
+}
+
+.alert.success {
+    background: #f0fff4;
+    color: #276749;
+    border-color: #48bb78;
+}
+
+/* Utilities: Spinner & Overlay */
+.spinner {
+    display: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.loading-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.loading-wheel {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 10px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 1.5rem;
+        width: 90%;
+    }
+}
