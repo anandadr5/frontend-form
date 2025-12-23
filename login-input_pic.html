@@ -4,18 +4,27 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - Pengawasan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="login-input_pic.css">
   </head>
   <body>
-    <!-- Login Box -->
     <div class="login-container">
-      <div class="logo">
+      <a href="/" class="btn-back">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>Kembali</span>
+      </a>
+
+      <div class="login-header">
         <img
           src="./Alfamart-Emblem.png"
           alt="Logo Alfamart"
           class="login-logo"
         />
         <h1>Building & Maintenance</h1>
+        <h3>Login Pengawasan</h3>
       </div>
 
       <div id="errorMessage" class="alert error"></div>
@@ -52,6 +61,7 @@
             </span>
           </div> 
         </div>
+
         <button type="submit" class="login-btn" id="loginBtn">
           <span class="spinner" id="spinner"></span>
           <span id="btnText">Login</span>
@@ -59,13 +69,13 @@
       </form>
     </div>
 
-    <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
       <div class="loading-card">
         <div class="loading-wheel"></div>
         <p>Memproses login...</p>
       </div>
     </div>
+
     <script src="login-input_pic.js"></script>
   </body>
 </html>
