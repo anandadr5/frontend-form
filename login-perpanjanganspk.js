@@ -105,6 +105,5 @@ loginForm.addEventListener("submit", async (e) => {
         setLoading(false);
     }
 });
-
 emailInput.focus();
 [emailInput, passwordInput].forEach((el) => el.addEventListener("input", hideMessages));

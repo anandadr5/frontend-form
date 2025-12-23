@@ -33,9 +33,32 @@ body {
     position: relative;
 }
 
+/* Tombol Kembali */
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--label-color);
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+    align-self: flex-start; 
+    float: left;
+    width: 100%;
+    text-align: left;
+}
+
+.btn-back:hover {
+    color: var(--primary-color);
+    transform: translateX(-5px);
+}
+
 /* Header & Logo */
 .login-header {
     margin-bottom: 2rem;
+    clear: both; /* Clear float dari btn-back */
 }
 
 .login-logo {
@@ -145,7 +168,7 @@ body {
     cursor: not-allowed;
 }
 
-/* Alerts */
+/* Alerts (Penting untuk JS logic) */
 .alert {
     display: none;
     padding: 12px;
