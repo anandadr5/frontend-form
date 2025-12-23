@@ -1,355 +1,326 @@
 const API_PROXY_URL = "https://pengawasan-tambahspk.onrender.com/api/form";
-const GAS_LOGIN_VERIFY_URL = "https://pengawasan-tambahspk.onrender.com/api/form?form=login_perpanjanganspk&action=verifyToken";
-const LOGIN_PAGE_URL = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
-let currentUser = null;
+      const GAS_LOGIN_VERIFY_URL = "https://pengawasan-tambahspk.onrender.com/api/form?form=login_perpanjanganspk&action=verifyToken";
+      const LOGIN_PAGE_URL = "https://frontend-form-virid.vercel.app/login-perpanjanganspk.html";
+      let currentUser = null;
+      
+      let ulokData = []; 
+      let originalEndDateISO = '';
+      let newEndDateISO = '';
+      
+      const ulokSelect = document.getElementById('nomor_ulok');
+      const pertambahanHariInput = document.getElementById('pertambahan_hari');
+      const tglSpkAkhirInput = document.getElementById('tanggal_spk_akhir');
+      const tglSpkAkhirBaruInput = document.getElementById('tanggal_spk_akhir_baru');
+      const logoutBtn = document.getElementById('logoutBtn');
 
-let ulokData = [];
-let originalEndDateISO = '';
-let newEndDateISO = '';
-
-// Element References
-const ulokSelect = document.getElementById('nomor_ulok');
-const pertambahanHariInput = document.getElementById('pertambahan_hari');
-const tglSpkAkhirInput = document.getElementById('tanggal_spk_akhir');
-const tglSpkAkhirBaruInput = document.getElementById('tanggal_spk_akhir_baru');
-const logoutBtn = document.getElementById('logoutBtn');
-const alasanContainer = document.getElementById('alasan-container');
-const tambahAlasanBtn = document.getElementById('tambah-alasan-btn');
-const alasanHiddenInput = document.getElementById('alasan_spk_hidden');
-const lampiranPdfInput = document.getElementById('lampiran_pdf');
-const form = document.getElementById('pertambahan-spk-form');
-const submitBtn = document.getElementById('submit-btn');
-const btnText = document.getElementById('btn-text');
-const btnSpinner = document.getElementById('btn-spinner');
-const successModal = document.getElementById('success-modal');
-const modalMessage = document.getElementById('modal-message');
-const buatLaporanBaruBtn = document.getElementById('buat-laporan-baru-btn');
-
-// --- Logout Handler ---
-if (logoutBtn) {
-    logoutBtn.addEventListener('click', function() {
-        if (confirm('Apakah Anda yakin ingin keluar?')) {
-            sessionStorage.removeItem('authToken');
-            window.location.href = LOGIN_PAGE_URL;
-        }
-    });
-}
-
-// --- Helper: Format Tanggal ---
-function formatDisplayDate(dateObj) {
-    if (!dateObj) return "";
-    return dateObj.toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-    });
-}
-
-// --- Helper: Hitung Tanggal Akhir Baru ---
-function calculateNewDate() {
-    if (!originalEndDateISO) return;
-
-    const daysToAdd = parseInt(pertambahanHariInput.value, 10);
-    if (isNaN(daysToAdd) || daysToAdd <= 0) {
-        tglSpkAkhirBaruInput.value = "";
-        newEndDateISO = "";
-        return;
-    }
-
-    const startDate = new Date(originalEndDateISO);
-    const newDate = new Date(startDate);
-    newDate.setDate(startDate.getDate() + daysToAdd);
-
-    newEndDateISO = newDate.toISOString().split('T')[0];
-    tglSpkAkhirBaruInput.value = formatDisplayDate(newDate);
-}
-
-// --- Helper: Dynamic Alasan Fields ---
-function addAlasanField(value = "") {
-    const div = document.createElement("div");
-    div.className = "alasan-item";
-
-    const input = document.createElement("input");
-    input.type = "text";
-    input.placeholder = "Masukkan alasan...";
-    input.value = value;
-    input.required = true;
-
-    // Update hidden input saat mengetik
-    input.addEventListener("input", updateHiddenAlasan);
-
-    const removeBtn = document.createElement("button");
-    removeBtn.type = "button";
-    removeBtn.className = "remove-alasan-btn";
-    removeBtn.innerHTML = "&times;"; // Simbol X
-    removeBtn.onclick = function() {
-        div.remove();
-        updateHiddenAlasan();
-    };
-
-    div.appendChild(input);
-    div.appendChild(removeBtn);
-    alasanContainer.appendChild(div);
-
-    updateHiddenAlasan();
-}
-
-function updateHiddenAlasan() {
-    const inputs = alasanContainer.querySelectorAll("input");
-    const values = Array.from(inputs).map(input => input.value.trim()).filter(val => val !== "");
-    alasanHiddenInput.value = values.join(" | ");
-}
-
-tambahAlasanBtn.addEventListener("click", () => addAlasanField());
-pertambahanHariInput.addEventListener('input', calculateNewDate);
-
-// --- Initialization ---
-(async function() {
-    checkSessionTime();
-    setInterval(checkSessionTime, 60000); // Cek setiap menit
-
-    const token = sessionStorage.getItem("authToken");
-    if (!token) {
-        alert("Anda belum login. Harap login terlebih dahulu.");
-        window.location.href = LOGIN_PAGE_URL;
-        return;
-    }
-
-    // Verifikasi Token
-    try {
-        const verifyResp = await fetch(GAS_LOGIN_VERIFY_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify({ token: token })
-        });
-        const verifyResult = await verifyResp.json();
-
-        if (verifyResult.status !== "success") {
-            sessionStorage.removeItem("authToken");
-            alert("Sesi tidak valid, harap login kembali.");
-            window.location.href = LOGIN_PAGE_URL;
-            return;
-        }
-
-        currentUser = verifyResult.user; // Simpan data user (pic_name, cabang)
-
-    } catch (error) {
-        console.error("Auth check failed:", error);
-        alert("Gagal memverifikasi sesi. Harap login kembali.");
-        window.location.href = LOGIN_PAGE_URL;
-        return;
-    }
-
-    // Load Data Ulok
-    try {
-        const response = await fetch(`${API_PROXY_URL}?action=getUlokData&cabang=${encodeURIComponent(currentUser.cabang)}`);
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            ulokData = result.data;
-
-            // Reset dropdown
-            ulokSelect.innerHTML = '<option value="" disabled selected>-- Pilih Nomor Ulok --</option>';
-
-            ulokData.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.nomor_ulok;
-                option.textContent = `${item.nomor_ulok} - ${item.nama_toko}`;
-                ulokSelect.appendChild(option);
-            });
-        } else {
-            ulokSelect.innerHTML = '<option value="" disabled>Gagal memuat data</option>';
-            alert("Gagal memuat data Ulok: " + result.message);
-        }
-    } catch (error) {
-        console.error("Error fetching Ulok data:", error);
-        ulokSelect.innerHTML = '<option value="" disabled>Error memuat data</option>';
-    }
-})();
-
-// --- Event Listener: Pilih Ulok ---
-ulokSelect.addEventListener('change', function() {
-    const selectedUlok = this.value;
-    const data = ulokData.find(item => item.nomor_ulok === selectedUlok);
-
-    if (data) {
-        // Parse tanggal dari format DD/MM/YYYY atau YYYY-MM-DD
-        let dateObj = new Date(data.tanggal_spk_akhir);
-        if (isNaN(dateObj.getTime())) {
-            // Coba parsing manual jika format DD/MM/YYYY
-            const parts = data.tanggal_spk_akhir.split('/');
-            if (parts.length === 3) {
-                dateObj = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+      if(logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            if(confirm('Apakah Anda yakin ingin keluar?')) {
+                sessionStorage.removeItem('authToken'); 
+                window.location.href = LOGIN_PAGE_URL;
             }
-        }
+        });
+      }
 
-        if (!isNaN(dateObj.getTime())) {
-            originalEndDateISO = dateObj.toISOString().split('T')[0];
-            tglSpkAkhirInput.value = formatDisplayDate(dateObj);
-            calculateNewDate(); // Recalculate jika user sudah input hari sebelumnya
-        } else {
-            originalEndDateISO = '';
-            tglSpkAkhirInput.value = "Format Tanggal Invalid";
-        }
-    } else {
-        tglSpkAkhirInput.value = "";
-        originalEndDateISO = '';
-    }
-});
+      function formatDisplayDate(dateObj) {
+          if (!dateObj) return "";
+          return dateObj.toLocaleDateString('id-ID', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+          });
+      }
 
-// --- Event Listener: Submit Form ---
-form.addEventListener('submit', async function(e) {
-    e.preventDefault();
+      function formatISODate(dateObj) {
+          if (!dateObj) return "";
+          const offset = dateObj.getTimezoneOffset() * 60000;
+          const adjustedDate = new Date(dateObj.getTime() - offset);
+          return adjustedDate.toISOString().split('T')[0];
+      }
+      
+      function parseISODate(dateString) {
+          if (!dateString) return null;
+          return new Date(dateString + 'T00:00:00');
+      }
 
-    // Validasi dasar
-    if (!ulokSelect.value) { alert("Silakan pilih Nomor Ulok."); return; }
-    if (!pertambahanHariInput.value) { alert("Silakan isi jumlah hari."); return; }
-    if (!alasanHiddenInput.value) { alert("Silakan isi setidaknya satu alasan."); return; }
+      function updateDates() {
+          const selectedUlok = ulokSelect.value;
+          const daysToAdd = parseInt(pertambahanHariInput.value, 10);
+          
+          tglSpkAkhirInput.value = '';
+          tglSpkAkhirBaruInput.value = '';
+          originalEndDateISO = '';
+          newEndDateISO = '';
 
-    // Validasi File PDF
-    const file = lampiranPdfInput.files[0];
-    if (file && file.size > 5 * 1024 * 1024) {
-        alert("Ukuran file terlalu besar! Maksimal 5MB.");
-        return;
-    }
+          const spkInfo = ulokData.find(item => item.ulok === selectedUlok);
 
-    // UI Loading State
-    submitBtn.disabled = true;
-    btnText.style.display = 'none';
-    btnSpinner.style.display = 'flex';
+          if (spkInfo && spkInfo.waktuSelesai) {
+              const originalEndDate = parseISODate(spkInfo.waktuSelesai);
+              
+              if (originalEndDate) {
+                  tglSpkAkhirInput.value = formatDisplayDate(originalEndDate);
+                  originalEndDateISO = formatISODate(originalEndDate);
 
-    // Persiapkan Data
-    const formData = new FormData(); // Gunakan FormData untuk file upload
-    formData.append('nomor_ulok', ulokSelect.value);
-    
-    // Ambil data nama_toko dari object ulokData
-    const selectedData = ulokData.find(u => u.nomor_ulok === ulokSelect.value);
-    formData.append('nama_toko', selectedData ? selectedData.nama_toko : '');
-    
-    formData.append('pic_name', currentUser.pic_name);
-    formData.append('cabang', currentUser.cabang);
-    formData.append('pertambahan_hari', pertambahanHariInput.value);
-    formData.append('tanggal_spk_akhir_lama', originalEndDateISO); // Kirim format YYYY-MM-DD
-    formData.append('tanggal_spk_akhir_baru', newEndDateISO);      // Kirim format YYYY-MM-DD
-    formData.append('alasan_spk', alasanHiddenInput.value);
+                  if (!isNaN(daysToAdd) && daysToAdd > 0) {
+                      const newEndDate = new Date(originalEndDate.getTime());
+                      newEndDate.setDate(newEndDate.getDate() + daysToAdd);
+                      
+                      tglSpkAkhirBaruInput.value = formatDisplayDate(newEndDate);
+                      newEndDateISO = formatISODate(newEndDate);
+                  }
+              }
+          }
+      }
 
-    // Baca file sebagai Base64
-    let fileBase64 = null;
-    let fileName = null;
-    let fileMime = null;
+      async function populateUlokDropdown(cabang) {
+          ulokSelect.disabled = true;
 
-    if (file) {
-        try {
-            const fileData = await readFileAsBase64(file);
-            fileBase64 = fileData.base64;
-            fileName = file.name;
-            fileMime = file.type;
-        } catch (err) {
-            alert("Gagal membaca file: " + err.message);
+          try {
+              const fetchUrl = `${API_PROXY_URL}?form=perpanjangan_spk&action=getUlokByCabang&cabang=${encodeURIComponent(cabang)}`;
+              const response = await fetch(fetchUrl);
+              const result = await response.json();
+
+              if (result.status === "success" && result.data && result.data.length > 0) {
+                  ulokSelect.innerHTML = '';
+                  const defaultOption = document.createElement('option');
+                  defaultOption.value = "";
+                  defaultOption.textContent = "Pilih Nomor Ulok...";
+                  defaultOption.disabled = true;
+                  defaultOption.selected = true;
+                  ulokSelect.appendChild(defaultOption);
+
+                  ulokData = result.data; 
+
+                  ulokData.forEach(item => {
+                      if (item && item.ulok) {
+                          const option = document.createElement('option');
+                          option.value = item.ulok;
+                          option.textContent = item.ulok;
+                          ulokSelect.appendChild(option);
+                      }
+                  });
+                  ulokSelect.disabled = false;
+              } else {
+                  ulokSelect.innerHTML = `<option value="" disabled selected>Tidak ada data Ulok untuk cabang ini</option>`;
+              }
+          } catch (error) {
+              console.error("Gagal memuat Nomor Ulok:", error);
+              ulokSelect.innerHTML = `<option value="" disabled selected>Gagal memuat data</option>`;
+          }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+          (async function verifySession() {
+              const authToken = sessionStorage.getItem("authToken");
+              if (!authToken) {
+                  // Jika tidak ada token, langsung ke login
+                  window.location.href = LOGIN_PAGE_URL;
+                  return;
+              }
+
+              try {
+                  const response = await fetch(`${GAS_LOGIN_VERIFY_URL}&token=${authToken}`);
+                  const result = await response.json();
+                  if (result.status === "success") {
+                      currentUser = result.data;
+                      populateUlokDropdown(currentUser.cabang);
+                  } else {
+                      sessionStorage.removeItem("authToken");
+                      alert("Sesi tidak valid atau telah berakhir. Silakan login kembali.");
+                      window.location.href = LOGIN_PAGE_URL;
+                  }
+              } catch (error) {
+                  alert("Gagal memverifikasi sesi. Coba lagi.");
+                  window.location.href = LOGIN_PAGE_URL;
+              }
+          })();
+
+        const alasanContainer = document.getElementById("alasan-container");
+        const tambahAlasanBtn = document.getElementById("tambah-alasan-btn");
+        const hiddenTextarea = document.getElementById("alasan_spk_hidden");
+        const form = document.getElementById("pertambahan-spk-form");
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnSpinner = document.getElementById('btn-spinner');
+
+        const successModal = document.getElementById('success-modal');
+        const modalMessage = document.getElementById('modal-message');
+        const newReportBtn = document.getElementById('buat-laporan-baru-btn');
+
+        ulokSelect.addEventListener('change', updateDates);
+        pertambahanHariInput.addEventListener('input', updateDates);
+
+        const createAlasanItem = () => {
+          const div = document.createElement("div");
+          div.className = "alasan-item";
+          div.innerHTML = `
+            <input type="text" placeholder="Tuliskan satu alasan di sini..." />
+            <button type="button" class="remove-alasan-btn">&times;</button>
+          `;
+          alasanContainer.appendChild(div);
+          div.querySelector("input").focus();
+        };
+
+        const updateHiddenTextarea = () => {
+          const inputs = alasanContainer.querySelectorAll(".alasan-item input");
+          const alasanArray = [];
+          inputs.forEach((input) => {
+            if (input.value.trim() !== "") {
+              alasanArray.push(`- ${input.value.trim()}`);
+            }
+          });
+          hiddenTextarea.value = alasanArray.join("\n");
+        };
+
+        createAlasanItem();
+
+        tambahAlasanBtn.addEventListener("click", () => {
+          const lastItem = alasanContainer.lastElementChild;
+          if (lastItem) {
+            const lastInput = lastItem.querySelector("input");
+            if (lastInput.value.trim() === "") {
+              alert("Harap isi alasan saat ini sebelum menambahkan yang baru.");
+              lastInput.focus();
+              return;
+            }
+            lastInput.readOnly = true;
+            lastInput.classList.add("locked");
+            lastItem.classList.add("locked-item");
+          }
+          createAlasanItem();
+        });
+
+        alasanContainer.addEventListener("click", function (e) {
+          if (e.target.classList.contains("remove-alasan-btn")) {
+            e.target.closest(".alasan-item").remove();
+            updateHiddenTextarea();
+          } else if (e.target.classList.contains("locked")) {
+            const targetInput = e.target;
+            targetInput.readOnly = false;
+            targetInput.classList.remove("locked");
+            targetInput.parentElement.classList.remove("locked-item");
+            targetInput.focus();
+            targetInput.setSelectionRange(targetInput.value.length, targetInput.value.length);
+          }
+        });
+        
+        alasanContainer.addEventListener("input", updateHiddenTextarea);
+
+        newReportBtn.addEventListener('click', () => window.location.reload());
+
+        const readFileAsBase64 = (file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]); // Ambil bagian base64 saja
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        };
+
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+          updateHiddenTextarea();
+          if (hiddenTextarea.value.trim() === "") {
+            alert("Harap isi setidaknya satu alasan pertambahan SPK.");
+            if (alasanContainer.children.length === 0) createAlasanItem();
+            else alasanContainer.querySelector("input").focus();
+            return;
+          }
+          
+          if (!originalEndDateISO || !newEndDateISO) {
+              alert("Data tanggal tidak valid. Pastikan Nomor Ulok dan Pertambahan Hari sudah benar.");
+              return;
+          }
+
+          const fileInput = document.getElementById('lampiran_pdf');
+          let fileBase64 = null;
+          let fileName = null;
+
+          if (fileInput.files.length > 0) {
+              const file = fileInput.files[0];
+              if (file.size > 5 * 1024 * 1024) {
+                  alert("Ukuran file terlalu besar. Maksimal 5MB.");
+                  return;
+              }
+              try {
+                  fileBase64 = await readFileAsBase64(file);
+                  fileName = file.name;
+              } catch (err) {
+                  alert("Gagal memproses file upload.");
+                  return;
+              }
+          }
+
+          submitBtn.disabled = true;
+          btnText.style.display = 'none';
+          btnSpinner.style.display = 'flex';
+
+          const formData = {
+            nomor_ulok: document.getElementById("nomor_ulok").value,
+            pertambahan_hari: document.getElementById("pertambahan_hari").value,
+            tanggal_spk_akhir: originalEndDateISO,
+            tanggal_spk_akhir_baru: newEndDateISO,
+            alasan_spk: hiddenTextarea.value,
+            dibuat_oleh_nama: currentUser.nama,
+            dibuat_oleh_email: currentUser.email,
+            cabang_pembuat: currentUser.cabang,
+            lampiran_user_base64: fileBase64,
+            lampiran_user_name: fileName
+          };
+
+          try {
+            const response = await fetch(`${API_PROXY_URL}?form=perpanjangan_spk`, {
+              method: "POST",
+              mode: "cors",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(formData),
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (result.status === "success") {
+              modalMessage.textContent = result.message;
+              successModal.classList.add('show');
+            } else {
+              throw new Error(result.message || "Terjadi kesalahan di server.");
+            }
+          } catch (error) {
+            alert("Gagal mengirim data: " + error.message);
+          } finally {
             submitBtn.disabled = false;
             btnText.style.display = 'inline';
             btnSpinner.style.display = 'none';
-            return;
-        }
-    }
-
-    // Buat payload JSON (karena Google Apps Script DoPost lebih mudah handle JSON string di body)
-    const payload = {
-        nomor_ulok: ulokSelect.value,
-        nama_toko: selectedData ? selectedData.nama_toko : '',
-        pic_name: currentUser.pic_name,
-        cabang: currentUser.cabang,
-        pertambahan_hari: pertambahanHariInput.value,
-        tanggal_spk_akhir_lama: originalEndDateISO,
-        tanggal_spk_akhir_baru: newEndDateISO,
-        alasan_spk: alasanHiddenInput.value,
-        file_base64: fileBase64,
-        file_name: fileName,
-        file_mime: fileMime
-    };
-
-    try {
-        // Kirim ke backend (Action: submitPerpanjangan)
-        // Catatan: Pastikan backend Anda menangani parameter 'action=submitPerpanjangan'
-        const response = await fetch(`${API_PROXY_URL}?action=submitPerpanjangan`, {
-            method: 'POST',
-            // headers: { "Content-Type": "application/json" }, // Terkadang text/plain lebih aman untuk CORS di GAS
-            body: JSON.stringify(payload)
+          }
         });
+      });
 
-        const result = await response.json();
+      function checkSessionTime() {
+        try {
+          const startHour = 6;
+          const endHour = 18;
 
-        if (result.status === "success") {
-            modalMessage.textContent = result.message || "Permintaan berhasil dikirim.";
-            successModal.classList.add('show');
-        } else {
-            throw new Error(result.message || "Terjadi kesalahan di server.");
-        }
+          const now = new Date();
+          const options = { timeZone: "Asia/Jakarta", hour: '2-digit', hour12: false };
+          const currentHour = parseInt(new Intl.DateTimeFormat('en-US', options).format(now));
 
-    } catch (error) {
-        alert("Gagal mengirim data: " + error.message);
-    } finally {
-        submitBtn.disabled = false;
-        btnText.style.display = 'inline';
-        btnSpinner.style.display = 'none';
-    }
-});
-
-// --- Helper: Read File as Base64 ---
-function readFileAsBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const result = reader.result;
-            // result format: "data:application/pdf;base64,....."
-            const base64 = result.split(',')[1];
-            resolve({ base64: base64 });
-        };
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-    });
-}
-
-// --- Event Listener: Modal Button ---
-buatLaporanBaruBtn.addEventListener('click', function() {
-    successModal.classList.remove('show');
-    form.reset();
-    
-    // Reset elemen custom yang tidak ter-reset otomatis
-    ulokSelect.value = "";
-    alasanContainer.innerHTML = "";
-    alasanHiddenInput.value = "";
-    tglSpkAkhirInput.value = "";
-    tglSpkAkhirBaruInput.value = "";
-    originalEndDateISO = "";
-    newEndDateISO = "";
-    
-    // Tambahkan 1 field alasan kosong lagi
-    addAlasanField();
-});
-
-// --- Initialize First Alasan Field ---
-addAlasanField();
-
-// --- Session Timeout Check ---
-function checkSessionTime() {
-    try {
-        const startHour = 6;
-        const endHour = 18;
-
-        const now = new Date();
-        const options = { timeZone: "Asia/Jakarta", hour: '2-digit', hour12: false };
-        const currentHour = parseInt(new Intl.DateTimeFormat('en-US', options).format(now));
-
-        if (currentHour < startHour || currentHour >= endHour) {
+          if (currentHour < startHour || currentHour >= endHour) {
+            
             const token = sessionStorage.getItem("authToken");
+            
             if (token) {
-                sessionStorage.removeItem("authToken");
-                alert("Sesi Anda telah berakhir karena di luar jam operasional (06:00 - 18:00 WIB).");
-                window.location.href = LOGIN_PAGE_URL;
+              sessionStorage.removeItem("authToken");
+              alert("Sesi Anda telah berakhir karena di luar jam operasional (06:00 - 18:00 WIB).");
+              
+              window.location.href = LOGIN_PAGE_URL;
             }
+          }
+        } catch (err) {
+          console.error("Gagal menjalankan pengecekan jam sesi:", err);
         }
-    } catch (err) {
-        console.error("Gagal menjalankan pengecekan jam sesi:", err);
-    }
-}
+      }
+      checkSessionTime();
+      setInterval(checkSessionTime, 300000);
