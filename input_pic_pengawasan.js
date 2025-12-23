@@ -286,7 +286,7 @@ form.addEventListener("submit", async function (e) {
 logoutLink.addEventListener("click", function (e) {
     e.preventDefault();
     sessionStorage.removeItem("authToken");
-    window.location.href = "https://frontend-form-virid.vercel.app/login-input_pic.html";
+    window.location.href = "https://sparta-alfamart.vercel.app/dashboard/pic/index.html";
 });
 window.closePopup = closePopup;
 
