@@ -812,168 +812,226 @@
         loadFormFromLocalStorage(selectedKode);
       }
 
+      // TAMBAHKAN FUNGSI INI (setelah pekerjaanData dan sebelum form.addEventListener)
+function getSelectedItems() {
+  const selectedItems = [];
+  
+  const itemDivs = document.querySelectorAll(". pekerjaan-item");
+  
+  itemDivs.forEach(itemDiv => {
+    const kode = itemDiv.getAttribute("data-item-kode");
+    const area = itemDiv.getAttribute("data-item-area");
+    
+    const selectAda = itemDiv.querySelector(`select[name="${kode}_ada"]`);
+    
+    if (! selectAda) return;
+    
+    const adaTidak = selectAda.value;
+    
+    // Hanya simpan jika user memilih sesuatu (tidak kosong)
+    if (adaTidak && adaTidak !== "") {
+      const itemData = {
+        kode:  kode,
+        area: area,
+        ada_tidak: selectAda.options[selectAda.selectedIndex]?.textContent || "-",
+        sesuai_design_standart: "-",
+        kualitas_kerapihan: "-",
+        spesifikasi_material: "-",
+        diterima_tidak: "-"
+      };
+
+      // Ambil nilai field lainnya hanya jika ada/tidak = "ada"
+      if (adaTidak. toLowerCase() === "ada") {
+        const selectDesain = itemDiv.querySelector(`select[name="${kode}_desain"]`);
+        const selectKualitas = itemDiv.querySelector(`select[name="${kode}_kualitas"]`);
+        const selectMaterial = itemDiv.querySelector(`select[name="${kode}_material"]`);
+        const selectDiterima = itemDiv.querySelector(`select[name="${kode}_diterima"]`);
+
+        if (selectDesain && selectDesain.value) {
+          itemData.sesuai_design_standart = selectDesain.options[selectDesain.selectedIndex]?.textContent || "-";
+        }
+        if (selectKualitas && selectKualitas.value) {
+          itemData.kualitas_kerapihan = selectKualitas. options[selectKualitas.selectedIndex]?.textContent || "-";
+        }
+        if (selectMaterial && selectMaterial.value) {
+          itemData.spesifikasi_material = selectMaterial.options[selectMaterial. selectedIndex]?.textContent || "-";
+        }
+        if (selectDiterima && selectDiterima.value) {
+          itemData.diterima_tidak = selectDiterima.options[selectDiterima.selectedIndex]?. textContent || "-";
+        }
+      }
+
+      selectedItems. push(itemData);
+    }
+  });
+
+  return selectedItems;
+}
+
       form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+  e.preventDefault();
 
-        const statusSerah = document.getElementById("status_serah").value;
-        if (statusSerah === "") {
-          let errorFound = false;
-          const allSections = document.querySelectorAll(".kelompok");
+  const statusSerah = document.getElementById("status_serah").value;
+  if (statusSerah === "") {
+    let errorFound = false;
+    const allSections = document.querySelectorAll(".kelompok");
 
-          for (const section of allSections) {
-            const items = section.querySelectorAll(".pekerjaan-item");
-            
-            for (const item of items) {
-              const selectAda = item.querySelector('select[name$="_ada"]');
-              const val = (selectAda?.value || "").toLowerCase();
-              let firstInvalidElement = null;
-              
-              if (val === "") {
-                firstInvalidElement = selectAda;
-              } else if (val === "ada") {
-                const otherSelects = item.querySelectorAll(
-                  'select:not([name$="_ada"])'
-                );
-                for (const s of otherSelects) {
-                  if (s.value === "") {
-                    firstInvalidElement = s;
-                    break;
-                  }
-                }
-
-                if (!firstInvalidElement) {
-                  const fileInput = item.querySelector('input[type="file"]');
-                  if (fileInput && !fileInput.disabled && fileInput.files.length === 0) {
-                    firstInvalidElement = fileInput;
-                  }
-                }
-              }
-              
-              if (firstInvalidElement) {
-                document.querySelectorAll(".kelompok").forEach(s => s.classList.add("collapsed"));
-                section.classList.remove("collapsed");
-
-                item.scrollIntoView({ behavior: "smooth", block: "center" });
-                
-                showErrorPopup(
-                  "Masih ada item yang belum diisi. Harap periksa kembali.",
-                  null
-                );
-                
-                errorFound = true;
-                break;
-              }
-            }
-            
-            if (errorFound) {
+    for (const section of allSections) {
+      const items = section.querySelectorAll(". pekerjaan-item");
+      
+      for (const item of items) {
+        const selectAda = item.querySelector('select[name$="_ada"]');
+        const val = (selectAda?. value || "").toLowerCase();
+        let firstInvalidElement = null;
+        
+        if (val === "") {
+          firstInvalidElement = selectAda;
+        } else if (val === "ada") {
+          const otherSelects = item.querySelectorAll(
+            'select: not([name$="_ada"])'
+          );
+          for (const s of otherSelects) {
+            if (s.value === "") {
+              firstInvalidElement = s;
               break;
             }
-          } 
-
-          if (!errorFound) {
-             showErrorPopup(
-              "Masih ada item yang belum diisi. Harap periksa kembali.",
-              null
-            );
           }
+
+          if (! firstInvalidElement) {
+            const fileInput = item.querySelector('input[type="file"]');
+            if (fileInput && ! fileInput.disabled && fileInput.files.length === 0) {
+              firstInvalidElement = fileInput;
+            }
+          }
+        }
+        
+        if (firstInvalidElement) {
+          document.querySelectorAll(".kelompok").forEach(s => s.classList.add("collapsed"));
+          section.classList.remove("collapsed");
+
+          item.scrollIntoView({ behavior: "smooth", block: "center" });
           
-          return;
+          showErrorPopup(
+            "Masih ada item yang belum diisi.  Harap periksa kembali.",
+            null
+          );
+          
+          errorFound = true;
+          break;
         }
+      }
+      
+      if (errorFound) {
+        break;
+      }
+    } 
 
-        submitButton.disabled = true;
-        showPopup("Mengirim data...");
+    if (!errorFound) {
+       showErrorPopup(
+        "Masih ada item yang belum diisi. Harap periksa kembali.",
+        null
+      );
+    }
+    
+    return;
+  }
 
-        const payload = {};
-        const fotoUpload = [];
+  submitButton.disabled = true;
+  showPopup("Mengirim data.. .");
 
-        const allFormElements = form.querySelectorAll("input, select");
-        for (const element of allFormElements) {
-          if (element.name && element.type !== "file") {
-            const mappedName = element.name
-              .replace(/_ada$/, "_ada/tidak")
-              .replace(/_desain$/, "_sesuai_design_standart")
-              .replace(/_kualitas$/, "_kualitas/kerapihan_pekerjaan")
-              .replace(/_material$/, "_spesifikasi_material")
-              .replace(/_diterima$/, "_diterima/tidak");
+  // === PERUBAHAN UTAMA DI SINI ===
+  const payload = {
+    lokasi: document.getElementById("lokasi").value,
+    cabang: document.getElementById("cabang").value,
+    pekerjaan: "", // Jika ada field pekerjaan, isi sesuai kebutuhan
+    kode_ulok: document.getElementById("kode_ulok").value,
+    kategori_lokasi: "", // Tambahkan jika ada
+    pic_nama: getParameterByName("assigned_nama") || getParameterByName("nama"),
+    pic_building_support: getParameterByName("assigned_email") || getParameterByName("email"),
+    status_serah: document.getElementById("status_serah").value,
+    tanggal_serah: document.getElementById("tanggal_serah")?. value || "",
+    
+    // KUNCI UTAMA:  items yang dipilih
+    items_dipilih: getSelectedItems()
+  };
 
-            if (element.tagName === "SELECT") {
-              const selectedOption = element.options[element.selectedIndex];
-              payload[mappedName] = selectedOption
-                ? selectedOption.textContent
-                : "";
-            } else {
-              payload[mappedName] = element.value;
-            }
-          }
-        }
+  // Validasi minimal ada 1 item dipilih
+  if (payload. items_dipilih.length === 0) {
+    showErrorPopup("Harap pilih minimal 1 item pekerjaan!", null);
+    submitButton.disabled = false;
+    return;
+  }
 
-        const itemDivs = document.querySelectorAll(".pekerjaan-item");
-        for (const itemDiv of itemDivs) {
-          const kode = itemDiv.getAttribute("data-item-kode");
-          const area = itemDiv.getAttribute("data-item-area");
-          const fileInput = itemDiv.querySelector(`input[name="${kode}_foto"]`);
+  // Proses foto upload
+  const fotoUpload = [];
+  const itemDivs = document.querySelectorAll(".pekerjaan-item");
+  
+  for (const itemDiv of itemDivs) {
+    const kode = itemDiv.getAttribute("data-item-kode");
+    const area = itemDiv.getAttribute("data-item-area");
+    const fileInput = itemDiv.querySelector(`input[name="${kode}_foto"]`);
 
-          if (fileInput && fileInput.files.length > 0 && !fileInput.disabled) {
-            const file = fileInput.files[0];
-            try {
-              const base64 = await convertFileToBase64(file);
-              fotoUpload.push({
-                item: kode,
-                area: area,
-                base64: base64.split(",")[1],
-              });
-            } catch (error) {
-              console.error(`Error converting file for ${kode}:`, error);
-              showPopup(`Error converting file for ${kode}: ${error.message}`);
-              submitButton.disabled = false;
-              return;
-            }
-          }
-        }
+    if (fileInput && fileInput.files.length > 0 && ! fileInput.disabled) {
+      const file = fileInput.files[0];
+      try {
+        const base64 = await convertFileToBase64(file);
+        fotoUpload.push({
+          item: kode,
+          area: area,
+          base64: base64, // Kirim full base64 (dengan header)
+        });
+      } catch (error) {
+        console.error(`Error converting file for ${kode}:`, error);
+        showErrorPopup(`Error converting file for ${kode}:  ${error.message}`, null);
+        submitButton.disabled = false;
+        return;
+      }
+    }
+  }
 
-        payload.fotoUpload = fotoUpload;
-        payload.pic_nama = getParameterByName("assigned_nama") || getParameterByName("nama");
-        payload.pic_building_support = getParameterByName("assigned_email") || getParameterByName("email");
+  payload.fotoUpload = fotoUpload;
 
-        try {
-          const response = await fetch(SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify(payload),
-            headers: { "Content-Type": "application/json" },
-          });
+  console.log("Payload yang dikirim:", payload); // Debug
 
-          let result;
-          try {
-            result = await response.json();
-          } catch {
-            const text = await response.text();
-            console.error("Non-JSON response:", text);
-            showPopup("Server mengembalikan format yang tidak dikenali.");
-            submitButton.disabled = false;
-            return;
-          }
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method:  "POST",
+      body: JSON.stringify(payload),
+      headers: { "Content-Type": "application/json" },
+    });
 
-          if (response.ok && result.status === "success") {
-            showPopup("Data berhasil dikirim!");
-            const submittedKodeUlok = payload["kode_ulok"]; 
-            if (submittedKodeUlok) {
-                const storageKey = `autosave_serahTerima_${submittedKodeUlok}`;
-                localStorage.removeItem(storageKey); 
-            }
+    let result;
+    try {
+      result = await response. json();
+    } catch {
+      const text = await response.text();
+      console.error("Non-JSON response:", text);
+      showPopup("Server mengembalikan format yang tidak dikenali.");
+      submitButton.disabled = false;
+      return;
+    }
 
-            form.reset();
-            document.querySelectorAll(".kelompok").forEach(updateSectionColor);
-            checkFinalStatus();
-          } else {
-            showPopup("Gagal kirim: " + (result.message || "Tidak diketahui"));
-          }
-        } catch (err) {
-          console.error(err);
-          showPopup("Error: " + err.message);
-        } finally {
-          submitButton.disabled = false;
-        }
-      });
+    if (response.ok && result.status === "success") {
+      showPopup("Data berhasil dikirim!");
+      const submittedKodeUlok = payload.kode_ulok; 
+      if (submittedKodeUlok) {
+        const storageKey = `autosave_serahTerima_${submittedKodeUlok}`;
+        localStorage.removeItem(storageKey); 
+      }
+
+      form.reset();
+      document.querySelectorAll(".kelompok").forEach(updateSectionColor);
+      checkFinalStatus();
+    } else {
+      showPopup("Gagal kirim:  " + (result.message || "Tidak diketahui"));
+    }
+  } catch (err) {
+    console.error(err);
+    showPopup("Error: " + err.message);
+  } finally {
+    submitButton. disabled = false;
+  }
+});
 
       function convertFileToBase64(file) {
         return new Promise((resolve, reject) => {
