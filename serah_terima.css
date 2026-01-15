@@ -1,200 +1,329 @@
+/* Import Font Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 body {
-    font-family: Cambria;
+    font-family: 'Inter', sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    color: #333;
 }
 
+/* Header Style - Matching H2 */
 header {
-    background-color: #ce1e10;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
     color: white;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    min-height: 60px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     text-align: center;
-    padding: 20px;
 }
 
+.header-logo {
+    width: 100px;
+    height: auto;
+    position: absolute;
+    left: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Container Style */
 .container {
-    max-width: 800px;
-    margin: 20px auto;
+    max-width: 900px; /* Sedikit lebih lebar untuk grid input */
+    margin: 2.5rem auto;
     background-color: white;
-    padding: 30px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    border-radius: 15px;
 }
 
+/* Form Basics */
 .form-container {
     display: flex;
     flex-direction: column;
 }
 
 .form-container label {
-        font-weight: bold;
-        margin-bottom: 5px;
-        margin-top: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    margin-top: 15px;
+    color: #444;
+    font-size: 0.95rem;
 }
 
-.form-container input,
+.form-container input[type="text"],
+.form-container input[type="date"],
 .form-container select {
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    padding: 12px;
+    margin-bottom: 5px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    box-sizing: border-box;
 }
 
+.form-container input:focus,
+.form-container select:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Accordion Section (Kelompok) Style */
 .kelompok {
-    margin-bottom: 40px;
-    padding: 15px;
-    background-color: #fff6f6;
-    border-left: 4px solid #ce1e10;
-    border-radius: 6px;
+    margin-bottom: 20px;
+    padding: 0; /* Padding dipindah ke content */
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: box-shadow 0.3s;
 }
 
+.kelompok:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Accordion Header */
 .kelompok h2 {
-    color: #ce1e10;
-    font-size: 20px;
-    margin-bottom: 20px;
-    border-bottom: 1px dashed #ccc;
-    padding-bottom: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    padding: 15px 20px;
     cursor: pointer;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background-color 0.3s;
+    /* Warna default akan ditimpa oleh JS, tapi kita set base style yang bagus */
+    border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
-      .kelompok h2::after {
-        content: "▼";
-        position: absolute;
-        right: 10px;
-        font-size: 14px;
-        transition: transform 0.3s;
-      }
+.kelompok h2::after {
+    content: "▼";
+    font-size: 12px;
+    transition: transform 0.3s;
+    margin-left: 10px;
+}
 
-      .kelompok.collapsed h2::after {
-        transform: rotate(-90deg);
-      }
+.kelompok.collapsed h2::after {
+    transform: rotate(-90deg);
+}
 
-      .kelompok.collapsed .pekerjaan-item {
-        display: none;
-      }
+/* Logic JS menyembunyikan item, kita styling transisinya jika perlu */
+.kelompok.collapsed .pekerjaan-item {
+    display: none;
+}
 
-      .pekerjaan-item {
-        margin-bottom: 20px;
-        background-color: #ffffff;
-        border: 1px solid #eee;
-        border-radius: 6px;
-        padding: 15px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      }
+/* Item Card Style */
+.pekerjaan-item {
+    background-color: #fcfcfc;
+    border-top: 1px solid #f0f0f0;
+    padding: 20px;
+}
 
-      .judul-area {
-        display: flex;
-        align-items: center;
-        gap: 15px;
+.judul-area {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.judul-area .no {
+    font-weight: 700;
+    color: #dc2626;
+    background: #fee2e2;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.judul-area .area {
+    font-weight: 600;
+    color: #333;
+    font-style: normal;
+    font-size: 15px;
+}
+
+/* Grid Layout for Inputs inside Items */
+.input-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.input-grid label {
+    display: block;
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 6px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-grid select,
+.input-grid input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background-color: white;
+}
+
+/* Status Container */
+#status-container {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px dashed #e2e8f0;
+}
+
+/* Buttons */
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.form-container button {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: white;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    flex: 1;
+    box-shadow: 0 4px 6px rgba(220, 38, 38, 0.2);
+}
+
+.form-container button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(220, 38, 38, 0.3);
+}
+
+.form-container button:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* File Info Small Text */
+.file-info {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 4px;
+    display: block;
+    font-style: italic;
+}
+
+/* Popup Modern Style */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+}
+
+.popup-content {
+    background-color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    color: #333;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    font-family: 'Inter', sans-serif;
+}
+
+.popup p {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #dc2626;
+}
+
+.popup.show {
+    display: block;
+}
+
+.popup button,
+#error-link {
+    background: #dc2626;
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s;
+}
+
+.popup button:hover,
+#error-link:hover {
+    background-color: #b91c1c;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        margin: 1rem;
+        padding: 1.5rem;
+        width: auto;
+    }
+    
+    header {
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 1rem;
+    }
+    
+    .header-logo {
+        position: static;
+        transform: none;
         margin-bottom: 10px;
-      }
+        width: 120px;
+    }
 
-      .judul-area .no {
-        font-weight: bold;
-        color: #d60000;
-      }
-
-      .judul-area .area {
-        font-style: italic;
-        color: #555;
-      }
-
-      .input-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 15px 30px;
-      }
-
-      .input-grid label {
-        display: block;
-        font-weight: bold;
-        font-size: 13px;
-        margin-bottom: 5px;
-        color: #333;
-      }
-
-      .input-grid select,
-      .input-grid input[type="file"] {
-        width: 100%;
-        padding: 8px;
-        font-size: 13px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
-
-      #status-container {
-        margin-bottom: 20px;
-      }
-      #status-container input[type="date"],
-      #status-container input[type="text"] {
-        padding: 10px;
-        font-size: 14px;
-      }
-
-      .button-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-      }
-
-      .form-container button {
-        background-color: #ce1e10;
-        color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        flex: 1;
-      }
-
-      .form-container button:hover {
-        background-color: #ef190a;
-      }
-
-      .popup {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #ffffff;
-        padding: 30px;
-        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
-        border-radius: 10px;
-        color: #ef190a;
-        text-align: center;
-        z-index: 1000;
-      }
-
-      .popup p {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 15px;
-      }
-
-      .popup.show {
-        display: block;
-      }
-
-      .popup button {
-        background-color: #ef190a;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-      }
-
-      .popup button:hover {
-        background-color: #d50e08;
-      }
-
-      .file-info {
-        font-size: 12px;
-        color: #666;
-        margin-top: -10px;
-        margin-bottom: 15px;
-      }
+    .input-grid {
+        grid-template-columns: 1fr; /* Stack inputs on mobile */
+    }
+}

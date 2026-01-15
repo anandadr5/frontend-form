@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,14 +8,17 @@
   </head>
   <body>
     <header>
+      <img src="assets/Alfamart-Emblem.png" alt="Alfamart Logo" class="header-logo" onerror="this.style.display='none'"/>
       <h1>SERAH TERIMA PEKERJAAN RENOVASI / PEMBANGUNAN TOKO</h1>
     </header>
+    
     <div class="container">
       <form id="laporan-form" class="form-container" novalidate>
         <label for="kode_ulok">Kode Ulok:</label>
         <select id="kode_ulok" name="kode_ulok" required>
           <option value="">-- Pilih Kode Ulok --</option>
         </select>
+        
         <label for="lokasi">Lokasi:</label>
         <input
           type="text"
@@ -24,10 +27,11 @@
           placeholder="Akan terisi otomatis berdasarkan kode ulok..."
           required
           readonly
+          class="input-readonly"
         />
 
         <label for="cabang">Cabang:</label>
-        <input type="text" id="cabang" name="cabang" readonly required />
+        <input type="text" id="cabang" name="cabang" readonly required class="input-readonly"/>
 
         <div id="pekerjaan-sections"></div>
 
@@ -54,32 +58,28 @@
     </div>
 
     <div class="popup" id="popup">
-      <p>Data Berhasil Terkirim</p>
-      <button onclick="closePopup()">Tutup</button>
+      <div class="popup-content">
+        <p>Data Berhasil Terkirim</p>
+        <button onclick="closePopup()">Tutup</button>
+      </div>
     </div>
 
     <div class="popup" id="error-popup">
-      <p id="error-message" style="font-weight: bold">
-        Pesan error akan muncul di sini.
-      </p>
-      <a
-        id="error-link"
-        href="#"
-        target="_blank"
-        style="
-          background-color: #ffb700;
-          color: black;
-          padding: 10px 15px;
-          text-decoration: none;
-          border-radius: 5px;
-          margin: 10px 0;
-          display: inline-block;
-        "
-        >Kompres Foto di Sini</a
-      >
-      <br />
-      <button id="close-error-popup" style="margin-top: 15px">Tutup</button>
+      <div class="popup-content">
+        <p id="error-message" style="font-weight: bold">
+            Pesan error akan muncul di sini.
+        </p>
+        <a
+            id="error-link"
+            href="#"
+            target="_blank"
+            style="display: none; margin-bottom: 15px;"
+        >Kompres Foto di Sini</a>
+        <br />
+        <button id="close-error-popup">Tutup</button>
+      </div>
     </div>
+
     <script src="/serah_terima.js"></script>
   </body>
 </html>
