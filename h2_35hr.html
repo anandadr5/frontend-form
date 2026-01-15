@@ -1,131 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Laporan Progress Pengawasan H2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-      body {
-        font-family: Cambria;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 0;
-      }
-
-      header {
-        background-color: #ce1e10;
-        color: white;
-        text-align: center;
-        padding: 20px;
-      }
-
-      .container {
-        max-width: 800px;
-        margin: 20px auto;
-        background-color: white;
-        padding: 30px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-      }
-
-      .form-container {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .form-container label {
-        font-weight: bold;
-        margin-bottom: 5px;
-        margin-top: 15px;
-      }
-
-      .form-container input,
-      .form-container select,
-      .form-container textarea {
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-      }
-
-      .button-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-      }
-
-      .form-container button {
-        background-color: #ce1e10;
-        color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        flex: 1;
-      }
-
-      .form-container button:hover {
-        background-color: #ef190a;
-      }
-
-      .popup {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #ffffff;
-        padding: 30px;
-        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
-        border-radius: 10px;
-        color: #ef190a;
-        text-align: center;
-      }
-
-      .popup p {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 15px;
-      }
-
-      .popup.show {
-        display: block;
-      }
-
-      .popup button {
-        background-color: #ef190a;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-      }
-
-      .popup button:hover {
-        background-color: #d50e08;
-      }
-
-      #compress {
-        background-color: #ffb700;
-        color: black;
-      }
-
-      #compress:hover {
-        background-color: #e6a800;
-      }
-
-      .file-info {
-        font-size: 12px;
-        color: #666;
-        margin-top: -10px;
-        margin-bottom: 15px;
-      }
+      body { font-family: 'Inter', sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; color: #333; }
+      header { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); min-height: 60px; }
+      header h1 { margin: 0; font-size: 1.5rem; font-weight: 700; text-align: center; }
+      .header-logo { width: 100px; height: auto; position: absolute; left: 25px; top: 50%; transform: translateY(-50%); }
+      .container { max-width: 800px; margin: 2.5rem auto; background-color: white; padding: 2rem; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border-radius: 15px; }
+      .form-container { display: flex; flex-direction: column; }
+      .form-container label { font-weight: 600; margin-bottom: 8px; margin-top: 15px; color: #444; font-size: 0.95rem; }
+      .form-container input, .form-container select, .form-container textarea { padding: 12px; margin-bottom: 5px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; width: 100%; box-sizing: border-box; transition: border-color 0.2s; }
+      .form-container input:focus, .form-container select:focus, .form-container textarea:focus { outline: none; border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1); }
+      .button-group { margin-top: 2rem; display: flex; flex-direction: column; gap: 10px; }
+      button[type='submit'] { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s; width: 100%; }
+      button[type='submit']:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); }
+      #compress { background-color: #ffb700; color: #000; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; }
+      #compress:hover { background-color: #e6a800; transform: translateY(-2px); }
+      .file-info { font-size: 12px; color: #666; margin-top: 4px; margin-bottom: 15px; font-style: italic; }
+      .popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; }
+      .popup-content { background-color: white; margin: 15% auto; padding: 30px; border-radius: 15px; text-align: center; max-width: 400px; width: 90%; font-family: 'Inter', sans-serif; }
+      .popup-content p { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #dc2626; }
+      .popup-content button { background: #dc2626; color: white; padding: 10px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+      .popup.show { display: block; }
+      @media (max-width: 768px) { .container { margin: 1rem; padding: 1.5rem; } header { flex-direction: column; gap: 1rem; } .header-logo { position: static; transform: none; margin-bottom: 10px; } }
     </style>
   </head>
   <body>
     <header>
+      <img src="assets/Alfamart-Emblem.png" alt="Alfamart Logo" class="header-logo" onerror="this.style.display='none'"/>
       <h1>Laporan Progress Pengawasan H2</h1>
     </header>
 
@@ -137,29 +43,11 @@
         </select>
 
         <label for="status_lokasi">Status Lokasi:</label>
-        <input
-          type="text"
-          id="status_lokasi"
-          placeholder="Non Ruko Non Urugan 35 hr"
-          disabled
-        />
-        <input
-          type="hidden"
-          id="status_lokasi"
-          name="status_lokasi"
-          value="non_ruko_non_urugan_35hr"
-        />
+        <input type="text" id="status_lokasi_display" placeholder="Non Ruko Non Urugan 35 hr" disabled style="background-color: #f8fafc; color: #64748b;"/>
+        <input type="hidden" id="status_lokasi" name="status_lokasi" value="non_ruko_non_urugan_35hr" />
 
-        <label for="pengukuran_bowplank"
-          >I. Pengukuran dan Pemasangan Bowplank:</label
-        >
-        <input
-          type="file"
-          id="pengukuran_bowplank"
-          name="pengukuran_bowplank"
-          accept="image/*"
-          required
-        />
+        <label for="pengukuran_bowplank">I. Pengukuran dan Pemasangan Bowplank:</label>
+        <input type="file" id="pengukuran_bowplank" name="pengukuran_bowplank" accept="image/*" required />
         <small class="file-info">Maksimal ukuran file: 2 MB</small>
 
         <label for="status_progress1">Status Progress:</label>
@@ -170,22 +58,10 @@
         </select>
 
         <label for="catatan1">Catatan:</label>
-        <textarea
-          name="catatan"
-          id="catatan1"
-          rows="4"
-          placeholder="Masukan catatan"
-          required
-        ></textarea>
+        <textarea name="catatan" id="catatan1" rows="4" placeholder="Masukan catatan" required></textarea>
 
         <label for="pekerjaan_tanah">II. Mulai Pekerjaan Tanah:</label>
-        <input
-          type="file"
-          id="pekerjaan_tanah"
-          name="pekerjaan_tanah"
-          accept="image/*"
-          required
-        />
+        <input type="file" id="pekerjaan_tanah" name="pekerjaan_tanah" accept="image/*" required />
         <small class="file-info">Maksimal ukuran file: 2 MB</small>
 
         <label for="status_progress2">Status Progress:</label>
@@ -196,67 +72,35 @@
         </select>
 
         <label for="catatan2">Catatan:</label>
-        <textarea
-          name="catatan"
-          id="catatan2"
-          rows="4"
-          placeholder="Masukan catatan"
-          required
-        ></textarea>
+        <textarea name="catatan" id="catatan2" rows="4" placeholder="Masukan catatan" required></textarea>
 
-        <label for="berkas_pengawasan"
-          >III. BERKAS PENGAWASAN (MEMO PENGAWASAN/INSTRUKSI LAPANGAN/OPNAME
-          PEKERJAAN)</label
-        >
-        <input
-          type="file"
-          id="berkas_pengawasan"
-          name="berkas_pengawasan"
-          accept="image/*"
-          required
-        />
+        <label for="berkas_pengawasan">III. BERKAS PENGAWASAN (MEMO PENGAWASAN/INSTRUKSI LAPANGAN/OPNAME PEKERJAAN)</label>
+        <input type="file" id="berkas_pengawasan" name="berkas_pengawasan" accept="image/*" required />
         <small class="file-info">Maksimal ukuran file: 2 MB</small>
 
         <div class="button-group">
           <button type="submit">Simpan</button>
-        </div>
-
-        <div class="button-group">
-          <button
-            type="button"
-            id="compress"
-            onclick="window.open('https://compressprojectv2.vercel.app/', '_blank')"
-          >
-            Kompres Foto Disini
-          </button>
+          <button type="button" id="compress" onclick="window.open('https://compressprojectv2.vercel.app/', '_blank')">Kompres Foto Disini</button>
         </div>
       </form>
     </div>
 
     <div class="popup" id="popup">
-      <p>Data Berhasil Terkirim</p>
-      <button onclick="closePopup()">Tutup</button>
+      <div class="popup-content">
+        <p>Data Berhasil Terkirim</p>
+        <button onclick="closePopup()">Tutup</button>
+      </div>
     </div>
 
     <script>
       const SCRIPT_URL = "https://pengawasan-tambahspk.onrender.com/api/form";
-      const GET_URL = "https://pengawasan-tambahspk.onrender.com/api/form";
-
       const form = document.getElementById("laporan-form");
       const submitButton = form.querySelector("button[type='submit']");
       const messageDiv = document.getElementById("popup");
 
       async function loadKodeUlok() {
-        let email = getParameterByName("assigned_email");
-        if (!email) {
-          email = getParameterByName("email");
-        }
-
-        const res = await fetch(
-          `https://pengawasan-tambahspk.onrender.com/api/form?form=h2&email=${encodeURIComponent(
-            email
-          )}`
-        );
+        let email = getParameterByName("assigned_email") || getParameterByName("email");
+        const res = await fetch(`https://pengawasan-tambahspk.onrender.com/api/form?form=h2&email=${encodeURIComponent(email)}`);
         const result = await res.json();
         const select = document.getElementById("kode_ulok");
         result.data.forEach((kode) => {
@@ -273,24 +117,17 @@
         showPopup("Mengirim data...");
 
         const formData = new FormData(form);
-        const convertToBase64 = (file) =>
-          new Promise((resolve, reject) => {
+        const convertToBase64 = (file) => new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result.split(",")[1]);
             reader.onerror = reject;
             reader.readAsDataURL(file);
-          });
+        });
 
         try {
-          const base64_1 = await convertToBase64(
-            formData.get("pengukuran_bowplank")
-          );
-          const base64_2 = await convertToBase64(
-            formData.get("pekerjaan_tanah")
-          );
-          const base64_3 = await convertToBase64(
-            formData.get("berkas_pengawasan")
-          );
+          const base64_1 = await convertToBase64(formData.get("pengukuran_bowplank"));
+          const base64_2 = await convertToBase64(formData.get("pekerjaan_tanah"));
+          const base64_3 = await convertToBase64(formData.get("berkas_pengawasan"));
           const statusProgress = formData.getAll("status_progress");
           const catatan = formData.getAll("catatan");
 
@@ -335,52 +172,35 @@
         }
       });
 
-      // Validasi ukuran file
       const MAX_SIZE_BYTES = 2 * 1024 * 1024;
-
       function setupFileInput(inputId, label) {
         const input = document.getElementById(inputId);
         const previewId = `preview-${inputId}`;
-
         input.addEventListener("change", function () {
           const oldPreview = document.getElementById(previewId);
-          if (oldPreview) {
-            oldPreview.remove();
-          }
-
+          if (oldPreview) oldPreview.remove();
           const file = this.files[0];
           if (file) {
-            // Validasi ukuran file
             if (file.size > MAX_SIZE_BYTES) {
-              alert(
-                `Ukuran file "${label}" melebihi 2 MB. Silakan kompres terlebih dahulu.`
-              );
-              this.value = ""; // Reset input
-              return;
+              alert(`Ukuran file "${label}" melebihi 2 MB. Silakan kompres terlebih dahulu.`);
+              this.value = ""; return;
             }
-
             const reader = new FileReader();
             reader.onload = function (e) {
               const previewImage = document.createElement("img");
               previewImage.id = previewId;
               previewImage.src = e.target.result;
-
               previewImage.style.maxWidth = "250px";
               previewImage.style.maxHeight = "250px";
               previewImage.style.marginTop = "10px";
               previewImage.style.borderRadius = "5px";
-
-              const fileInfo = input.nextElementSibling;
-              fileInfo.insertAdjacentElement("afterend", previewImage);
+              input.nextElementSibling.insertAdjacentElement("afterend", previewImage);
             };
             reader.readAsDataURL(file);
           }
         });
       }
-      setupFileInput(
-        "pengukuran_bowplank",
-        "Pengukuran dan Pemasangan Bowplank"
-      );
+      setupFileInput("pengukuran_bowplank", "Pengukuran dan Pemasangan Bowplank");
       setupFileInput("pekerjaan_tanah", "Mulai Pekerjaan Tanah");
       setupFileInput("berkas_pengawasan", "BERKAS PENGAWASAN");
 
@@ -388,40 +208,26 @@
         messageDiv.querySelector("p").textContent = msg;
         messageDiv.classList.add("show");
       }
-
-      function closePopup() {
-        messageDiv.classList.remove("show");
-      }
-
-      function getParameterByName(name) {
-        return new URLSearchParams(window.location.search).get(name) || "";
-      }
+      function closePopup() { messageDiv.classList.remove("show"); }
+      function getParameterByName(name) { return new URLSearchParams(window.location.search).get(name) || ""; }
 
       window.addEventListener("DOMContentLoaded", loadKodeUlok);
 
       function checkSessionTime() {
         try {
-          const startHour = 6;
-          const endHour = 18;
-
+          const startHour = 6; const endHour = 18;
           const now = new Date();
           const options = { timeZone: "Asia/Jakarta", hour: '2-digit', hour12: false };
           const currentHour = parseInt(new Intl.DateTimeFormat('en-US', options).format(now));
-
           if (currentHour < startHour || currentHour >= endHour) {
-            
             const token = sessionStorage.getItem("authToken");
-            
             if (token) {
               sessionStorage.removeItem("authToken");
               alert("Sesi Anda telah berakhir karena di luar jam operasional (06:00 - 18:00 WIB).");
-              
               window.location.href = "https://frontend-form-virid.vercel.app/login-input_pic.html";
             }
           }
-        } catch (err) {
-          console.error("Gagal menjalankan pengecekan jam sesi:", err);
-        }
+        } catch (err) { console.error("Gagal menjalankan pengecekan jam sesi:", err); }
       }
       checkSessionTime();
       setInterval(checkSessionTime, 300000);
