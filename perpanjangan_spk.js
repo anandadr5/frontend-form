@@ -17,7 +17,7 @@ if (logoutBtn) {
     logoutBtn.addEventListener('click', function() {
         if (confirm('Apakah Anda yakin ingin keluar?')) {
             sessionStorage.removeItem('authToken');
-            window.location.href = "https://sparta-alfamart.vercel.app/dashboard/pic/index.html";
+            window.location.href = "https://sparta-alfamart.vercel.app/dashboard/index.html";
         }
     });
 }
