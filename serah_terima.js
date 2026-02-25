@@ -493,7 +493,7 @@
         const lokasiInput = document.getElementById("lokasi");
         const cabangInput = document.getElementById("cabang");
 
-        document.querySelectorAll('.pekerjaan-item select, #tanggal_serah, #status_serah').forEach(el => {
+        document.querySelectorAll('.pekerjaan-item select, #tanggal_serah, #status_serah, #tanggal_go').forEach(el => {
           if (el.tagName === 'SELECT') {
             el.value = "";
           } else if (el.tagName === 'INPUT') {
@@ -663,8 +663,7 @@ function getSelectedItems() {
     pic_building_support: getParameterByName("assigned_email") || getParameterByName("email"),
     status_serah: document.getElementById("status_serah").value,
     tanggal_serah: document.getElementById("tanggal_serah")?. value || "",
-    
-    // KUNCI UTAMA:  items yang dipilih
+    tanggal_go: document.getElementById("tanggal_go")?.value || "",
     items_dipilih: getSelectedItems()
   };
 
@@ -873,6 +872,7 @@ function getSelectedItems() {
         });
 
       document.getElementById("tanggal_serah").addEventListener("change", saveFormToLocalStorage);
+      document.getElementById("tanggal_go").addEventListener("change", saveFormToLocalStorage);
 
       function checkSessionTime() {
         try {
