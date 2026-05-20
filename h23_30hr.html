@@ -81,12 +81,15 @@
         border-radius: 10px;
         color: #ef190a;
         text-align: center;
+        width: min(82vw, 720px);
+        z-index: 10;
       }
 
       .popup p {
-        font-size: 24px;
+        font-size: 20px;
         font-weight: bold;
         margin-bottom: 15px;
+        overflow-wrap: anywhere;
       }
 
       .popup.show {
@@ -139,7 +142,7 @@
         <label for="status_lokasi">Status Lokasi:</label>
         <input
           type="text"
-          id="status_lokasi"
+          id="status_lokasi_display"
           name="status_lokasi"
           placeholder="Non Ruko Non Urugan 30 hr"
           disabled
@@ -347,18 +350,18 @@
 
           const result = await response.json();
           if (result.status === "success") {
-            showPopup("Data berhasil dikirim!");
+            showPopup(result.message || "Data berhasil dikirim!");
             document.getElementById("preview-pek_kusen")?.remove();
             document.getElementById("preview-pek_area")?.remove();
             document.getElementById("preview-pengawasan")?.remove();
             document.getElementById("preview-berkas_pengawasan")?.remove();
             form.reset();
           } else {
-            showPopup("Gagal kirim: " + result.message);
+            showPopup(formatErrorMessage(result.message));
           }
         } catch (err) {
           console.error(err);
-          showPopup("Error: " + err.message);
+          showPopup(formatErrorMessage(err.message));
         } finally {
           submitButton.disabled = false;
         }
@@ -414,6 +417,16 @@
       function showPopup(msg) {
         messageDiv.querySelector("p").textContent = msg;
         messageDiv.classList.add("show");
+      }
+
+      function formatErrorMessage(message) {
+        const text = String(message || "Terjadi kesalahan saat mengirim data.");
+
+        if (text.includes("invalid_grant")) {
+          return "Data belum selesai diproses karena token Gmail API di server sudah tidak valid. Mohon admin update GOOGLE_REFRESH_TOKEN di Render lalu coba kirim ulang.";
+        }
+
+        return text.startsWith("Gagal kirim:") ? text : "Gagal kirim: " + text;
       }
 
       function closePopup() {
