@@ -1,5 +1,7 @@
  // Variabel untuk validasi ukuran file
-      const MAX_SIZE_BYTES = 2 * 1024 * 1024; // Batas 2 MB
+      const MAX_SIZE_BYTES = 8 * 1024 * 1024; // Batas file mentah 8 MB, foto akan dikompres otomatis sebelum dikirim
+      const MAX_IMAGE_DIMENSION = 1280;
+      const IMAGE_QUALITY = 0.72;
       const COMPRESS_URL = "https://compressprojectv2.vercel.app/";
 
       let ulokDataStore = [];
@@ -246,7 +248,7 @@
                     <div>
                       <label>UPLOAD FOTO</label>
                       <input type="file" name="${item.kode}_foto" accept="image/*" required />
-                      <small class="file-info">Maksimal ukuran file: 2 MB</small>
+                      <small class="file-info">Maksimal ukuran file: 8 MB, foto dikompres otomatis</small>
                     </div>
                   </div>
                 `;
@@ -590,7 +592,7 @@ function getSelectedItems() {
     const allSections = document.querySelectorAll(".kelompok");
 
     for (const section of allSections) {
-      const items = section.querySelectorAll(". pekerjaan-item");
+      const items = section.querySelectorAll(".pekerjaan-item");
       
       for (const item of items) {
         const selectAda = item.querySelector('select[name$="_ada"]');
@@ -601,7 +603,7 @@ function getSelectedItems() {
           firstInvalidElement = selectAda;
         } else if (val === "ada") {
           const otherSelects = item.querySelectorAll(
-            'select: not([name$="_ada"])'
+            'select:not([name$="_ada"])'
           );
           for (const s of otherSelects) {
             if (s.value === "") {
@@ -694,7 +696,7 @@ function getSelectedItems() {
         });
       } catch (error) {
         console.error(`Error converting file for ${kode}:`, error);
-        showErrorPopup(`Error converting file for ${kode}:  ${error.message}`, null);
+        showErrorPopup(`Gagal membaca foto untuk item ${kode}. ${error.message || "Silakan pilih ulang foto dari galeri/kamera, lalu coba kirim lagi."}`, null);
         submitButton.disabled = false;
         return;
       }
@@ -739,19 +741,74 @@ function getSelectedItems() {
     }
   } catch (err) {
     console.error(err);
-    showPopup("Error: " + err.message);
+    showPopup("Gagal terhubung ke server. Pastikan koneksi stabil, tunggu sebentar jika server Render baru aktif, lalu coba kirim lagi.");
   } finally {
     submitButton. disabled = false;
   }
 });
 
-      function convertFileToBase64(file) {
+      function readFileAsDataURL(file) {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result);
-          reader.onerror = reject;
+          reader.onload = () => {
+            if (typeof reader.result === "string" && reader.result) {
+              resolve(reader.result);
+            } else {
+              reject(new Error("File tidak menghasilkan data yang valid."));
+            }
+          };
+          reader.onerror = () => reject(new Error("Browser gagal membaca file. Pilih ulang foto, jangan gunakan file dari preview sementara."));
+          reader.onabort = () => reject(new Error("Pembacaan file dibatalkan."));
           reader.readAsDataURL(file);
         });
+      }
+
+      function loadImage(dataUrl) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => reject(new Error("Format foto tidak bisa diproses browser. Gunakan JPG/PNG atau ambil ulang foto."));
+          img.src = dataUrl;
+        });
+      }
+
+      async function convertFileToBase64(file) {
+        if (!file) {
+          throw new Error("File foto tidak ditemukan.");
+        }
+
+        if (!file.type || !file.type.startsWith("image/")) {
+          throw new Error("File harus berupa gambar.");
+        }
+
+        if (file.size > MAX_SIZE_BYTES) {
+          throw new Error("Ukuran foto terlalu besar. Kompres foto terlebih dahulu atau ambil ulang dengan resolusi lebih kecil.");
+        }
+
+        const originalDataUrl = await readFileAsDataURL(file);
+
+        try {
+          const img = await loadImage(originalDataUrl);
+          const scale = Math.min(1, MAX_IMAGE_DIMENSION / Math.max(img.width, img.height));
+          const width = Math.max(1, Math.round(img.width * scale));
+          const height = Math.max(1, Math.round(img.height * scale));
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            return originalDataUrl;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+          return canvas.toDataURL("image/jpeg", IMAGE_QUALITY);
+        } catch (error) {
+          if (file.size <= 2 * 1024 * 1024) {
+            return originalDataUrl;
+          }
+          throw error;
+        }
       }
 
       function showPopup(msg) {
@@ -791,7 +848,7 @@ function getSelectedItems() {
           input.addEventListener("change", function () {
             const file = this.files[0];
             if (file && file.size > MAX_SIZE_BYTES) {
-              const message = `File "${file.name}" terlalu besar (maksimal 2 MB). Silakan kompres terlebih dahulu.`;
+              const message = `File "${file.name}" terlalu besar (maksimal 8 MB). Silakan kompres terlebih dahulu.`;
               showErrorPopup(message, COMPRESS_URL);
               this.value = "";
             }

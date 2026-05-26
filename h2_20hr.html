@@ -49,7 +49,7 @@
 
         <label for="pek_persiapan">I. PEK. PERSIAPAN & BONGKARAN:</label>
         <input type="file" id="pek_persiapan" name="pek_persiapan" accept="image/*" required />
-        <small class="file-info">Maksimal ukuran file: 2 MB</small>
+        <small class="file-info">Maksimal ukuran file: 8 MB, foto dikompres otomatis</small>
 
         <label for="status_progress1">Status Progress:</label>
         <select name="status_progress" id="status_progress1" required>
@@ -63,7 +63,7 @@
 
         <label for="berkas_pengawasan">II. BERKAS PENGAWASAN (MEMO PENGAWASAN/INSTRUKSI LAPANGAN/OPNAME PEKERJAAN)</label>
         <input type="file" id="berkas_pengawasan" name="berkas_pengawasan" accept="image/*" required />
-        <small class="file-info">Maksimal ukuran file: 2 MB</small>
+        <small class="file-info">Maksimal ukuran file: 8 MB, foto dikompres otomatis</small>
 
         <div class="button-group">
           <button type="submit">Simpan</button>
@@ -79,6 +79,7 @@
       </div>
     </div>
 
+    <script src="/photo_compress.js"></script>
     <script>
       const SCRIPT_URL = "https://pengawasan-tambahspk.onrender.com/api/form";
       const form = document.getElementById("laporan-form");
@@ -104,12 +105,7 @@
         showPopup("Mengirim data...");
 
         const formData = new FormData(form);
-        const convertToBase64 = (file) => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(",")[1]);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
+        const convertToBase64 = (file) => window.convertImageFileToBase64(file, { maxSizeBytes: MAX_SIZE_BYTES });
 
         try {
           const base64_1 = await convertToBase64(formData.get("pek_persiapan"));
@@ -157,7 +153,7 @@
         }
       });
 
-      const MAX_SIZE_BYTES = 2 * 1024 * 1024;
+      const MAX_SIZE_BYTES = 8 * 1024 * 1024;
       function setupFileInput(inputId, label) {
         const input = document.getElementById(inputId);
         const previewId = `preview-${inputId}`;
@@ -167,7 +163,7 @@
           const file = this.files[0];
           if (file) {
             if (file.size > MAX_SIZE_BYTES) {
-              alert(`Ukuran file "${label}" melebihi 2 MB. Silakan kompres terlebih dahulu.`);
+              alert(`Ukuran file "${label}" melebihi 8 MB. Silakan kompres terlebih dahulu atau ambil ulang foto dengan resolusi lebih kecil.`);
               this.value = ""; return;
             }
             const reader = new FileReader();
