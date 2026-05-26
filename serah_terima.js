@@ -877,7 +877,7 @@ function getSelectedItems() {
       function checkSessionTime() {
         try {
           const startHour = 6; 
-          const endHour = 18;
+          const endHour = 24;
 
           const now = new Date();
           const options = { timeZone: "Asia/Jakarta", hour: '2-digit', hour12: false };
@@ -890,7 +890,7 @@ function getSelectedItems() {
             if (token) {
               sessionStorage.removeItem("authToken");
               
-              showPopup("Sesi Anda telah berakhir karena di luar jam operasional (06:00 - 18:00 WIB).");
+              showPopup("Sesi Anda telah berakhir karena di luar jam operasional (06:00 - 24:00 WIB).");
               
               setTimeout(() => {
                 window.location.href = "https://frontend-form-virid.vercel.app/login-input_pic.html";
